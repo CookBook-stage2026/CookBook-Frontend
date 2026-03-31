@@ -1,0 +1,37 @@
+import {Component, output, ChangeDetectionStrategy, inject, input} from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Ingredient, Unit } from '../../models/ingredient.model';
+
+@Component({
+  selector: 'app-ingredient-form',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ReactiveFormsModule],
+  templateUrl: '../html/ingredient-form.component.html',
+  styleUrl: '../scss/ingredient-form.component.scss'
+})
+export class IngredientFormComponent {
+  private fb = inject(FormBuilder);
+
+  ingredientSubmitted = output<Ingredient>();
+  isSubmitting = input<boolean>(false);
+
+  units: Unit[] = ['Eetlepel', 'Theelepel', 'Kilogram', 'Gram', 'Liters', 'Milligram', 'Milliliters', 'Kopje', 'Snufje', 'Stuk', 'Teen'];
+
+  form = this.fb.nonNullable.group({
+    name: ['', Validators.required],
+    description: ['', Validators.required],
+    unit: [null as Unit | null]
+  });
+
+  onSubmit(): void {
+    if (this.form.valid) {
+      this.ingredientSubmitted.emit(this.form.getRawValue());
+    } else {
+      this.form.markAllAsTouched();
+    }
+  }
+
+  resetForm(): void {
+    this.form.reset({ name: '', description: '', unit: null });
+  }
+}
