@@ -3,28 +3,23 @@
   --bg-main: #ffffff;
   --bg-surface: #f8fafc;
   --border-color: #e2e8f0;
-
   /* Text */
   --text-main: #0f172a;
   --text-muted: #475569;
-
   /* special element*/
   --element-primary: #2563eb;
   --element-primary-contrast: #ffffff;
-
   --spacing-unit: 4px;
   --radius-md: 6px;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg-main: #020617;
     --bg-surface: #0f172a;
     --border-color: #1e293b;
-
     --text-main: #f8fafc;
     --text-muted: #94a3b8;
-
     --element-primary: #60a5fa;
     --element-primary-contrast: #020617;
   }
@@ -36,4 +31,5 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  margin: 0;
 }

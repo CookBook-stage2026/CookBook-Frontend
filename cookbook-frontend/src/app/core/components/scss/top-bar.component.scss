@@ -1,0 +1,82 @@
+.app-header {
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.75rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.brand-nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: var(--text-main);
+}
+
+.logo-icon {
+  color: var(--element-primary);
+}
+
+.app-title {
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.main-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.main-nav a {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 500;
+  padding: 0.5rem;
+  border-radius: var(--radius-md);
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.main-nav a:hover {
+  background-color: var(--border-color);
+  color: var(--text-main);
+}
+
+.main-nav a.active {
+  color: var(--element-primary);
+  font-weight: 600;
+  background-color: transparent;
+}
+
+.theme-toggle {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.theme-toggle:hover {
+  background-color: var(--border-color);
+}

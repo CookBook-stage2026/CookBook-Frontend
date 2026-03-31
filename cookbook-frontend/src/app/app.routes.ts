@@ -4,7 +4,7 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'ingredients'
+    loadComponent: () => import('./features/home/typescript/home-page.component')
   },
   {
     path: 'ingredients',
@@ -12,6 +12,6 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    redirectTo: 'ingredients'
+    redirectTo: ''
   }
 ];
