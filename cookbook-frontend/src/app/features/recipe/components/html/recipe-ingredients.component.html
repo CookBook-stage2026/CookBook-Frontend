@@ -1,12 +1,15 @@
 <div class="array-section">
   <div class="section-header">
     <h3>Ingredients *</h3>
-    <button type="button" class="btn-text" (click)="add()" [disabled]="isSubmitting()">+ Add Ingredient</button>
+    <button type="button" class="btn-text" (click)="add()" [disabled]="isSubmitting()">
+      + Add Ingredient
+    </button>
   </div>
 
   <div class="array-container">
     @for (ingredientCtrl of ingredients().controls; track $index) {
       <div [formGroup]="ingredientCtrl" class="ingredient-row">
+
         <div class="form-group flex-2">
           <label [attr.for]="'ingredient-name-' + $index">Ingredient Name *</label>
           <div class="input-wrapper">
@@ -21,9 +24,35 @@
               [id]="'ingredient-name-' + $index"
               placeholder="e.g., Flour"
               class="form-control"
-              [attr.aria-describedby]="ingredientCtrl.get('name')?.invalid && ingredientCtrl.get('name')?.touched ? 'name-error-' + $index : null"
+              autocomplete="off"
+              role="combobox"
+              [attr.aria-expanded]="dropdownOpen()[$index]"
+              aria-haspopup="listbox"
+              aria-autocomplete="list"
+              [attr.aria-controls]="'ingredient-listbox-' + $index"
               aria-required="true"
-              [class.is-invalid]="ingredientCtrl.get('name')?.invalid && ingredientCtrl.get('name')?.touched">
+              [attr.aria-describedby]="ingredientCtrl.get('name')?.invalid && ingredientCtrl.get('name')?.touched ? 'name-error-' + $index : null"
+              [class.is-invalid]="ingredientCtrl.get('name')?.invalid && ingredientCtrl.get('name')?.touched"
+              (input)="onNameInput($event, $index)"
+              (blur)="closeDropdown($index)">
+
+            @if (dropdownOpen()[$index] && filteredIngredients()[$index].length) {
+              <ul
+                [id]="'ingredient-listbox-' + $index"
+                role="listbox"
+                aria-label="Ingredient suggestions"
+                class="autocomplete-dropdown">
+                @for (ingredient of filteredIngredients()[$index]; track ingredient.id) {
+                  <li
+                    role="option"
+                    class="autocomplete-option"
+                    [attr.aria-selected]="ingredientCtrl.get('name')?.value === ingredient.name"
+                    (mousedown)="selectIngredient(ingredient, $index, ingredientCtrl)">
+                    {{ ingredient.name }}
+                  </li>
+                }
+              </ul>
+            }
           </div>
         </div>
 
@@ -38,15 +67,15 @@
             <input
               type="number"
               step="0.1"
+              min="0"
               formControlName="quantity"
               [id]="'quantity-' + $index"
               placeholder="2.5"
               class="form-control"
-              min="0"
-              (input)="onQuantityInput($event, ingredientCtrl.get('quantity')!)"
-              [attr.aria-describedby]="ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched ? 'quantity-error-' + $index : null"
               aria-required="true"
-              [class.is-invalid]="ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched">
+              [attr.aria-describedby]="ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched ? 'quantity-error-' + $index : null"
+              [class.is-invalid]="ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched"
+              (input)="onQuantityInput($event, ingredientCtrl.get('quantity')!)">
           </div>
         </div>
 
@@ -58,15 +87,18 @@
                 <span>Unit is required</span>
               </div>
             }
-            <input
-              type="text"
+            <select
               formControlName="unit"
               [id]="'unit-' + $index"
-              placeholder="cups, grams, tbsp"
               class="form-control"
-              [attr.aria-describedby]="ingredientCtrl.get('unit')?.invalid && ingredientCtrl.get('unit')?.touched ? 'unit-error-' + $index : null"
               aria-required="true"
+              [attr.aria-describedby]="ingredientCtrl.get('unit')?.invalid && ingredientCtrl.get('unit')?.touched ? 'unit-error-' + $index : null"
               [class.is-invalid]="ingredientCtrl.get('unit')?.invalid && ingredientCtrl.get('unit')?.touched">
+              <option value="" disabled>Select unit</option>
+              @for (unit of units; track unit) {
+                <option [value]="unit">{{ unit }}</option>
+              }
+            </select>
           </div>
         </div>
 
@@ -77,12 +109,13 @@
           (keydown.enter)="remove($index)"
           (keydown.space)="remove($index)"
           [disabled]="isSubmitting()"
-          [attr.aria-label]="'Remove ingredient ' + (ingredientCtrl.get('name')?.value || '')">
+          [attr.aria-label]="'Remove ingredient ' + (ingredientCtrl.get('name')?.value || $index + 1)">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
             <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
           </svg>
         </button>
+
       </div>
     } @empty {
       <p class="empty-text">No ingredients added yet. Click "+ Add Ingredient" to add some.</p>
