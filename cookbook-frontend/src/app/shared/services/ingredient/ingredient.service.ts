@@ -2,8 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, catchError, tap, throwError } from 'rxjs';
 import { environment } from '../../../../environment';
-import { Ingredient } from '../models/ingredient.model';
-import { ToastService } from '../../../core/services/toast.service';
+import { Ingredient } from '@shared/domain/ingredient';
+import { ToastService } from '@core/services/toast.service';
 
 @Injectable({ providedIn: 'root' })
 export class IngredientService {

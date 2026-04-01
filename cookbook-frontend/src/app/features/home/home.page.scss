@@ -30,6 +30,10 @@ h1 {
 
 .actions {
   margin-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 
 .btn-primary {
@@ -41,8 +45,24 @@ h1 {
   text-decoration: none;
   font-weight: 600;
   transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 0.9;
+  }
 }
 
-.btn-primary:hover {
-  opacity: 0.9;
+.btn-secondary {
+  display: inline-block;
+  background-color: transparent;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-weight: 600;
+  transition: background-color 0.2s;
+
+  &:hover {
+    background-color: var(--border-color);
+  }
 }

@@ -1,7 +1,7 @@
 import { Component, inject, signal, ChangeDetectionStrategy, ViewChild } from '@angular/core';
-import { IngredientService } from './services/ingredient.service';
-import { Ingredient } from './models/ingredient.model';
-import { ToastComponent } from '../../shared/components/toast/toast.component';
+import { IngredientService } from '@shared/services/ingredient/ingredient.service';
+import { Ingredient } from '@shared/domain/ingredient/ingredient.model';
+import { ToastComponent } from '@shared/components/toast/toast.component';
 import {IngredientListComponent} from './components/typescript/ingredient-list.component';
 import {IngredientFormComponent} from './components/typescript/ingredient-form.component';
 
@@ -37,14 +37,13 @@ import {IngredientFormComponent} from './components/typescript/ingredient-form.c
     .content { flex: 1; min-width: 0; }
     .content-header h1 { margin-top: 0; margin-bottom: 1.5rem; font-size: 1.75rem; color: var(--text-main); }
 
-    /* Responsive stacking for mobile */
     @media (max-width: 860px) {
       .page-layout { flex-direction: column; }
       .sidebar { position: static; flex: auto; width: 100%; }
     }
   `]
 })
-export default class IngredientPageComponent {
+export default class IngredientPage {
   private ingredientService = inject(IngredientService);
 
   @ViewChild(IngredientFormComponent) formComponent!: IngredientFormComponent;

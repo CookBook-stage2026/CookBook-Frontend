@@ -50,17 +50,17 @@
   padding: 0.5rem;
   border-radius: var(--radius-md);
   transition: background-color 0.2s, color 0.2s;
-}
 
-.main-nav a:hover {
-  background-color: var(--border-color);
-  color: var(--text-main);
-}
+  &:hover {
+    background-color: var(--border-color);
+    color: var(--text-main);
+  }
 
-.main-nav a.active {
-  color: var(--element-primary);
-  font-weight: 600;
-  background-color: transparent;
+  &.active {
+    color: var(--element-primary);
+    font-weight: 600;
+    background-color: transparent;
+  }
 }
 
 .theme-toggle {
@@ -75,8 +75,8 @@
   align-items: center;
   gap: 0.5rem;
   transition: background-color 0.2s;
-}
 
-.theme-toggle:hover {
-  background-color: var(--border-color);
+  &:hover {
+    background-color: var(--border-color);
+  }
 }

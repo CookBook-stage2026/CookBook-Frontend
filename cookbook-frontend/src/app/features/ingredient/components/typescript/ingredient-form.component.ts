@@ -1,6 +1,6 @@
 import {Component, output, ChangeDetectionStrategy, inject, input} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Ingredient, Unit } from '../../models/ingredient.model';
+import { Ingredient, Unit } from '@shared/domain/ingredient/ingredient.model';
 
 @Component({
   selector: 'app-ingredient-form',
