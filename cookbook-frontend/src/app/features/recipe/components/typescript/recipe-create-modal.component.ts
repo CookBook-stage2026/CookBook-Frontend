@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, output, signal, input } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { RecipeService } from '@shared/services/recipe/recipe.service';
-import { CreateRecipeDto, IngredientDto } from '@shared/domain/recipe';
+import { CreateRecipeDto } from '@shared/domain/recipe';
 import { RecipeIngredientsComponent } from './recipe-ingredients.component';
 import { RecipeStepsComponent } from './recipe-steps.component';
 
@@ -42,7 +42,13 @@ export class RecipeCreateModalComponent {
       this.isSubmitting.set(true);
 
       const formValue = this.recipeForm.value;
-      const createRecipeDto = this.transformToDto(formValue);
+      const createRecipeDto: CreateRecipeDto = {
+        name: formValue.name,
+        description: formValue.description,
+        durationInMinutes: formValue.durationInMinutes,
+        steps: formValue.steps,
+        ingredients: formValue.ingredients
+      };
 
       this.recipeService.createRecipe(createRecipeDto).subscribe({
         next: () => {
@@ -58,25 +64,6 @@ export class RecipeCreateModalComponent {
     } else {
       this.recipeForm.markAllAsTouched();
     }
-  }
-
-  private transformToDto(formValue: any): CreateRecipeDto {
-    const ingredientsMap: { [key: string]: IngredientDto } = {};
-    formValue.ingredients.forEach((ingredient: any, index: number) => {
-      ingredientsMap[`ingredient_${index + 1}`] = {
-        name: ingredient.name,
-        quantity: ingredient.quantity,
-        unit: ingredient.unit
-      };
-    });
-
-    return {
-      name: formValue.name,
-      description: formValue.description,
-      durationInMinutes: formValue.durationInMinutes,
-      steps: formValue.steps,
-      ingredients: ingredientsMap
-    };
   }
 
   addStep() {

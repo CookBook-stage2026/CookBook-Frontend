@@ -9,53 +9,65 @@
       <div [formGroup]="ingredientCtrl" class="ingredient-row">
         <div class="form-group flex-2">
           <label [attr.for]="'ingredient-name-' + $index">Ingredient Name *</label>
-          <input
-            type="text"
-            formControlName="name"
-            [id]="'ingredient-name-' + $index"
-            placeholder="e.g., Flour"
-            class="form-control"
-            [attr.aria-describedby]="ingredientCtrl.get('name')?.invalid && ingredientCtrl.get('name')?.touched ? 'name-error-' + $index : null"
-            aria-required="true"
-            [class.is-invalid]="ingredientCtrl.get('name')?.invalid && ingredientCtrl.get('name')?.touched">
-          @if (ingredientCtrl.get('name')?.invalid && ingredientCtrl.get('name')?.touched) {
-            <div [id]="'name-error-' + $index" class="invalid-feedback" role="alert">Ingredient name is required</div>
-          }
+          <div class="input-wrapper">
+            @if (ingredientCtrl.get('name')?.invalid && ingredientCtrl.get('name')?.touched) {
+              <div [id]="'name-error-' + $index" class="tooltip-error tooltip-above" role="tooltip">
+                <span>Ingredient name is required</span>
+              </div>
+            }
+            <input
+              type="text"
+              formControlName="name"
+              [id]="'ingredient-name-' + $index"
+              placeholder="e.g., Flour"
+              class="form-control"
+              [attr.aria-describedby]="ingredientCtrl.get('name')?.invalid && ingredientCtrl.get('name')?.touched ? 'name-error-' + $index : null"
+              aria-required="true"
+              [class.is-invalid]="ingredientCtrl.get('name')?.invalid && ingredientCtrl.get('name')?.touched">
+          </div>
         </div>
 
         <div class="form-group flex-1">
           <label [attr.for]="'quantity-' + $index">Quantity *</label>
-          <input
-            type="number"
-            step="0.1"
-            formControlName="quantity"
-            [id]="'quantity-' + $index"
-            placeholder="2.5"
-            class="form-control"
-            min="0"
-            (input)="onQuantityInput($event, ingredientCtrl.get('quantity')!)"
-            [attr.aria-describedby]="ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched ? 'quantity-error-' + $index : null"
-            aria-required="true"
-            [class.is-invalid]="ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched">
-          @if (ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched) {
-            <div [id]="'quantity-error-' + $index" class="invalid-feedback" role="alert">Quantity must be greater than 0</div>
-          }
+          <div class="input-wrapper">
+            @if (ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched) {
+              <div [id]="'quantity-error-' + $index" class="tooltip-error tooltip-above" role="tooltip">
+                <span>Must be greater than 0</span>
+              </div>
+            }
+            <input
+              type="number"
+              step="0.1"
+              formControlName="quantity"
+              [id]="'quantity-' + $index"
+              placeholder="2.5"
+              class="form-control"
+              min="0"
+              (input)="onQuantityInput($event, ingredientCtrl.get('quantity')!)"
+              [attr.aria-describedby]="ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched ? 'quantity-error-' + $index : null"
+              aria-required="true"
+              [class.is-invalid]="ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched">
+          </div>
         </div>
 
         <div class="form-group flex-1">
           <label [attr.for]="'unit-' + $index">Unit *</label>
-          <input
-            type="text"
-            formControlName="unit"
-            [id]="'unit-' + $index"
-            placeholder="cups, grams, tbsp"
-            class="form-control"
-            [attr.aria-describedby]="ingredientCtrl.get('unit')?.invalid && ingredientCtrl.get('unit')?.touched ? 'unit-error-' + $index : null"
-            aria-required="true"
-            [class.is-invalid]="ingredientCtrl.get('unit')?.invalid && ingredientCtrl.get('unit')?.touched">
-          @if (ingredientCtrl.get('unit')?.invalid && ingredientCtrl.get('unit')?.touched) {
-            <div [id]="'unit-error-' + $index" class="invalid-feedback" role="alert">Unit is required</div>
-          }
+          <div class="input-wrapper">
+            @if (ingredientCtrl.get('unit')?.invalid && ingredientCtrl.get('unit')?.touched) {
+              <div [id]="'unit-error-' + $index" class="tooltip-error tooltip-above" role="tooltip">
+                <span>Unit is required</span>
+              </div>
+            }
+            <input
+              type="text"
+              formControlName="unit"
+              [id]="'unit-' + $index"
+              placeholder="cups, grams, tbsp"
+              class="form-control"
+              [attr.aria-describedby]="ingredientCtrl.get('unit')?.invalid && ingredientCtrl.get('unit')?.touched ? 'unit-error-' + $index : null"
+              aria-required="true"
+              [class.is-invalid]="ingredientCtrl.get('unit')?.invalid && ingredientCtrl.get('unit')?.touched">
+          </div>
         </div>
 
         <button

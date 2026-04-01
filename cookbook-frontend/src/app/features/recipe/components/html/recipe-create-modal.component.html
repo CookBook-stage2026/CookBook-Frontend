@@ -23,52 +23,75 @@
         <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()" class="recipe-form">
           <div class="form-group">
             <label for="name">Recipe Name *</label>
-            <input
-              type="text"
-              id="name"
-              formControlName="name"
-              placeholder="e.g., Homemade Pizza"
-              class="form-control"
-              [class.is-invalid]="recipeForm.get('name')?.invalid && recipeForm.get('name')?.touched"
-              aria-required="true">
-            @if (recipeForm.get('name')?.invalid && recipeForm.get('name')?.touched) {
-              <div class="invalid-feedback" role="alert">Recipe name is required</div>
-            }
+            <div class="input-wrapper">
+              <input
+                type="text"
+                id="name"
+                formControlName="name"
+                placeholder="e.g., Homemade Pizza"
+                class="form-control"
+                [class.is-invalid]="recipeForm.get('name')?.invalid && recipeForm.get('name')?.touched"
+                aria-required="true">
+              @if (recipeForm.get('name')?.invalid && recipeForm.get('name')?.touched) {
+                <div class="tooltip-error" role="tooltip">
+                  <svg class="tooltip-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 8v4M12 16h.01"/>
+                  </svg>
+                  <span>Recipe name is required</span>
+                </div>
+              }
+            </div>
           </div>
 
           <div class="form-group">
             <label for="description">Short Description *</label>
-            <textarea
-              id="description"
-              formControlName="description"
-              rows="3"
-              placeholder="Describe the dish briefly..."
-              class="form-control"
-              [class.is-invalid]="recipeForm.get('description')?.invalid && recipeForm.get('description')?.touched"
-              aria-required="true"></textarea>
-            @if (recipeForm.get('description')?.invalid && recipeForm.get('description')?.touched) {
-              <div class="invalid-feedback" role="alert">Description is required</div>
-            }
+            <div class="input-wrapper">
+              <textarea
+                id="description"
+                formControlName="description"
+                rows="3"
+                placeholder="Describe the dish briefly..."
+                class="form-control"
+                [class.is-invalid]="recipeForm.get('description')?.invalid && recipeForm.get('description')?.touched"
+                aria-required="true"></textarea>
+              @if (recipeForm.get('description')?.invalid && recipeForm.get('description')?.touched) {
+                <div class="tooltip-error" role="tooltip">
+                  <svg class="tooltip-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 8v4M12 16h.01"/>
+                  </svg>
+                  <span>Description is required</span>
+                </div>
+              }
+            </div>
           </div>
 
           <div class="form-row">
             <div class="form-group">
               <label for="durationInMinutes">Total Duration (minutes) *</label>
-              <input
-                type="number"
-                id="durationInMinutes"
-                formControlName="durationInMinutes"
-                placeholder="15"
-                class="form-control"
-                min="1"
-                step="1"
-                (input)="onDurationInput($event)"
-                [class.is-invalid]="recipeForm.get('durationInMinutes')?.invalid && recipeForm.get('durationInMinutes')?.touched"
-                aria-required="true"
-                aria-describedby="duration-error">
-              @if (recipeForm.get('durationInMinutes')?.invalid && recipeForm.get('durationInMinutes')?.touched) {
-                <div id="duration-error" class="invalid-feedback" role="alert">Duration must be at least 1 minute</div>
-              }
+              <div class="input-wrapper">
+                <input
+                  type="number"
+                  id="durationInMinutes"
+                  formControlName="durationInMinutes"
+                  placeholder="15"
+                  class="form-control"
+                  min="1"
+                  step="1"
+                  (input)="onDurationInput($event)"
+                  [class.is-invalid]="recipeForm.get('durationInMinutes')?.invalid && recipeForm.get('durationInMinutes')?.touched"
+                  aria-required="true">
+                @if (recipeForm.get('durationInMinutes')?.invalid && recipeForm.get('durationInMinutes')?.touched) {
+                  <div class="tooltip-error" role="tooltip">
+                    <svg class="tooltip-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="M12 8v4M12 16h.01"/>
+                    </svg>
+                    <span>Duration must be at least 1 minute</span>
+                  </div>
+                }
+              </div>
             </div>
           </div>
 

@@ -9,7 +9,7 @@ export interface CreateRecipeDto {
   description: string;
   durationInMinutes: number;
   steps: string[];
-  ingredients: { [key: string]: IngredientDto };
+  ingredients: IngredientDto[];
 }
 
 export interface RecipeDto extends CreateRecipeDto {
