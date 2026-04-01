@@ -4,15 +4,11 @@ export const routes: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    loadComponent: () => import('@features/home/HomePage')
-  },
-  {
-    path: 'ingredients',
-    loadComponent: () => import('./features/ingredient/ingredient.page')
+    loadComponent: () => import('@features/home/home.page')
   },
   {
     path: 'recipes',
-    loadComponent: () => import('./features/recipe/./recipe.page')
+    loadComponent: () => import('@features/recipe/recipe.page')
   },
   {
     path: '**',

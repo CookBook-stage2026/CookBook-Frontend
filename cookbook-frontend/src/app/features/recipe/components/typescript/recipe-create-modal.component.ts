@@ -1,44 +1,32 @@
-import { Component, ChangeDetectionStrategy, inject, output, signal, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, output, } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
-import {RecipeService} from '@shared/services/recipe/recipe.service';
-import {CreateRecipeDto} from '@shared/domain/recipe';
-import {Ingredient} from '@shared/domain/ingredient/ingredient.model';
-import {IngredientService} from '@shared/services/ingredient/ingredient.service';
+import { RecipeService } from '@shared/services/recipe/recipe.service';
+import { CreateRecipeDto, IngredientDto } from '@shared/domain/recipe';
 
 @Component({
   selector: 'app-recipe-create-modal',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule],
   templateUrl: '../html/recipe-create-modal.component.html',
   styleUrl: '../scss/recipe-create-modal.component.scss'
 })
-export class RecipeCreateModalComponent implements OnInit {
+export class RecipeCreateModalComponent {
   private fb = inject(FormBuilder);
   private recipeService = inject(RecipeService);
-  private ingredientService = inject(IngredientService);
 
   closeModal = output<void>();
   recipeCreated = output<void>();
 
-  availableIngredients = signal<Ingredient[]>([]);
-
   recipeForm: FormGroup = this.fb.group({
     name: ['', Validators.required],
     description: ['', Validators.required],
-    durationInMinutes: [0, [Validators.required, Validators.min(1)]],
+    durationInMinutes: [null, [Validators.required, Validators.min(1)]],
     steps: this.fb.array([this.fb.control('', Validators.required)]),
     ingredients: this.fb.array([])
   });
 
   get steps() { return this.recipeForm.get('steps') as FormArray; }
   get ingredients() { return this.recipeForm.get('ingredients') as FormArray; }
-
-  ngOnInit() {
-    this.ingredientService.getIngredients(0, 20).subscribe(ingredients => {
-      this.availableIngredients.set(ingredients);
-    });
-  }
 
   addStep() {
     this.steps.push(this.fb.control('', Validators.required));
@@ -52,9 +40,9 @@ export class RecipeCreateModalComponent implements OnInit {
 
   addIngredient() {
     const ingredientGroup = this.fb.group({
-      ingredientId: ['', Validators.required],
-      isScalable: [true],
-      baseQuantity: [1, [Validators.required, Validators.min(0.1)]]
+      name: ['', Validators.required],
+      quantity: [null, [Validators.required, Validators.min(0.1)]],
+      unit: ['', Validators.required]
     });
     this.ingredients.push(ingredientGroup);
   }
@@ -65,9 +53,26 @@ export class RecipeCreateModalComponent implements OnInit {
 
   onSubmit() {
     if (this.recipeForm.valid) {
-      const formValue = this.recipeForm.value as CreateRecipeDto;
+      const formValue = this.recipeForm.value;
 
-      this.recipeService.createRecipe(formValue).subscribe({
+      const ingredientsMap: { [key: string]: IngredientDto } = {};
+      formValue.ingredients.forEach((ingredient: any, index: number) => {
+        ingredientsMap[`ingredient_${index + 1}`] = {
+          name: ingredient.name,
+          quantity: ingredient.quantity,
+          unit: ingredient.unit
+        };
+      });
+
+      const createRecipeDto: CreateRecipeDto = {
+        name: formValue.name,
+        description: formValue.description,
+        durationInMinutes: formValue.durationInMinutes,
+        steps: formValue.steps,
+        ingredients: ingredientsMap
+      };
+
+      this.recipeService.createRecipe(createRecipeDto).subscribe({
         next: () => {
           this.recipeCreated.emit();
           this.closeModal.emit();

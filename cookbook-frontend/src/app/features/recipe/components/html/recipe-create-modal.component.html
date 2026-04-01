@@ -44,28 +44,18 @@
               <div [formGroupName]="$index" class="ingredient-row">
 
                 <div class="form-group flex-2">
-                  <label>Ingredient</label>
-                  <select formControlName="ingredientId" class="form-control">
-                    <option value="" disabled selected>Select an ingredient...</option>
-                    @for (item of availableIngredients(); track item.id) {
-                      <option [value]="item.id">{{ item.name }}</option>
-                    }
-                  </select>
+                  <label>Ingredient Name</label>
+                  <input type="text" formControlName="name" placeholder="e.g., Flour" class="form-control">
                 </div>
 
                 <div class="form-group flex-1">
-                  <label>Base Quantity</label>
-                  <input type="number" step="0.1" formControlName="baseQuantity" class="form-control">
+                  <label>Quantity</label>
+                  <input type="number" step="0.1" formControlName="quantity" placeholder="2.5" class="form-control">
                 </div>
 
-                <div class="form-group checkbox-group">
-                  <label class="checkbox-label">
-                    <input type="checkbox" formControlName="isScalable">
-                    Scalable?
-                    <span class="info-icon" title="If checked, this quantity scales automatically when you adjust the serving size later.">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
-                    </span>
-                  </label>
+                <div class="form-group flex-1">
+                  <label>Unit</label>
+                  <input type="text" formControlName="unit" placeholder="cups, grams, tbsp" class="form-control">
                 </div>
 
                 <button type="button" class="btn-icon danger" (click)="removeIngredient($index)" aria-label="Remove ingredient">
@@ -73,7 +63,7 @@
                 </button>
               </div>
             } @empty {
-              <p class="empty-text">No ingredients added yet.</p>
+              <p class="empty-text">No ingredients added yet. Click "+ Add Ingredient" to add some.</p>
             }
           </div>
         </div>

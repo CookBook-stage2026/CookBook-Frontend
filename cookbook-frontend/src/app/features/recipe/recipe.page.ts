@@ -3,7 +3,6 @@ import { RecipeCreateModalComponent } from './components/typescript/recipe-creat
 
 @Component({
   selector: 'app-recipe-list-page',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RecipeCreateModalComponent],
   templateUrl: './recipe.page.html',

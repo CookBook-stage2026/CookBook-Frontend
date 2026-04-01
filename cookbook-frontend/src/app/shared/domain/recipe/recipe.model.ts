@@ -1,7 +1,7 @@
-export interface RecipeIngredientDto {
-  ingredientId: string;
-  isScalable: boolean;
-  baseQuantity: number;
+export interface IngredientDto {
+  name: string;
+  quantity: number;
+  unit: string;
 }
 
 export interface CreateRecipeDto {
@@ -9,7 +9,7 @@ export interface CreateRecipeDto {
   description: string;
   durationInMinutes: number;
   steps: string[];
-  ingredients: RecipeIngredientDto[];
+  ingredients: { [key: string]: IngredientDto };
 }
 
 export interface RecipeDto extends CreateRecipeDto {
