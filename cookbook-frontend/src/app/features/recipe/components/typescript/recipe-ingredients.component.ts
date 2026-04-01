@@ -24,8 +24,8 @@ export class RecipeIngredientsComponent {
   }
 
   onQuantityInput(event: Event, control: AbstractControl) {
-    let value = parseFloat((event.target as HTMLInputElement).value);
-    if (isNaN(value)) value = 0;
+    let value = Number.parseFloat((event.target as HTMLInputElement).value);
+    if (Number.isNaN(value)) value = 0;
     if (value < 0) value = 0;
     control.setValue(value, { emitEvent: false });
   }

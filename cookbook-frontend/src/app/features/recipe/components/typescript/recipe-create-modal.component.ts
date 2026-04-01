@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy, inject, output, signal } from '@angular/core';
-import {ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, FormControl} from '@angular/forms';
+import { Component, ChangeDetectionStrategy, inject, output, signal, input } from '@angular/core';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { RecipeService } from '@shared/services/recipe/recipe.service';
 import { CreateRecipeDto, IngredientDto } from '@shared/domain/recipe';
 import { RecipeIngredientsComponent } from './recipe-ingredients.component';
@@ -8,17 +8,18 @@ import { RecipeStepsComponent } from './recipe-steps.component';
 @Component({
   selector: 'app-recipe-create-modal',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RecipeIngredientsComponent, RecipeStepsComponent, RecipeIngredientsComponent],
+  imports: [ReactiveFormsModule, RecipeIngredientsComponent, RecipeStepsComponent],
   templateUrl: '../html/recipe-create-modal.component.html',
   styleUrl: '../scss/recipe-create-modal.component.scss'
 })
 export class RecipeCreateModalComponent {
-  private fb = inject(FormBuilder);
-  private recipeService = inject(RecipeService);
+  private readonly fb = inject(FormBuilder);
+  private readonly recipeService = inject(RecipeService);
 
   closeModal = output<void>();
   recipeCreated = output<void>();
   isSubmitting = signal(false);
+  isOpen = input<boolean>(false);
 
   recipeForm: FormGroup = this.fb.group({
     name: ['', Validators.required],
@@ -103,8 +104,8 @@ export class RecipeCreateModalComponent {
 
   onDurationInput(event: Event) {
     const input = event.target as HTMLInputElement;
-    let value = parseFloat(input.value);
-    if (isNaN(value)) value = 1;
+    let value = Number.parseFloat(input.value);
+    if (Number.isNaN(value)) value = 1;
     if (value < 1) value = 1;
     this.recipeForm.get('durationInMinutes')?.setValue(value, { emitEvent: false });
   }

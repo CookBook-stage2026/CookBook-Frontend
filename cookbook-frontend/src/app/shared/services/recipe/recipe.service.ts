@@ -9,9 +9,9 @@ import {environment} from '../../../../environment';
   providedIn: 'root'
 })
 export class RecipeService {
-  private http = inject(HttpClient);
-  private toastService = inject(ToastService);
-  private apiUrl = `${environment.apiUrl}/recipes`;
+  private readonly http = inject(HttpClient);
+  private readonly toastService = inject(ToastService);
+  private readonly apiUrl = `${environment.apiUrl}/recipes`;
 
   createRecipe(recipe: CreateRecipeDto): Observable<RecipeDto> {
     return this.http.post<RecipeDto>(this.apiUrl, recipe).pipe(

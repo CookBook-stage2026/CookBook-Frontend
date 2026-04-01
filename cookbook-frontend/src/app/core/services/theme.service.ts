@@ -5,7 +5,7 @@ export type Theme = 'light' | 'dark' | 'system';
 
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
-  private document = inject(DOCUMENT);
+  private readonly document = inject(DOCUMENT);
 
   readonly currentTheme = signal<Theme>('system');
 
@@ -15,9 +15,9 @@ export class ThemeService {
       const htmlEl = this.document.documentElement;
 
       if (theme === 'system') {
-        htmlEl.removeAttribute('data-theme');
+        delete htmlEl.dataset["theme"];
       } else {
-        htmlEl.setAttribute('data-theme', theme);
+        htmlEl.dataset["theme"] = theme;
       }
     });
   }

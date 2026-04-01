@@ -8,42 +8,65 @@
     @for (ingredientCtrl of ingredients().controls; track $index) {
       <div [formGroup]="ingredientCtrl" class="ingredient-row">
         <div class="form-group flex-2">
-          <label>Ingredient Name *</label>
+          <label [attr.for]="'ingredient-name-' + $index">Ingredient Name *</label>
           <input
             type="text"
             formControlName="name"
+            [id]="'ingredient-name-' + $index"
             placeholder="e.g., Flour"
             class="form-control"
+            [attr.aria-describedby]="ingredientCtrl.get('name')?.invalid && ingredientCtrl.get('name')?.touched ? 'name-error-' + $index : null"
+            aria-required="true"
             [class.is-invalid]="ingredientCtrl.get('name')?.invalid && ingredientCtrl.get('name')?.touched">
+          @if (ingredientCtrl.get('name')?.invalid && ingredientCtrl.get('name')?.touched) {
+            <div [id]="'name-error-' + $index" class="invalid-feedback" role="alert">Ingredient name is required</div>
+          }
         </div>
 
-        <input
-          type="number"
-          step="0.1"
-          formControlName="quantity"
-          placeholder="2.5"
-          class="form-control"
-          min="0"
-          (input)="onQuantityInput($event, ingredientCtrl.get('quantity')!)"
-          [class.is-invalid]="ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched">
+        <div class="form-group flex-1">
+          <label [attr.for]="'quantity-' + $index">Quantity *</label>
+          <input
+            type="number"
+            step="0.1"
+            formControlName="quantity"
+            [id]="'quantity-' + $index"
+            placeholder="2.5"
+            class="form-control"
+            min="0"
+            (input)="onQuantityInput($event, ingredientCtrl.get('quantity')!)"
+            [attr.aria-describedby]="ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched ? 'quantity-error-' + $index : null"
+            aria-required="true"
+            [class.is-invalid]="ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched">
+          @if (ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched) {
+            <div [id]="'quantity-error-' + $index" class="invalid-feedback" role="alert">Quantity must be greater than 0</div>
+          }
+        </div>
 
         <div class="form-group flex-1">
-          <label>Unit *</label>
+          <label [attr.for]="'unit-' + $index">Unit *</label>
           <input
             type="text"
             formControlName="unit"
+            [id]="'unit-' + $index"
             placeholder="cups, grams, tbsp"
             class="form-control"
+            [attr.aria-describedby]="ingredientCtrl.get('unit')?.invalid && ingredientCtrl.get('unit')?.touched ? 'unit-error-' + $index : null"
+            aria-required="true"
             [class.is-invalid]="ingredientCtrl.get('unit')?.invalid && ingredientCtrl.get('unit')?.touched">
+          @if (ingredientCtrl.get('unit')?.invalid && ingredientCtrl.get('unit')?.touched) {
+            <div [id]="'unit-error-' + $index" class="invalid-feedback" role="alert">Unit is required</div>
+          }
         </div>
 
         <button
           type="button"
           class="btn-icon danger"
           (click)="remove($index)"
+          (keydown.enter)="remove($index)"
+          (keydown.space)="remove($index)"
           [disabled]="isSubmitting()"
-          aria-label="Remove ingredient">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          [attr.aria-label]="'Remove ingredient ' + (ingredientCtrl.get('name')?.value || '')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
             <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
           </svg>
