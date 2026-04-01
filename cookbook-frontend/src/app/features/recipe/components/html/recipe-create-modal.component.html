@@ -34,10 +34,6 @@
                 aria-required="true">
               @if (recipeForm.get('name')?.invalid && recipeForm.get('name')?.touched) {
                 <div class="tooltip-error" role="tooltip">
-                  <svg class="tooltip-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 8v4M12 16h.01"/>
-                  </svg>
                   <span>Recipe name is required</span>
                 </div>
               }
@@ -57,10 +53,6 @@
                 aria-required="true"></textarea>
               @if (recipeForm.get('description')?.invalid && recipeForm.get('description')?.touched) {
                 <div class="tooltip-error" role="tooltip">
-                  <svg class="tooltip-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <path d="M12 8v4M12 16h.01"/>
-                  </svg>
                   <span>Description is required</span>
                 </div>
               }
@@ -84,10 +76,6 @@
                   aria-required="true">
                 @if (recipeForm.get('durationInMinutes')?.invalid && recipeForm.get('durationInMinutes')?.touched) {
                   <div class="tooltip-error" role="tooltip">
-                    <svg class="tooltip-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <circle cx="12" cy="12" r="10"/>
-                      <path d="M12 8v4M12 16h.01"/>
-                    </svg>
                     <span>Duration must be at least 1 minute</span>
                   </div>
                 }
