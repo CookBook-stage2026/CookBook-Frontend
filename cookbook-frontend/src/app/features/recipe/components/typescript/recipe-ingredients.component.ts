@@ -1,5 +1,5 @@
-import { Component, ChangeDetectionStrategy, input, output, inject } from '@angular/core';
-import {ReactiveFormsModule, FormArray, FormGroup, FormBuilder, Validators, AbstractControl} from '@angular/forms';
+import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
+import {ReactiveFormsModule, FormArray, FormGroup, AbstractControl} from '@angular/forms';
 
 @Component({
   selector: 'app-recipe-ingredients',
@@ -10,8 +10,6 @@ import {ReactiveFormsModule, FormArray, FormGroup, FormBuilder, Validators, Abst
   styleUrl: '../scss/recipe-create-modal.component.scss'
 })
 export class RecipeIngredientsComponent {
-  private fb = inject(FormBuilder);
-
   ingredients = input.required<FormArray<FormGroup>>();
   isSubmitting = input.required<boolean>();
   addIngredient = output<void>();
@@ -23,14 +21,6 @@ export class RecipeIngredientsComponent {
 
   remove(index: number) {
     this.removeIngredient.emit(index);
-  }
-
-  createIngredientGroup() {
-    return this.fb.group({
-      name: ['', Validators.required],
-      quantity: [null, [Validators.required, Validators.min(0.1)]],
-      unit: ['', Validators.required]
-    });
   }
 
   onQuantityInput(event: Event, control: AbstractControl) {

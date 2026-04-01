@@ -55,12 +55,6 @@
     background-color: var(--border-color);
     color: var(--text-main);
   }
-
-  &.active {
-    color: var(--element-primary);
-    font-weight: 600;
-    background-color: transparent;
-  }
 }
 
 .theme-toggle {
