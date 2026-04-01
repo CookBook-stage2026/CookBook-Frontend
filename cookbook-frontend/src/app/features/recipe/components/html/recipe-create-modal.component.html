@@ -1,101 +1,84 @@
-<div class="modal-backdrop" (click)="closeModal.emit()">
+<div class="modal-backdrop" (click)="!isSubmitting() && closeModal.emit()">
   <div class="modal-dialog" (click)="$event.stopPropagation()">
-
     <header class="modal-header">
       <div>
         <h2>Create New Recipe</h2>
         <p>Fill in the details below to add a new recipe.</p>
       </div>
-      <button class="btn-close" (click)="closeModal.emit()" aria-label="Close modal">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      <button class="btn-close" (click)="closeModal.emit()" [disabled]="isSubmitting()" aria-label="Close modal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+        </svg>
       </button>
     </header>
 
     <div class="modal-body">
       <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()" class="recipe-form">
-
         <div class="form-group">
-          <label for="name">Recipe Name</label>
-          <input type="text" id="name" formControlName="name" placeholder="e.g., Homemade Pizza" class="form-control">
+          <label for="name">Recipe Name *</label>
+          <input type="text" id="name" formControlName="name" placeholder="e.g., Homemade Pizza" class="form-control"
+                 [class.is-invalid]="recipeForm.get('name')?.invalid && recipeForm.get('name')?.touched">
+          @if (recipeForm.get('name')?.invalid && recipeForm.get('name')?.touched) {
+            <div class="invalid-feedback">Recipe name is required</div>
+          }
         </div>
 
         <div class="form-group">
-          <label for="description">Short Description</label>
-          <textarea id="description" formControlName="description" rows="3" placeholder="Describe the dish briefly..." class="form-control"></textarea>
+          <label for="description">Short Description *</label>
+          <textarea id="description" formControlName="description" rows="3" placeholder="Describe the dish briefly..."
+                    class="form-control"
+                    [class.is-invalid]="recipeForm.get('description')?.invalid && recipeForm.get('description')?.touched"></textarea>
+          @if (recipeForm.get('description')?.invalid && recipeForm.get('description')?.touched) {
+            <div class="invalid-feedback">Description is required</div>
+          }
         </div>
 
         <div class="form-row">
           <div class="form-group">
-            <label for="durationInMinutes">Total Duration (minutes)</label>
-            <input type="number" id="durationInMinutes" formControlName="durationInMinutes" placeholder="15" class="form-control">
-          </div>
-        </div>
-
-        <hr class="divider">
-
-        <div class="array-section">
-          <div class="section-header">
-            <h3>Ingredients</h3>
-            <button type="button" class="btn-text" (click)="addIngredient()">+ Add Ingredient</button>
-          </div>
-
-          <div formArrayName="ingredients" class="array-container">
-            @for (ingredientCtrl of ingredients.controls; track $index) {
-              <div [formGroupName]="$index" class="ingredient-row">
-
-                <div class="form-group flex-2">
-                  <label>Ingredient Name</label>
-                  <input type="text" formControlName="name" placeholder="e.g., Flour" class="form-control">
-                </div>
-
-                <div class="form-group flex-1">
-                  <label>Quantity</label>
-                  <input type="number" step="0.1" formControlName="quantity" placeholder="2.5" class="form-control">
-                </div>
-
-                <div class="form-group flex-1">
-                  <label>Unit</label>
-                  <input type="text" formControlName="unit" placeholder="cups, grams, tbsp" class="form-control">
-                </div>
-
-                <button type="button" class="btn-icon danger" (click)="removeIngredient($index)" aria-label="Remove ingredient">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                </button>
-              </div>
-            } @empty {
-              <p class="empty-text">No ingredients added yet. Click "+ Add Ingredient" to add some.</p>
+            <label for="durationInMinutes">Total Duration (minutes) *</label>
+            <input
+              type="number"
+              id="durationInMinutes"
+              formControlName="durationInMinutes"
+              placeholder="15"
+              class="form-control"
+              min="1"
+              (input)="onDurationInput($event)"
+              [class.is-invalid]="recipeForm.get('durationInMinutes')?.invalid && recipeForm.get('durationInMinutes')?.touched">     @if (recipeForm.get('durationInMinutes')?.invalid && recipeForm.get('durationInMinutes')?.touched) {
+              <div class="invalid-feedback">Duration must be at least 1 minute</div>
             }
           </div>
         </div>
 
         <hr class="divider">
 
-        <div class="array-section">
-          <div class="section-header">
-            <h3>Preparation Steps</h3>
-            <button type="button" class="btn-text" (click)="addStep()">+ Add Step</button>
-          </div>
+        <app-recipe-ingredients
+          [ingredients]="ingredients"
+          [isSubmitting]="isSubmitting()"
+          (addIngredient)="addIngredient()"
+          (removeIngredient)="removeIngredient($event)"
+        />
 
-          <div formArrayName="steps" class="array-container">
-            @for (stepCtrl of steps.controls; track $index) {
-              <div class="step-row">
-                <span class="step-number">{{ $index + 1 }}</span>
-                <textarea [formControlName]="$index" rows="2" placeholder="Describe this step..." class="form-control flex-grow"></textarea>
-                <button type="button" class="btn-icon danger" (click)="removeStep($index)" [disabled]="steps.length === 1" aria-label="Remove step">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                </button>
-              </div>
-            }
-          </div>
-        </div>
+        <hr class="divider">
 
+        <app-recipe-steps
+          [steps]="steps"
+          [isSubmitting]="isSubmitting()"
+          (addStep)="addStep()"
+          (removeStep)="removeStep($event)"
+        />
       </form>
     </div>
 
     <footer class="modal-footer">
-      <button type="button" class="btn-secondary" (click)="closeModal.emit()">Cancel</button>
-      <button type="button" class="btn-primary" (click)="onSubmit()" [disabled]="recipeForm.invalid">Save Recipe</button>
+      <button type="button" class="btn-secondary" (click)="closeModal.emit()" [disabled]="isSubmitting()">Cancel</button>
+      <button type="button" class="btn-primary" (click)="onSubmit()" [disabled]="recipeForm.invalid || isSubmitting()">
+        @if (isSubmitting()) {
+          <span class="spinner"></span> Creating...
+        } @else {
+          Save Recipe
+        }
+      </button>
     </footer>
-
   </div>
 </div>

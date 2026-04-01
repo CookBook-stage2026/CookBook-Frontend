@@ -1,10 +1,11 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { RecipeCreateModalComponent } from './components/typescript/recipe-create-modal.component';
+import {ToastComponent} from '@shared/components/toast/toast.component';
 
 @Component({
   selector: 'app-recipe-list-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RecipeCreateModalComponent],
+  imports: [RecipeCreateModalComponent, ToastComponent],
   templateUrl: './recipe.page.html',
   styleUrl: './recipe.page.scss'
 })

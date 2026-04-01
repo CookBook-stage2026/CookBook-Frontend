@@ -1,0 +1,56 @@
+<div class="array-section">
+  <div class="section-header">
+    <h3>Ingredients *</h3>
+    <button type="button" class="btn-text" (click)="add()" [disabled]="isSubmitting()">+ Add Ingredient</button>
+  </div>
+
+  <div class="array-container">
+    @for (ingredientCtrl of ingredients().controls; track $index) {
+      <div [formGroup]="ingredientCtrl" class="ingredient-row">
+        <div class="form-group flex-2">
+          <label>Ingredient Name *</label>
+          <input
+            type="text"
+            formControlName="name"
+            placeholder="e.g., Flour"
+            class="form-control"
+            [class.is-invalid]="ingredientCtrl.get('name')?.invalid && ingredientCtrl.get('name')?.touched">
+        </div>
+
+        <input
+          type="number"
+          step="0.1"
+          formControlName="quantity"
+          placeholder="2.5"
+          class="form-control"
+          min="0"
+          (input)="onQuantityInput($event, ingredientCtrl.get('quantity')!)"
+          [class.is-invalid]="ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched">
+
+        <div class="form-group flex-1">
+          <label>Unit *</label>
+          <input
+            type="text"
+            formControlName="unit"
+            placeholder="cups, grams, tbsp"
+            class="form-control"
+            [class.is-invalid]="ingredientCtrl.get('unit')?.invalid && ingredientCtrl.get('unit')?.touched">
+        </div>
+
+        <button
+          type="button"
+          class="btn-icon danger"
+          (click)="remove($index)"
+          [disabled]="isSubmitting()"
+          aria-label="Remove ingredient">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+          </svg>
+        </button>
+      </div>
+    } @empty {
+      <p class="empty-text">No ingredients added yet. Click "+ Add Ingredient" to add some.</p>
+    }
+  </div>
+</div>

@@ -1,0 +1,30 @@
+<div class="array-section">
+  <div class="section-header">
+    <h3>Preparation Steps *</h3>
+    <button type="button" class="btn-text" (click)="add()" [disabled]="isSubmitting()">+ Add Step</button>
+  </div>
+
+  <div class="array-container">
+    @for (stepCtrl of steps().controls; track $index) {
+      <div class="step-row">
+        <span class="step-number">{{ $index + 1 }}</span>
+        <textarea
+          [formControl]="stepCtrl"
+          rows="2"
+          placeholder="Describe this step..."
+          class="form-control flex-grow"
+          [class.is-invalid]="stepCtrl.invalid && stepCtrl.touched"></textarea>
+        <button
+          type="button"
+          class="btn-icon danger"
+          (click)="remove($index)"
+          [disabled]="steps().length === 1 || isSubmitting()"
+          aria-label="Remove step">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+          </svg>
+        </button>
+      </div>
+    }
+  </div>
+</div>
