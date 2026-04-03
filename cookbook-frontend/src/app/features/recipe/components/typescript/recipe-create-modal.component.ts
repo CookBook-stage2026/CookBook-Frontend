@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, output, signal, input } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { RecipeService } from '@shared/services/recipe/recipe.service';
-import { CreateRecipeDto } from '@shared/domain/recipe';
+import { CreateRecipeDto, CreateRecipeIngredientDto } from '@shared/domain/recipe';
 import { RecipeIngredientsComponent } from './recipe-ingredients.component';
 import { RecipeStepsComponent } from './recipe-steps.component';
 
@@ -16,9 +16,9 @@ export class RecipeCreateModalComponent {
   private readonly fb = inject(FormBuilder);
   private readonly recipeService = inject(RecipeService);
 
-  closeModal = output<void>();
-  isSubmitting = signal(false);
-  isOpen = input<boolean>(false);
+  readonly closeModal = output<void>();
+  readonly isSubmitting = signal(false);
+  readonly isOpen = input<boolean>(false);
 
   readonly recipeForm: FormGroup = this.fb.group({
     name: ['', Validators.required],
@@ -40,8 +40,21 @@ export class RecipeCreateModalComponent {
     if (this.recipeForm.valid && !this.isSubmitting()) {
       this.isSubmitting.set(true);
 
-      const { name, description, durationInMinutes, steps, ingredients } = this.recipeForm.value;
-      const dto: CreateRecipeDto = { name, description, durationInMinutes, steps, ingredients };
+      const rawFormValue = this.recipeForm.getRawValue();
+
+      const mappedIngredients: CreateRecipeIngredientDto[] = rawFormValue.ingredients.map((ing: any) => ({
+        ingredientId: ing.id,
+        baseQuantity: Number(ing.quantity)
+      }));
+
+      const dto: CreateRecipeDto = {
+        name: rawFormValue.name,
+        description: rawFormValue.description,
+        durationInMinutes: rawFormValue.durationInMinutes,
+        steps: rawFormValue.steps,
+        ingredients: mappedIngredients,
+        servings: 1
+      };
 
       this.recipeService.createRecipe(dto).subscribe({
         next: () => {
@@ -69,8 +82,9 @@ export class RecipeCreateModalComponent {
 
   addIngredient(): void {
     this.ingredients.push(this.fb.group({
+      id: [null, Validators.required],
       name: ['', Validators.required],
-      quantity: [null, [Validators.required, Validators.min(0.1)]],
+      quantity: [null as number | null, [Validators.required, Validators.min(0.1)]],
       unit: ['', Validators.required]
     }));
   }
@@ -80,7 +94,7 @@ export class RecipeCreateModalComponent {
   }
 
   onDurationInput(event: Event): void {
-    let value = Number.parseFloat((event.target as HTMLInputElement).value);
+    let value = Number.parseInt((event.target as HTMLInputElement).value, 10);
     if (Number.isNaN(value) || value < 1) value = 1;
     this.recipeForm.get('durationInMinutes')?.setValue(value, { emitEvent: false });
   }

@@ -21,18 +21,17 @@
   } @else if (ingredients().length === 0) {
     <div class="status-msg">No ingredients found.</div>
   } @else {
-    <div class="grid" role="list">
+    <ul class="grid">
       @for (ing of ingredients(); track ing.id) {
-        <div class="card" role="listitem">
+        <li class="card">
           <div class="card-header">
             <h3>{{ ing.name }}</h3>
             @if (ing.unit) {
               <span class="badge">{{ ing.unit }}</span>
             }
           </div>
-          <p class="desc">{{ ing.description }}</p>
-        </div>
+        </li>
       }
-    </div>
+    </ul>
   }
 </div>

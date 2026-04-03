@@ -1,9 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, catchError, tap, throwError } from 'rxjs';
-import { Ingredient } from '@shared/domain/ingredient';
+import {Observable, catchError, throwError, of} from 'rxjs';
 import { ToastService } from '@core/services/toast.service';
-import {environment} from '../../../../environment';
+import { environment } from '../../../../environment';
+import {Ingredient} from '@shared/domain/ingredient';
 
 @Injectable({ providedIn: 'root' })
 export class IngredientService {
@@ -24,13 +24,16 @@ export class IngredientService {
     );
   }
 
-  addIngredient(ingredient: Ingredient): Observable<Ingredient> {
-    return this.http.post<Ingredient>(this.apiUrl, ingredient).pipe(
-      tap(() => this.toastService.show('Ingredient added successfully!', 'success')),
-      catchError(err => {
-        this.toastService.show('Failed to add ingredient.', 'error');
-        return throwError(() => err);
-      })
-    );
+  searchIngredients(query: string, page = 0, size = 10): Observable<Ingredient[]> {
+    if (!query.trim()) {
+      return of([]);
+    }
+    return this.http.get<Ingredient[]>(`${this.apiUrl}/search`, {
+      params: {
+        query: query,
+        page: page.toString(),
+        size: size.toString()
+      }
+    });
   }
 }
