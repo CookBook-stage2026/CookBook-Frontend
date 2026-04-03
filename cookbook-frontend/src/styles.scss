@@ -1,3 +1,29 @@
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
+
+body {
+  color-scheme: light dark;
+
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+
+  margin: 0;
+  height: 100%;
+}
 :root {
   /* Neutrals */
   --bg-main: #ffffff;
@@ -11,6 +37,18 @@
   --element-primary-contrast: #ffffff;
   --spacing-unit: 4px;
   --radius-md: 6px;
+
+  --mat-sys-primary: var(--element-primary);
+  --mat-sys-on-primary: var(--element-primary-contrast);
+  --mat-sys-surface: var(--bg-surface);
+  --mat-sys-on-surface: var(--text-main);
+  --mat-sys-background: var(--bg-main);
+  --mat-sys-on-background: var(--text-main);
+  --mat-sys-surface-container-low: var(--bg-main);
+  --mat-sys-surface-container: var(--bg-surface);
+  --mat-sys-outline: var(--border-color);
+  --mat-sys-outline-variant: var(--border-color);
+  --mat-sys-on-surface-variant: var(--text-muted);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,13 +61,4 @@
     --element-primary: #60a5fa;
     --element-primary-contrast: #020617;
   }
-}
-
-body {
-  background-color: var(--bg-main);
-  color: var(--text-main);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  margin: 0;
 }

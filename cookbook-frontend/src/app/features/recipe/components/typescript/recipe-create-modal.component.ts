@@ -17,7 +17,6 @@ export class RecipeCreateModalComponent {
   private readonly recipeService = inject(RecipeService);
 
   closeModal = output<void>();
-  recipeCreated = output<void>();
   isSubmitting = signal(false);
   isOpen = input<boolean>(false);
 
@@ -53,12 +52,10 @@ export class RecipeCreateModalComponent {
       this.recipeService.createRecipe(createRecipeDto).subscribe({
         next: () => {
           this.isSubmitting.set(false);
-          this.recipeCreated.emit();
           this.closeModal.emit();
         },
-        error: (err) => {
+        error: () => {
           this.isSubmitting.set(false);
-          console.error('Failed to create recipe', err);
         }
       });
     } else {

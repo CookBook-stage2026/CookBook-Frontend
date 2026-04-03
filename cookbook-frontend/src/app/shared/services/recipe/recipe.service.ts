@@ -15,7 +15,7 @@ export class RecipeService {
 
   createRecipe(recipe: CreateRecipeDto): Observable<RecipeDto> {
     return this.http.post<RecipeDto>(this.apiUrl, recipe).pipe(
-      tap(() => this.toastService.show("Recipe succesfully created!", "success")),
+      tap(() => this.toastService.show("Recipe successfully created!", "success")),
       catchError(err => {
         this.toastService.show('Failed to create a recipe.', 'error');
         return throwError(() => err);

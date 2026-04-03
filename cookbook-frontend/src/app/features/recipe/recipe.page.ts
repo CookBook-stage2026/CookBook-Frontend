@@ -19,8 +19,4 @@ export default class RecipePage {
   closeModal() {
     this.isCreateModalOpen.set(false);
   }
-
-  onRecipeCreated() {
-    console.log('Recipe was created successfully!');
-  }
 }
