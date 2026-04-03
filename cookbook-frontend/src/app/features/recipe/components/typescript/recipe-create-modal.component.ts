@@ -16,7 +16,17 @@ export class RecipeCreateModalComponent {
   private readonly fb = inject(FormBuilder);
   private readonly recipeService = inject(RecipeService);
 
+  private resetForm() {
+    this.recipeForm.reset();
+
+    this.steps.clear();
+    this.steps.push(this.fb.control('', Validators.required));
+
+    this.ingredients.clear();
+  }
+
   closeModal = output<void>();
+  recipeCreated = output<void>();
   isSubmitting = signal(false);
   isOpen = input<boolean>(false);
 
@@ -52,6 +62,8 @@ export class RecipeCreateModalComponent {
       this.recipeService.createRecipe(createRecipeDto).subscribe({
         next: () => {
           this.isSubmitting.set(false);
+          this.resetForm();
+          this.recipeCreated.emit();
           this.closeModal.emit();
         },
         error: () => {

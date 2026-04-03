@@ -27,5 +27,6 @@
 
 <app-recipe-create-modal
   [isOpen]="isCreateModalOpen()"
-  (closeModal)="closeModal()">
+  (closeModal)="closeModal()"
+  (recipeCreated)="onRecipeCreated()">
 </app-recipe-create-modal>

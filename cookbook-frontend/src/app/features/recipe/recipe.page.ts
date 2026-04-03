@@ -32,7 +32,7 @@ export default class RecipePage implements OnInit {
     this.recipeService.getRecipes(this.pageIndex(), this.pageSize()).subscribe({
       next: (data) => {
         this.recipes.set(data.content);
-        this.totalPages.set(data.totalPages);
+        this.totalPages.set(data.page.totalPages);
         this.isLoading.set(false);
       },
       error: () => this.isLoading.set(false)
