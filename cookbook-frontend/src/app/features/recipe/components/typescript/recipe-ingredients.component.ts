@@ -1,19 +1,20 @@
 import {
-  Component, ChangeDetectionStrategy, input, output,
-  inject, signal, computed, effect
+  Component, ChangeDetectionStrategy, input, output, inject, signal, OnDestroy
 } from '@angular/core';
 import { ReactiveFormsModule, FormArray, FormGroup, AbstractControl } from '@angular/forms';
+import { Subject, Subscription, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { IngredientService } from '@shared/services/ingredient';
-import { Ingredient, Unit } from '@shared/domain/ingredient';
+import { Ingredient } from '@shared/domain/ingredient';
+import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-recipe-ingredients',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, MatAutocompleteModule],
   templateUrl: '../html/recipe-ingredients.component.html',
   styleUrl: '../scss/recipe-create-modal.component.scss'
 })
-export class RecipeIngredientsComponent {
+export class RecipeIngredientsComponent implements OnDestroy {
   private readonly ingredientService = inject(IngredientService);
 
   readonly ingredients = input.required<FormArray<FormGroup>>();
@@ -21,102 +22,103 @@ export class RecipeIngredientsComponent {
   readonly addIngredient = output<void>();
   readonly removeIngredient = output<number>();
 
-  readonly units: Unit[] = [
-    'Eetlepel', 'Theelepel', 'Kilogram', 'Gram', 'Liters',
-    'Milligram', 'Milliliters', 'Kopje', 'Snufje', 'Stuk', 'Teen'
-  ];
+  readonly allIngredients = signal<Ingredient[]>([]);
 
-  private readonly allIngredients = signal<Ingredient[]>([]);
-  readonly searchQueries = signal<string[]>([]);
-  readonly dropdownOpen = signal<boolean[]>([]);
-
-  readonly filteredIngredients = computed(() =>
-    this.searchQueries().map(query =>
-      query.length >= 2
-        ? this.allIngredients().filter(i =>
-          i.name.toLowerCase().includes(query.toLowerCase())
-        )
-        : []
-    )
-  );
+  private readonly searchSubject = new Subject<string>();
+  private readonly searchSubscription: Subscription;
 
   constructor() {
-    effect(() => {
-      const length = this.ingredients().length;
-      this.searchQueries.set(new Array<string>(length).fill(''));
-      this.dropdownOpen.set(new Array<boolean>(length).fill(false));
-    });
-
-    this.ingredientService.getIngredients(0, 100).subscribe((ingredients: Ingredient[]) => {
-      this.allIngredients.set(ingredients);
+    this.searchSubscription = this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => this.ingredientService.searchIngredients(query))
+    ).subscribe(results => {
+      this.allIngredients.set(results);
     });
   }
 
+  ngOnDestroy(): void {
+    this.searchSubscription.unsubscribe();
+  }
+
   add(): void {
-    this.searchQueries.update(q => [...q, '']);
-    this.dropdownOpen.update(o => [...o, false]);
     this.addIngredient.emit();
   }
 
   remove(index: number): void {
-    this.searchQueries.update(q => q.filter((_, i) => i !== index));
-    this.dropdownOpen.update(o => o.filter((_, i) => i !== index));
     this.removeIngredient.emit(index);
   }
 
-  onNameInput(event: Event, index: number): void {
-    const query = (event.target as HTMLInputElement).value;
-    this.searchQueries.update(q => {
-      const copy = [...q];
-      copy[index] = query;
-      return copy;
-    });
-    this.dropdownOpen.update(o => {
-      const copy = [...o];
-      copy[index] = query.length >= 2;
-      return copy;
-    });
+  onNameChange(event: Event, ctrl: AbstractControl): void {
+    const inputName = (event.target as HTMLInputElement).value;
+    this.searchSubject.next(inputName);
+
+    const matched = this.allIngredients().find(i => i.name.toLowerCase() === inputName.trim().toLowerCase());
+
+    if (matched) {
+      ctrl.patchValue({
+        id: matched.id,
+        unit: matched.unit ?? ''
+      });
+    } else {
+      ctrl.patchValue({
+        id: null,
+        unit: ''
+      });
+    }
   }
 
-  selectIngredient(ingredient: Ingredient, index: number, ctrl: FormGroup): void {
-    ctrl.patchValue({ name: ingredient.name, unit: ingredient.unit ?? '' });
-    this.searchQueries.update(q => {
-      const copy = [...q];
-      copy[index] = ingredient.name;
-      return copy;
-    });
-    this.closeDropdown(index);
-  }
+  onOptionSelected(event: MatAutocompleteSelectedEvent, ctrl: AbstractControl): void {
+    const selectedName = event.option.value;
+    const matched = this.allIngredients().find(i => i.name === selectedName);
 
-  closeDropdown(index: number): void {
-    this.dropdownOpen.update(o => {
-      const copy = [...o];
-      copy[index] = false;
-      return copy;
-    });
+    if (matched) {
+      ctrl.patchValue({
+        id: matched.id,
+        unit: matched.unit ?? ''
+      });
+    }
   }
 
   onQuantityInput(event: Event, control: AbstractControl): void {
-    const input = event.target as HTMLInputElement;
+    const inputElement = event.target as HTMLInputElement;
+    let sanitizedValue = inputElement.value.replaceAll(/[^0-9.,]/g, '');
 
-    let rawValue = input.value.replaceAll(',', '.').replaceAll(/[^0-9.]/g, '');
-
-    const parts = rawValue.split('.');
-    if (parts.length > 2) {
-      rawValue = parts[0] + '.' + parts.slice(1).join('');
+    const decimalCount = (sanitizedValue.match(/[.,]/g) || []).length;
+    if (decimalCount > 1) {
+      sanitizedValue = sanitizedValue.slice(0, -1);
     }
 
-    if (input.value !== rawValue) {
-      input.value = rawValue;
+    if (inputElement.value !== sanitizedValue) {
+      inputElement.value = sanitizedValue;
     }
 
-    if (rawValue === '' || rawValue.endsWith('.')) {
-      return;
+    const numericValue = Number.parseFloat(sanitizedValue.replace(',', '.'));
+    if (!Number.isNaN(numericValue) && numericValue >= 0) {
+      control.setValue(numericValue, { emitEvent: false });
+    } else {
+      control.setValue(null, { emitEvent: false });
     }
+  }
 
-    let value = Number.parseFloat(rawValue);
+  getDisplayUnit(ctrl: AbstractControl): string {
+    const unitEnum = ctrl.get('unit')?.value;
+    const quantity = ctrl.get('quantity')?.value || 0;
 
-    if (Number.isNaN(value) || value < 0) value = 0;
-    control.setValue(value, { emitEvent: false });
+    if (!unitEnum) return '';
+
+    const isPlural = quantity !== 1;
+
+    switch (unitEnum.toUpperCase()) {
+      case 'GRAM': return 'Gram';
+      case 'KILOGRAM': return 'Kilogram';
+      case 'MILLILITER': return 'Milliliter';
+      case 'LITER': return 'Liter';
+      case 'TEASPOON': return isPlural ? 'Theelepels' : 'Theelepel';
+      case 'TABLESPOON': return isPlural ? 'Eetlepels' : 'Eetlepel';
+      case 'CUP': return isPlural ? 'Kopjes' : 'Kopje';
+      case 'PIECE': return isPlural ? 'Stuks' : 'Stuk';
+      default: return unitEnum;
+    }
   }
 }
