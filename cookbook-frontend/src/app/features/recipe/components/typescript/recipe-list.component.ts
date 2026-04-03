@@ -1,12 +1,13 @@
 import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { RecipeSummary } from '@shared/domain/recipe';
 import { RecipeCardComponent } from './recipe-card.component';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-recipe-list',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RecipeCardComponent],
+  imports: [RecipeCardComponent, MatButtonModule],
   templateUrl: '../html/recipe-list.component.html',
   styleUrl: '../scss/recipe-list.component.scss'
 })

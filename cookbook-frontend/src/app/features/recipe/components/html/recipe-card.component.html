@@ -1,10 +1,14 @@
-<div class="card-container">
-  <h3 class="recipe-name">{{ recipe.name }}</h3>
+<mat-card class="recipe-card">
+  <mat-card-header>
+    <mat-card-title class="text">{{ recipe.name }}</mat-card-title>
+  </mat-card-header>
 
-  <p class="recipe-description">{{ recipe.description }}</p>
+  <mat-card-content>
+    <p class="text">{{ recipe.description }}</p>
+  </mat-card-content>
 
-  <div class="card-footer">
-    <span class="material-symbols-outlined duration-icon">schedule</span>
-    <span class="duration-text">{{ recipe.durationInMinutes | duration }}</span>
-  </div>
-</div>
+  <mat-card-actions class="recipe-footer">
+    <mat-icon>schedule</mat-icon>
+    <span>{{ recipe.durationInMinutes | duration }}</span>
+  </mat-card-actions>
+</mat-card>
