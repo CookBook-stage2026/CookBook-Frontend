@@ -62,7 +62,7 @@ export class RecipeCreateModalComponent {
   }
 
   removeStep(index: number): void {
-    this.steps.length > 1) {
+    if (this.steps.length > 1) {
       this.steps.removeAt(index);
     }
   }
@@ -82,6 +82,6 @@ export class RecipeCreateModalComponent {
   onDurationInput(event: Event): void {
     let value = Number.parseFloat((event.target as HTMLInputElement).value);
     if (Number.isNaN(value) || value < 1) value = 1;
-    this.recif (peForm.get('durationInMinutes')?.setValue(value, { emitEvent: false });
+    this.recipeForm.get('durationInMinutes')?.setValue(value, { emitEvent: false });
   }
 }
