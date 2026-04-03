@@ -1,0 +1,132 @@
+@if (isOpen()) {
+  <div class="modal-backdrop" (click)="!isSubmitting() && closeModal.emit()" (keydown.esc)="!isSubmitting() && closeModal.emit()">
+    <div class="modal-dialog" (click)="$event.stopPropagation()" (keydown.esc)="$event.stopPropagation()">
+      <header class="modal-header">
+        <div>
+          <h2 id="modal-title">Create New Recipe</h2>
+          <p id="modal-description">Fill in the details below to add a new recipe.</p>
+        </div>
+        <button
+          class="btn-close"
+          (click)="closeModal.emit()"
+          (keydown.enter)="closeModal.emit()"
+          (keydown.space)="closeModal.emit()"
+          [disabled]="isSubmitting()"
+          aria-label="Close modal">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+          </svg>
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()" class="recipe-form">
+          <div class="form-group">
+            <label for="name">Recipe Name *</label>
+            <div class="input-wrapper">
+              <input
+                type="text"
+                id="name"
+                formControlName="name"
+                placeholder="e.g., Homemade Pizza"
+                class="form-control"
+                [class.is-invalid]="recipeForm.get('name')?.invalid && recipeForm.get('name')?.touched"
+                aria-required="true">
+              @if (recipeForm.get('name')?.invalid && recipeForm.get('name')?.touched) {
+                <div class="tooltip-error" role="tooltip">
+                  <span>Recipe name is required</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Short Description *</label>
+            <div class="input-wrapper">
+              <textarea
+                id="description"
+                formControlName="description"
+                rows="3"
+                placeholder="Describe the dish briefly..."
+                class="form-control"
+                [class.is-invalid]="recipeForm.get('description')?.invalid && recipeForm.get('description')?.touched"
+                aria-required="true"></textarea>
+              @if (recipeForm.get('description')?.invalid && recipeForm.get('description')?.touched) {
+                <div class="tooltip-error" role="tooltip">
+                  <span>Description is required</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="durationInMinutes">Total Duration (minutes) *</label>
+              <div class="input-wrapper">
+                <input
+                  type="number"
+                  id="durationInMinutes"
+                  formControlName="durationInMinutes"
+                  placeholder="15"
+                  class="form-control"
+                  min="1"
+                  step="1"
+                  (input)="onDurationInput($event)"
+                  [class.is-invalid]="recipeForm.get('durationInMinutes')?.invalid && recipeForm.get('durationInMinutes')?.touched"
+                  aria-required="true">
+                @if (recipeForm.get('durationInMinutes')?.invalid && recipeForm.get('durationInMinutes')?.touched) {
+                  <div class="tooltip-error" role="tooltip">
+                    <span>Duration must be at least 1 minute</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <hr class="divider">
+
+          <app-recipe-ingredients
+            [ingredients]="ingredients"
+            [isSubmitting]="isSubmitting()"
+            (addIngredient)="addIngredient()"
+            (removeIngredient)="removeIngredient($event)"
+          />
+
+          <hr class="divider">
+
+          <app-recipe-steps
+            [steps]="steps"
+            [isSubmitting]="isSubmitting()"
+            (addStep)="addStep()"
+            (removeStep)="removeStep($event)"
+          />
+        </form>
+      </div>
+
+      <footer class="modal-footer">
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="closeModal.emit()"
+          (keydown.enter)="closeModal.emit()"
+          (keydown.space)="closeModal.emit()"
+          [disabled]="isSubmitting()">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="onSubmit()"
+          (keydown.enter)="onSubmit()"
+          (keydown.space)="onSubmit()"
+          [disabled]="recipeForm.invalid || isSubmitting()">
+          @if (isSubmitting()) {
+            <span class="spinner" aria-hidden="true"></span> Creating...
+          } @else {
+            Save Recipe
+          }
+        </button>
+      </footer>
+    </div>
+  </div>
+}
