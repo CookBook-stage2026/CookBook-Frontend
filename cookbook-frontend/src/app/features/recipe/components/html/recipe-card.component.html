@@ -1,0 +1,10 @@
+<div class="card-container">
+  <h3 class="recipe-name">{{ recipe.name }}</h3>
+
+  <p class="recipe-description">{{ recipe.description }}</p>
+
+  <div class="card-footer">
+    <span class="material-symbols-outlined duration-icon">schedule</span>
+    <span class="duration-text">{{ recipe.durationInMinutes | duration }}</span>
+  </div>
+</div>
