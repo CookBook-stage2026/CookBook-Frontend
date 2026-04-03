@@ -2,7 +2,7 @@
   <div>
     <nav class="pagination">
       <button mat-stroked-button (click)="onPrevPage()" [disabled]="pageIndex() === 0 || isLoading()">Prev</button>
-      <span class="page-info">Page {{ pageIndex() + 1 }}</span>
+      <span class="page-info">Page {{ pageIndex() + 1 }} / {{ totalPages() || 1 }}</span>
       <button mat-stroked-button (click)="onNextPage()" [disabled]="recipes().length < pageSize() || isLoading()">Next</button>
     </nav>
   </div>

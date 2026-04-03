@@ -19,9 +19,10 @@
     [recipes]="recipes()"
     [pageSize]="pageSize()"
     [pageIndex]="pageIndex()"
+    [totalPages]="totalPages()"
     [isLoading]="isLoading()"
-    (pageChange)="onPageChange($event)"
-  />
+    (pageChange)="onPageChange($event)">
+  </app-recipe-list>
 </div>
 
 <app-recipe-create-modal

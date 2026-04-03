@@ -1,4 +1,4 @@
-import { Component, Input, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { RecipeSummary } from '@shared/domain/recipe';
 import { DurationPipe } from '@shared/pipes/duration.pipe';
 import { MatCardModule } from '@angular/material/card';

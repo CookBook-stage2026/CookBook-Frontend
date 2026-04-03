@@ -1,4 +1,4 @@
-import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { RecipeSummary } from '@shared/domain/recipe';
 import { RecipeCardComponent } from './recipe-card.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -15,6 +15,7 @@ export class RecipeListComponent {
   recipes = input.required<RecipeSummary[]>();
   pageSize = input.required<number>();
   pageIndex = input.required<number>();
+  totalPages = input.required<number>();
   isLoading = input<boolean>(false);
 
   pageChange = output<number>();
