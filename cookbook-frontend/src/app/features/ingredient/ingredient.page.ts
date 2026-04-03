@@ -81,10 +81,6 @@ export default class IngredientPage {
   readonly isLoading = signal(false);
   readonly isSubmitting = signal(false);
 
-  constructor() {
-    this.loadIngredients();
-  }
-
   loadIngredients(): void {
     this.isLoading.set(true);
     this.ingredientService.getIngredients(this.pageIndex(), this.pageSize()).subscribe({
