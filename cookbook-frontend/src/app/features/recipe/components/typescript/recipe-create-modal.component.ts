@@ -62,7 +62,7 @@ export class RecipeCreateModalComponent {
   }
 
   removeStep(index: number): void {
-    ithis.steps.length > 1) {
+    this.steps.length > 1) {
       this.steps.removeAt(index);
     }
   }
