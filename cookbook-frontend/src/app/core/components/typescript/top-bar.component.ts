@@ -1,5 +1,5 @@
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { ThemeService } from '@core/services';
 
 @Component({
@@ -12,4 +12,11 @@ import { ThemeService } from '@core/services';
 })
 export class TopBarComponent {
   themeService = inject(ThemeService);
+  private readonly router = inject(Router);
+
+  logout(): void {
+    localStorage.removeItem('jwt');
+
+    this.router.navigate(['/login']);
+  }
 }

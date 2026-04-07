@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
-import {authGuard} from '@core/services/auth/auth.guard';
+import { authGuard } from '@core/services/auth/auth.guard';
+import {MainLayoutComponent} from '@core/components/typescript/main-layout.component';
 
 export const routes: Routes = [
   {
@@ -11,11 +12,24 @@ export const routes: Routes = [
     loadComponent: () =>
       import('@core/components/typescript/auth/callback.component').then((m) => m.CallbackComponent),
   },
+
   {
-    path: 'recipes',
+    path: '',
+    component: MainLayoutComponent,
     canActivate: [authGuard],
-    loadComponent: () => import('@features/recipe/recipe.page'),
+    children: [
+      {
+        path: 'recipes',
+        loadComponent: () => import('@features/recipe/recipe.page'),
+      },
+      {
+        path: '',
+        redirectTo: 'recipes',
+        pathMatch: 'full'
+      }
+    ]
   },
+
   {
     path: '**',
     redirectTo: 'recipes',
