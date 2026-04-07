@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { RecipeSummary } from '@shared/domain/recipe';
 import { DurationPipe } from '@shared/pipes/duration.pipe';
 import { MatCardModule } from '@angular/material/card';
@@ -13,5 +13,5 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrl: '../scss/recipe-card.component.scss'
 })
 export class RecipeCardComponent {
-  @Input({ required: true }) recipe!: RecipeSummary;
+  recipe = input.required<RecipeSummary>();
 }
