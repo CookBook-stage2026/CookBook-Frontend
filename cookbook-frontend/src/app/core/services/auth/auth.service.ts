@@ -10,7 +10,7 @@ export class AuthService {
 
   constructor(private readonly http: HttpClient, private readonly router: Router) {}
 
-  loginWith(provider: 'google' | 'github') {
+  loginWith(provider: 'google' | 'github' | 'microsoft') {
     const redirectUri = `${globalThis.location.origin}/auth/callback`;
     sessionStorage.setItem('oauth_provider', provider);
 
