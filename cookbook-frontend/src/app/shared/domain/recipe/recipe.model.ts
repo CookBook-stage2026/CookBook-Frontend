@@ -15,3 +15,10 @@ export interface CreateRecipeDto {
 export interface RecipeDto extends CreateRecipeDto {
   id: string;
 }
+
+export interface RecipeSummary {
+  id: string;
+  name: string;
+  description: string;
+  durationInMinutes: number;
+}

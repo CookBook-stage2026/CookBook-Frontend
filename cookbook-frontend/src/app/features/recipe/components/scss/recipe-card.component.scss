@@ -1,0 +1,19 @@
+.recipe-card {
+  display: flex;
+  flex-direction: column;
+  height: 240px;
+  background-color: var(--bg-surface);
+}
+
+.text {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.recipe-footer {
+  margin-top: auto;
+  gap: 4px;
+  color: var(--text-muted);
+}
