@@ -10,7 +10,7 @@ import {AuthService} from '@core/services/auth/auth.service';
 export default class LoginPage {
   private readonly auth = inject(AuthService);
 
-  loginWith(provider: 'google' | 'github'): void {
+  loginWith(provider: 'google' | 'github' | 'microsoft'): void {
     this.auth.loginWith(provider);
   }
 }
