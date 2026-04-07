@@ -1,8 +1,9 @@
 name: Angular CI
 
 on:
+  workflow_dispatch:
   push:
-    branches: [ "main", "development", "#26-build-docker-image" ]
+    branches: [ "main", "development" ]
   pull_request:
     branches: [ "main", "development" ]
 
