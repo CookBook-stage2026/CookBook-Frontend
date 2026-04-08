@@ -22,13 +22,6 @@ export interface RecipeDto {
   servings: number;
 }
 
-export interface RecipeIngredientDto {
-  ingredientId: string;
-  baseQuantity: number;
-  ingredients: RecipeIngredientDto[];
-  servings: number;
-}
-
 export interface RecipeSummary {
   id: string;
   name: string;
