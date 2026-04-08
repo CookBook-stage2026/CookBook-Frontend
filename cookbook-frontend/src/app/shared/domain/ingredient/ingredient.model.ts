@@ -1,4 +1,4 @@
-export type Unit = 'Eetlepel' | 'Theelepel' | 'Kilogram' | 'Gram' | 'Liters' | 'Milligram' | 'Milliliters' | 'Kopje' | 'Snufje' | 'Stuk' | 'Teen';
+export type Unit = 'Tablespoon' | 'Teaspoon' | 'Kilogram' | 'Gram' | 'Liter' | 'Milliliter' | 'Cup' | 'Piece';
 
 export interface Ingredient {
   id?: string;
