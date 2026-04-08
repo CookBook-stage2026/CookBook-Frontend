@@ -23,13 +23,27 @@ export interface RecipeDto {
   description: string;
   durationInMinutes: number;
   steps: string[];
+  ingredients: CreateRecipeIngredientDto[];
+  servings: number;
+}
+
+export interface RecipeIngredientDto {
+  ingredientId: string;
+  baseQuantity: number;
   ingredients: RecipeIngredientDto[];
   servings: number;
 }
 
 export interface RecipeSummary {
+export interface RecipeDto {
   id: string;
   name: string;
   description: string;
   durationInMinutes: number;
+  name: string;
+  description: string;
+  durationInMinutes: number;
+  steps: string[];
+  ingredients: RecipeIngredientDto[];
+  servings: number;
 }
