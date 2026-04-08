@@ -1,4 +1,6 @@
-export interface RecipeIngredientDto {
+import { Unit } from '@shared/domain/ingredient';
+
+export interface CreateRecipeIngredientDto {
   ingredientId: string;
   baseQuantity: number;
 }
@@ -8,7 +10,7 @@ export interface CreateRecipeDto {
   description: string;
   durationInMinutes: number;
   steps: string[];
-  ingredients: RecipeIngredientDto[];
+  ingredients: CreateRecipeIngredientDto[];
   servings: number;
 }
 
@@ -20,6 +22,13 @@ export interface RecipeDto {
   steps: string[];
   ingredients: RecipeIngredientDto[];
   servings: number;
+}
+
+export interface RecipeIngredientDto {
+  ingredientId: string;
+  name: string;
+  baseQuantity: number;
+  unit?: Unit | null;
 }
 
 export interface RecipeSummary {

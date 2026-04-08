@@ -7,6 +7,10 @@ export const routes: Routes = [
     loadComponent: () => import('@features/recipe/recipe.page')
   },
   {
+    path: 'recipes/:recipeId',
+    loadComponent: () => import('@features/recipe/recipe-detail.page')
+  },
+  {
     path: '**',
     redirectTo: 'recipes'
   }
