@@ -1,14 +1,14 @@
 import { Component, ChangeDetectionStrategy, inject, output, signal, input } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { RecipeService } from '@shared/services/recipe/recipe.service';
-import { CreateRecipeDto, CreateRecipeIngredientDto } from '@shared/domain/recipe';
-import { RecipeIngredientsComponent } from './recipe-ingredients.component';
+import { CreateRecipeDto, RecipeIngredientDto } from '@shared/domain/recipe';
+import { RecipeIngredientsFormComponent } from './recipe-ingredients-form.component';
 import { RecipeStepsComponent } from './recipe-steps.component';
 
 @Component({
   selector: 'app-recipe-create-modal',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RecipeIngredientsComponent, RecipeStepsComponent],
+  imports: [ReactiveFormsModule, RecipeIngredientsFormComponent, RecipeStepsComponent],
   templateUrl: '../html/recipe-create-modal.component.html',
   styleUrl: '../scss/recipe-create-modal.component.scss'
 })
@@ -16,6 +16,7 @@ export class RecipeCreateModalComponent {
   private readonly fb = inject(FormBuilder);
   private readonly recipeService = inject(RecipeService);
 
+  readonly recipeCreated = output<void>();
   readonly closeModal = output<void>();
   readonly isSubmitting = signal(false);
   readonly isOpen = input<boolean>(false);
@@ -42,7 +43,7 @@ export class RecipeCreateModalComponent {
 
       const rawFormValue = this.recipeForm.getRawValue();
 
-      const mappedIngredients: CreateRecipeIngredientDto[] = rawFormValue.ingredients.map((ing: any) => ({
+      const mappedIngredients: RecipeIngredientDto[] = rawFormValue.ingredients.map((ing: any) => ({
         ingredientId: ing.id,
         baseQuantity: Number(ing.quantity)
       }));
@@ -59,6 +60,7 @@ export class RecipeCreateModalComponent {
       this.recipeService.createRecipe(dto).subscribe({
         next: () => {
           this.isSubmitting.set(false);
+          this.recipeCreated.emit();
           this.closeModal.emit();
         },
         error: () => {

@@ -11,10 +11,10 @@ import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/ma
   selector: 'app-recipe-ingredients',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, MatAutocompleteModule],
-  templateUrl: '../html/recipe-ingredients.component.html',
+  templateUrl: '../html/recipe-ingredients-form.component.html',
   styleUrl: '../scss/recipe-create-modal.component.scss'
 })
-export class RecipeIngredientsComponent implements OnDestroy {
+export class RecipeIngredientsFormComponent implements OnDestroy {
   private readonly ingredientService = inject(IngredientService);
 
   readonly ingredients = input.required<FormArray<FormGroup>>();

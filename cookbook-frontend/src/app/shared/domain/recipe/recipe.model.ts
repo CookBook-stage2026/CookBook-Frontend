@@ -1,4 +1,4 @@
-export interface CreateRecipeIngredientDto {
+export interface RecipeIngredientDto {
   ingredientId: string;
   baseQuantity: number;
 }
@@ -8,13 +8,8 @@ export interface CreateRecipeDto {
   description: string;
   durationInMinutes: number;
   steps: string[];
-  ingredients: CreateRecipeIngredientDto[];
+  ingredients: RecipeIngredientDto[];
   servings: number;
-}
-
-export interface RecipeIngredientDto {
-  ingredientId: string;
-  baseQuantity: number;
 }
 
 export interface RecipeDto {
@@ -23,7 +18,7 @@ export interface RecipeDto {
   description: string;
   durationInMinutes: number;
   steps: string[];
-  ingredients: CreateRecipeIngredientDto[];
+  ingredients: RecipeIngredientDto[];
   servings: number;
 }
 
@@ -35,15 +30,8 @@ export interface RecipeIngredientDto {
 }
 
 export interface RecipeSummary {
-export interface RecipeDto {
   id: string;
   name: string;
   description: string;
   durationInMinutes: number;
-  name: string;
-  description: string;
-  durationInMinutes: number;
-  steps: string[];
-  ingredients: RecipeIngredientDto[];
-  servings: number;
 }
