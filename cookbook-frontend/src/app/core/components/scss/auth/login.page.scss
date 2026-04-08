@@ -160,10 +160,35 @@
   margin: 0;
 }
 
-.auth-providers {
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.divider-container {
   display: flex;
-  flex-direction: column;
+  align-items: center;
   gap: 12px;
+  margin: 4px 0;
+}
+
+.divider-line {
+  flex: 1;
+  height: 1px;
+  border: none;
+  background-color: var(--border-color);
+  margin: 0;
+}
+
+.divider-text {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
 }
 
 .provider-btn {
@@ -290,4 +315,59 @@
   :root:not([data-theme="light"]) .provider-btn--microsoft:hover {
     box-shadow: 0 1px 4px rgba(0 0 0 / 0.3);
   }
+}
+
+.auth-actions {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.auth-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.auth-checkbox__input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--bg-main);
+  cursor: pointer;
+  position: relative;
+  transition: all 150ms ease;
+}
+
+.auth-checkbox__input:checked {
+  background-color: var(--element-primary);
+  border-color: var(--element-primary);
+}
+
+.auth-checkbox__input:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--element-primary-contrast);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.auth-checkbox__input:focus-visible {
+  outline: 2px solid var(--element-primary);
+  outline-offset: 2px;
+}
+
+.auth-checkbox__label {
+  font-size: 0.875rem;
+  color: var(--text-main);
+  font-weight: 500;
 }
