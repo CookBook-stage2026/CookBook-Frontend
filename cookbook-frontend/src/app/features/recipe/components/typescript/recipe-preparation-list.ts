@@ -6,6 +6,11 @@ import { MatList, MatListItem } from '@angular/material/list';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MatList, MatListItem],
   styles: `
+    mat-list-item {
+      height: auto !important;
+      padding: 0.5rem 0;
+    }
+
     .step-content {
       display: flex;
       gap: 1rem;
