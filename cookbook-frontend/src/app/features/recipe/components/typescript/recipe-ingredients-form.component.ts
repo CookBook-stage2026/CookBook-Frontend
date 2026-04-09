@@ -1,11 +1,12 @@
 import {
-  Component, ChangeDetectionStrategy, input, output, inject, signal, OnDestroy
+  Component, ChangeDetectionStrategy, input, output, inject, signal
 } from '@angular/core';
 import { ReactiveFormsModule, FormArray, FormGroup, AbstractControl } from '@angular/forms';
-import { Subject, Subscription, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
 import { IngredientService } from '@shared/services/ingredient';
 import { Ingredient } from '@shared/domain/ingredient';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-recipe-ingredients',
@@ -14,7 +15,7 @@ import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/ma
   templateUrl: '../html/recipe-ingredients-form.component.html',
   styleUrl: '../scss/recipe-create-modal.component.scss'
 })
-export class RecipeIngredientsFormComponent implements OnDestroy {
+export class RecipeIngredientsFormComponent {
   private readonly ingredientService = inject(IngredientService);
 
   readonly ingredients = input.required<FormArray<FormGroup>>();
@@ -25,20 +26,16 @@ export class RecipeIngredientsFormComponent implements OnDestroy {
   readonly allIngredients = signal<Ingredient[]>([]);
 
   private readonly searchSubject = new Subject<string>();
-  private readonly searchSubscription: Subscription;
 
   constructor() {
-    this.searchSubscription = this.searchSubject.pipe(
+    this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(query => this.ingredientService.searchIngredients(query))
+      switchMap(query => this.ingredientService.searchIngredients(query)),
+      takeUntilDestroyed()
     ).subscribe(results => {
       this.allIngredients.set(results);
     });
-  }
-
-  ngOnDestroy(): void {
-    this.searchSubscription.unsubscribe();
   }
 
   add(): void {
@@ -53,7 +50,9 @@ export class RecipeIngredientsFormComponent implements OnDestroy {
     const inputName = (event.target as HTMLInputElement).value;
     this.searchSubject.next(inputName);
 
-    const matched = this.allIngredients().find(i => i.name.toLowerCase() === inputName.trim().toLowerCase());
+    const matched = this.allIngredients().find(
+      i => i.name.toLowerCase() === inputName.trim().toLowerCase()
+    );
 
     if (matched) {
       ctrl.patchValue({
@@ -107,18 +106,35 @@ export class RecipeIngredientsFormComponent implements OnDestroy {
 
     if (!unitEnum) return '';
 
-    const isPlural = quantity !== 1;
+    return getLocalizedUnit(unitEnum, quantity);
+  }
+}
 
-    switch (unitEnum.toUpperCase()) {
-      case 'GRAM': return 'Gram';
-      case 'KILOGRAM': return 'Kilogram';
-      case 'MILLILITER': return 'Milliliter';
-      case 'LITER': return 'Liter';
-      case 'TEASPOON': return isPlural ? 'Theelepels' : 'Theelepel';
-      case 'TABLESPOON': return isPlural ? 'Eetlepels' : 'Eetlepel';
-      case 'CUP': return isPlural ? 'Kopjes' : 'Kopje';
-      case 'PIECE': return isPlural ? 'Stuks' : 'Stuk';
-      default: return unitEnum;
-    }
+function getLocalizedUnit(unitEnum: string, quantity: number): string {
+  const isPlural = quantity !== 1;
+
+  switch (unitEnum.toUpperCase()) {
+    case 'GRAM': return $localize`:@@unit.gram:Gram`;
+    case 'KILOGRAM': return $localize`:@@unit.kilogram:Kilogram`;
+    case 'MILLILITER': return $localize`:@@unit.milliliter:Milliliter`;
+    case 'LITER': return $localize`:@@unit.liter:Liter`;
+    case 'TEASPOON':
+      return isPlural
+        ? $localize`:@@unit.teaspoon.plural:Teaspoons`
+        : $localize`:@@unit.teaspoon:Teaspoon`;
+    case 'TABLESPOON':
+      return isPlural
+        ? $localize`:@@unit.tablespoon.plural:Tablespoons`
+        : $localize`:@@unit.tablespoon:Tablespoon`;
+    case 'CUP':
+      return isPlural
+        ? $localize`:@@unit.cup.plural:Cups`
+        : $localize`:@@unit.cup:Cup`;
+    case 'PIECE':
+      return isPlural
+        ? $localize`:@@unit.piece.plural:Pieces`
+        : $localize`:@@unit.piece:Piece`;
+    default:
+      return unitEnum;
   }
 }

@@ -8,7 +8,7 @@ import { RecipeStepsComponent } from './recipe-steps.component';
 @Component({
   selector: 'app-recipe-create-modal',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RecipeIngredientsFormComponent, RecipeStepsComponent],
+  imports: [ReactiveFormsModule, RecipeStepsComponent, RecipeIngredientsFormComponent],
   templateUrl: '../html/recipe-create-modal.component.html',
   styleUrl: '../scss/recipe-create-modal.component.scss'
 })
@@ -41,7 +41,7 @@ export class RecipeCreateModalComponent {
     if (this.recipeForm.valid && !this.isSubmitting()) {
       this.isSubmitting.set(true);
 
-      const rawFormValue = this.recipeForm.getRawValue();
+      const rawFormValue = this.recipeForm.value;
 
       const mappedIngredients: RecipeIngredientDto[] = rawFormValue.ingredients.map((ing: any) => ({
         ingredientId: ing.id,

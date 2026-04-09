@@ -81,8 +81,6 @@
               type="button"
               class="btn-icon danger"
               (click)="remove($index)"
-              (keydown.enter)="remove($index)"
-              (keydown.space)="remove($index)"
               [disabled]="isSubmitting()"
               [attr.aria-label]="'Remove ingredient ' + (ingredientCtrl.get('name')?.value || $index + 1)">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
