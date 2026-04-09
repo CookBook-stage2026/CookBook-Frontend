@@ -38,13 +38,7 @@ export class CallbackComponent implements OnInit {
   private readonly router = inject(Router);
 
   ngOnInit(): void {
-    const code = this.route.snapshot.queryParamMap.get('code');
-    if (!code) {
-      this.router.navigate(['/login']);
-      return;
-    }
-
-    this.auth.handleCallback(code).subscribe({
+    this.auth.handleCallback().subscribe({
       next: () => this.router.navigate(['/recipes']),
       error: (err) => {
         console.error('Callback failed: ', err);
