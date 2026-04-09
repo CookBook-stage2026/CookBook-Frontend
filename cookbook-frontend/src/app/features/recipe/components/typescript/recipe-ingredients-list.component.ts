@@ -40,7 +40,7 @@ export class RecipeIngredientsComponent {
 
     const labels: Record<string, string> = {
       GRAM: 'g', KILOGRAM: 'kg', MILLILITER: 'ml', LITER: 'L', TEASPOON: 'tsp', TABLESPOON: 'tbsp',
-      CUP: baseQuantity === 1 ? 'cup' : 'cups', PIECE: baseQuantity === 1 ? 'pc' : 'pcs'
+      CUP: baseQuantity === 1 ? 'cup' : 'cups', PIECE: baseQuantity === 1 ? 'piece' : 'pieces', PINCH: 'pinch'
     };
 
     return `${baseQuantity} ${labels[unit] ?? ''}`;
