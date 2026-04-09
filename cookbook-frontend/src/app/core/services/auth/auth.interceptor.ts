@@ -17,14 +17,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     catchError((error: HttpErrorResponse) => {
 
       if ((error.status === 401 || error.status === 403) && !isRefreshRequest) {
-
-        const refreshToken = authService.getRefreshToken();
-
-        if (!refreshToken) {
-          authService.logout();
-          return throwError(() => error);
-        }
-
+        // Attempt to refresh. If the browser doesn't have the HttpOnly cookie,
+        // the backend will return 401 and the catchError below will log the user out.
         return authService.refreshSession().pipe(
           switchMap((res) => {
             const clonedReq = req.clone({
