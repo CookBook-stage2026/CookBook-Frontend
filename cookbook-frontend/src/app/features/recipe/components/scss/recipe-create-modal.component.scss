@@ -1,3 +1,69 @@
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$blue-palette,
+    ),
+    typography: Roboto,
+    density: 0,
+  ));
+}
+
+body {
+  color-scheme: light dark;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  margin: 0;
+  height: 100%;
+}
+
+:root {
+  /* Neutrals */
+  --bg-main: #ffffff;
+  --bg-surface: #f8fafc;
+  --border-color: #e2e8f0;
+  /* Text */
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  /* special element*/
+  --element-primary: #2563eb;
+  --element-primary-contrast: #ffffff;
+  --spacing-unit: 4px;
+  --radius-md: 6px;
+  --radius-lg: 12px;
+  --radius-sm: 4px;
+
+  --mat-sys-primary: var(--element-primary);
+  --mat-sys-on-primary: var(--element-primary-contrast);
+  --mat-sys-surface: var(--bg-surface);
+  --mat-sys-on-surface: var(--text-main);
+  --mat-sys-background: var(--bg-main);
+  --mat-sys-on-background: var(--text-main);
+  --mat-sys-surface-container-low: var(--bg-main);
+  --mat-sys-surface-container: var(--bg-surface);
+  --mat-sys-outline: var(--border-color);
+  --mat-sys-outline-variant: var(--border-color);
+  --mat-sys-on-surface-variant: var(--text-muted);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-main: #020617;
+    --bg-surface: #0f172a;
+    --border-color: #1e293b;
+    --text-main: #f8fafc;
+    --text-muted: #94a3b8;
+    --element-primary: #60a5fa;
+    --element-primary-contrast: #020617;
+  }
+}
+
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -164,6 +230,20 @@ select.form-control {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--border-color);
+    border-radius: var(--radius-sm);
+  }
 }
 
 .ingredient-row {
@@ -324,28 +404,6 @@ dialog {
   }
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .input-wrapper {
   position: relative;
   width: 100%;
@@ -434,5 +492,57 @@ dialog {
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+.read-only-unit {
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  cursor: default;
+  pointer-events: none;
+  user-select: none;
+
+  &:focus,
+  &:hover,
+  &:active {
+    border-color: var(--border-color) !important;
+    box-shadow: none !important;
+    outline: none !important;
+  }
+}
+
+.action-group {
+  flex: 0 0 auto;
+}
+
+.invisible-label {
+  visibility: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+
+.action-btn-wrapper {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+::ng-deep .mat-mdc-autocomplete-panel {
+  background-color: var(--bg-surface) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+}
+
+::ng-deep .mat-mdc-option {
+  color: var(--text-main) !important;
+  font-family: inherit !important;
+
+  &:hover,
+  &.mdc-list-item--selected,
+  &.mat-mdc-option-active {
+    background-color: var(--bg-main) !important;
+    color: var(--element-primary) !important;
   }
 }

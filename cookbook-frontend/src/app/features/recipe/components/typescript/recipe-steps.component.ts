@@ -3,23 +3,22 @@ import { ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
 
 @Component({
   selector: 'app-recipe-steps',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule],
   templateUrl: '../html/recipe-steps.component.html',
   styleUrl: '../scss/recipe-create-modal.component.scss'
 })
 export class RecipeStepsComponent {
-  steps = input.required<FormArray<FormControl>>();
-  isSubmitting = input.required<boolean>();
-  addStep = output<void>();
-  removeStep = output<number>();
+  readonly steps = input.required<FormArray<FormControl>>();
+  readonly isSubmitting = input.required<boolean>();
+  readonly addStep = output<void>();
+  readonly removeStep = output<number>();
 
-  add() {
+  add(): void {
     this.addStep.emit();
   }
 
-  remove(index: number) {
+  remove(index: number): void {
     this.removeStep.emit(index);
   }
 }
