@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    defaults:
+      run:
+        working-directory: ./cookbook-frontend
 
     steps:
       - uses: actions/checkout@v4
@@ -30,7 +33,6 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     needs: build
-    if: github.event_name == 'push'
     permissions:
       contents: read
       packages: write
@@ -63,3 +65,4 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          context: ./cookbook-frontend
