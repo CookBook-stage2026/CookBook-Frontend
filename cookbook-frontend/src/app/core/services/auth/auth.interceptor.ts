@@ -25,7 +25,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           return throwError(() => error);
         }
 
-        // attempt to refresh
         return authService.refreshSession().pipe(
           switchMap((res) => {
             const clonedReq = req.clone({
@@ -40,7 +39,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         );
       }
 
-      // If refresh request fails, logout
       if ((error.status === 401 || error.status === 403) && isRefreshRequest) {
         authService.logout();
       }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { map, Observable, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -11,39 +11,35 @@ export class AuthService {
 
   constructor(private readonly http: HttpClient, private readonly router: Router) {}
 
-  loginWith(provider: 'google' | 'github' | 'microsoft', rememberMe: boolean) {
-    const redirectUri = `${globalThis.location.origin}/auth/callback`;
-    sessionStorage.setItem('oauth_provider', provider);
+  loginWith(provider: 'google' | 'github' | 'microsoft', rememberMe: boolean): void {
     sessionStorage.setItem('remember_me', String(rememberMe));
 
-    this.http.get<{ url: string }>(
-      `${this.apiUrl}/${provider}/url`,
-      { params: { redirectUri } }
-    ).subscribe(({ url }) => globalThis.location.href = url);
+    window.location.href = `http://localhost:8080/oauth2/authorization/${provider}`;
   }
 
-  handleCallback(code: string): Observable<void> {
-    const provider = sessionStorage.getItem('oauth_provider');
+  handleCallback(): Observable<void> {
+    const params = new URLSearchParams(window.location.search);
+    const accessToken = params.get('access_token');
+    const refreshToken = params.get('refresh_token');
     const rememberMe = sessionStorage.getItem('remember_me') === 'true';
-    const redirectUri = `${globalThis.location.origin}/auth/callback`;
 
-    return this.http.post<{ accessToken: string; refreshToken: string; email: string; displayName: string }>(
-      `${this.apiUrl}/${provider}/callback`,
-      { code, redirectUri, rememberMe }
-    ).pipe(
-      tap(res => {
-        const storage = rememberMe ? localStorage : sessionStorage;
-        storage.setItem(this.accessTokenKey, res.accessToken);
+    if (!accessToken) {
+      throw new Error('No access token received');
+    }
 
-        if (res.refreshToken) {
-          storage.setItem(this.refreshTokenKey, res.refreshToken);
-        }
+    const storage = rememberMe ? localStorage : sessionStorage;
+    storage.setItem(this.accessTokenKey, accessToken);
+    if (refreshToken) {
+      storage.setItem(this.refreshTokenKey, refreshToken);
+    }
 
-        sessionStorage.removeItem('oauth_provider');
-        sessionStorage.removeItem('remember_me');
-      }),
-      map(() => void 0)
-    );
+    sessionStorage.removeItem('remember_me');
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    return new Observable(subscriber => {
+      subscriber.next();
+      subscriber.complete();
+    });
   }
 
   refreshSession(): Observable<{ accessToken: string; refreshToken: string }> {
@@ -55,7 +51,6 @@ export class AuthService {
     ).pipe(
       tap(res => {
         const storage = localStorage.getItem(this.refreshTokenKey) ? localStorage : sessionStorage;
-
         storage.setItem(this.accessTokenKey, res.accessToken);
         if (res.refreshToken) {
           storage.setItem(this.refreshTokenKey, res.refreshToken);
