@@ -1,39 +1,34 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import {Observable, catchError, throwError, of} from 'rxjs';
-import { ToastService } from '@core/services/toast.service';
+import { Observable } from 'rxjs';
 import { environment } from '../../../../environment';
-import {Ingredient} from '@shared/domain/ingredient';
+import { Ingredient } from '@shared/domain/ingredient';
 
 @Injectable({ providedIn: 'root' })
 export class IngredientService {
   private readonly http = inject(HttpClient);
-  private readonly toastService = inject(ToastService);
   private readonly apiUrl = `${environment.apiUrl}/ingredients`;
 
-  getIngredients(page: number, size: number): Observable<Ingredient[]> {
-    const params = new HttpParams()
+  getIngredients(
+    query?: string,
+    excludedIds: string[] = [],
+    page = 0,
+    size = 10
+  ): Observable<Ingredient[]> {
+    let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
 
-    return this.http.get<Ingredient[]>(this.apiUrl, { params }).pipe(
-      catchError(err => {
-        this.toastService.show('Failed to load ingredients.', 'error');
-        return throwError(() => err);
-      })
-    );
-  }
-
-  searchIngredients(query: string, page = 0, size = 10): Observable<Ingredient[]> {
-    if (!query.trim()) {
-      return of([]);
+    if (query && query.trim() !== '') {
+      params = params.set('query', query);
     }
-    return this.http.get<Ingredient[]>(`${this.apiUrl}/search`, {
-      params: {
-        query: query,
-        page: page.toString(),
-        size: size.toString()
-      }
-    });
+
+    if (excludedIds.length > 0) {
+      excludedIds.forEach(id => {
+        params = params.append('excludedIds', id);
+      });
+    }
+
+    return this.http.get<Ingredient[]>(this.apiUrl, { params });
   }
 }

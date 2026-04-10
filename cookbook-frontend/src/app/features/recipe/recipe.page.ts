@@ -1,42 +1,55 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { RecipeCreateModalComponent } from './components/typescript/recipe-create-modal.component';
 import { ToastComponent } from '@shared/components/toast/toast.component';
 import { RecipeListComponent } from './components/typescript/recipe-list.component';
-import { RecipeSummary } from '@shared/domain/recipe';
 import { RecipeService } from '@shared/services/recipe';
+import { RecipeFilterComponent } from '@features/recipe/components/typescript/recipe-filter.component';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-recipe-list-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RecipeCreateModalComponent, ToastComponent, RecipeListComponent],
+  imports: [RecipeCreateModalComponent, ToastComponent, RecipeListComponent, RecipeFilterComponent],
   templateUrl: './recipe.page.html',
   styleUrl: './recipe.page.scss'
 })
-export default class RecipePage implements OnInit {
+export default class RecipePage {
   private readonly recipeService = inject(RecipeService);
 
-  isCreateModalOpen = signal(false);
-  recipes = signal<RecipeSummary[]>([]);
-  totalPages = signal(0);
-  pageSize = signal(20);
-  pageIndex = signal(0);
-  isLoading = signal(false);
+  readonly isCreateModalOpen = signal(false);
+  readonly pageSize = signal(20);
+  readonly pageIndex = signal(0);
+  readonly selectedIngredientIds = signal<string[]>([]);
 
-  ngOnInit(): void {
-    this.loadRecipes();
+  readonly recipeResource = rxResource({
+    params: () => ({
+      page: this.pageIndex(),
+      size: this.pageSize(),
+      ingredients: this.selectedIngredientIds()
+    }),
+    stream: ({ params }) => this.recipeService.getRecipes(
+      params.page,
+      params.size,
+      params.ingredients
+    )
+  });
+
+  readonly recipes = computed(() => this.recipeResource.value()?.content ?? []);
+  readonly totalPages = computed(() => this.recipeResource.value()?.page.totalPages ?? 0);
+  readonly isLoading = this.recipeResource.isLoading;
+
+  onFilterChange(ingredientIds: string[]): void {
+    this.selectedIngredientIds.set(ingredientIds);
+    this.pageIndex.set(0);
   }
 
-  loadRecipes(): void {
-    this.isLoading.set(true);
-    this.recipeService.getRecipes(this.pageIndex(), this.pageSize()).subscribe({
-      next: (data) => {
-        this.recipes.set(data.content);
-        this.totalPages.set(data.page.totalPages);
-        this.isLoading.set(false);
-      },
-      error: () => this.isLoading.set(false)
-    });
+  onPageChange(newPageIndex: number): void {
+    this.pageIndex.set(newPageIndex);
+  }
+
+  onRecipeCreated(): void {
+    this.recipeResource.reload();
   }
 
   openModal(): void {
@@ -45,14 +58,5 @@ export default class RecipePage implements OnInit {
 
   closeModal(): void {
     this.isCreateModalOpen.set(false);
-  }
-
-  onRecipeCreated(): void {
-    this.loadRecipes();
-  }
-
-  onPageChange(newPageIndex: number): void {
-    this.pageIndex.set(newPageIndex);
-    this.loadRecipes();
   }
 }

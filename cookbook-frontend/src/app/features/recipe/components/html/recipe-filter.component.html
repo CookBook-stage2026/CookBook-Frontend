@@ -1,0 +1,43 @@
+<div class="filter-container">
+  <div class="form-group">
+    <label for="ingredient-search">Filter by Ingredients</label>
+    <div class="input-wrapper">
+      <input
+        #searchInput
+        type="text"
+        id="ingredient-search"
+        [formControl]="searchControl"
+        placeholder="Search ingredients..."
+        class="form-control"
+        autocomplete="off"
+        [matAutocomplete]="auto">
+
+      @if (ingredientResource.isLoading()) {
+        <span class="input-loader">...</span>
+      }
+
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event)">
+        @for (ingredient of filteredResults(); track ingredient.id) {
+          <mat-option [value]="ingredient">
+            {{ ingredient.name }}
+          </mat-option>
+        }
+      </mat-autocomplete>
+    </div>
+  </div>
+
+  @if (selectedIngredients().length > 0) {
+    <div class="selected-ingredients">
+      <mat-chip-set aria-label="Selected ingredients">
+        @for (ingredient of selectedIngredients(); track ingredient.id) {
+          <mat-chip (removed)="removeIngredient(ingredient)">
+            {{ ingredient.name }}
+            <button matChipRemove>
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-chip>
+        }
+      </mat-chip-set>
+    </div>
+  }
+</div>

@@ -15,6 +15,10 @@
     </button>
   </header>
 
+  <app-recipe-filter
+    (selectedIngredientsChange)="onFilterChange($event)">
+  </app-recipe-filter>
+
   <app-recipe-list
     [recipes]="recipes()"
     [pageSize]="pageSize()"

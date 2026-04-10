@@ -24,10 +24,20 @@ export class RecipeService {
     );
   }
 
-  getRecipes(page: number, size: number): Observable<PaginatedResponse<RecipeSummary>> {
-    const params = new HttpParams()
+  getRecipes(
+    page: number,
+    size: number,
+    ingredientIds?: string[]
+  ): Observable<PaginatedResponse<RecipeSummary>> {
+    let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
+
+    if (ingredientIds && ingredientIds.length > 0) {
+      ingredientIds.forEach(id => {
+        params = params.append('ingredientIds', id);
+      });
+    }
 
     return this.http.get<PaginatedResponse<RecipeSummary>>(this.apiUrl, { params }).pipe(
       catchError(err => {
