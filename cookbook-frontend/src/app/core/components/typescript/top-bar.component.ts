@@ -16,7 +16,6 @@ export class TopBarComponent {
 
   logout(): void {
     localStorage.removeItem('jwt');
-
     this.router.navigate(['/login']);
   }
 }

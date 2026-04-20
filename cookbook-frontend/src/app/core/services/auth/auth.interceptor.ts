@@ -1,40 +1,29 @@
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { AuthService } from '@core/services/auth/auth.service';
-import { catchError, switchMap, throwError } from 'rxjs';
+import { catchError, throwError } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
+import {SessionExpiredDialogComponent} from '@core/components/typescript/auth/session-expired-dialog.component';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
-  const authService = inject(AuthService);
-  const accessToken = authService.getAccessToken();
-
-  const isRefreshRequest = req.url.includes('/auth/refresh');
-
-  if (accessToken && !isRefreshRequest) {
-    req = req.clone({ setHeaders: { Authorization: `Bearer ${accessToken}` } });
-  }
+  const dialog = inject(MatDialog);
 
   return next(req).pipe(
-    catchError((error: HttpErrorResponse) => {
-
-      if ((error.status === 401 || error.status === 403) && !isRefreshRequest) {
-        // Attempt to refresh. If the browser doesn't have the HttpOnly cookie,
-        // the backend will return 401 and the catchError below will log the user out.
-        return authService.refreshSession().pipe(
-          switchMap((res) => {
-            const clonedReq = req.clone({
-              setHeaders: { Authorization: `Bearer ${res.accessToken}` }
-            });
-            return next(clonedReq);
-          }),
-          catchError((refreshError) => {
-            authService.logout();
-            return throwError(() => refreshError);
-          })
+    catchError((error: unknown) => {
+      if (
+        error instanceof HttpErrorResponse &&
+        (error.status === 401 || error.status === 403)
+      ) {
+        const hasOpenDialog = dialog.openDialogs.some(
+          (d) => d.componentInstance instanceof SessionExpiredDialogComponent
         );
-      }
 
-      if ((error.status === 401 || error.status === 403) && isRefreshRequest) {
-        authService.logout();
+        if (!hasOpenDialog) {
+          dialog.open(SessionExpiredDialogComponent, {
+            disableClose: true,
+            width: '400px',
+            role: 'alertdialog',
+          });
+        }
       }
 
       return throwError(() => error);
