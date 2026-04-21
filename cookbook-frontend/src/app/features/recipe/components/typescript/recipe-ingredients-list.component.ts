@@ -36,13 +36,27 @@ export class RecipeIngredientsComponent {
 
   formatQuantity(item: RecipeIngredientDto): string {
     const { baseQuantity, unit } = item;
+
     if (!unit || unit === 'NONE') return '';
 
-    const labels: Record<string, string> = {
-      GRAM: 'g', KILOGRAM: 'kg', MILLILITER: 'ml', LITER: 'L', TEASPOON: 'tsp', TABLESPOON: 'tbsp',
-      CUP: baseQuantity === 1 ? 'cup' : 'cups', PIECE: baseQuantity === 1 ? 'piece' : 'pieces', PINCH: 'pinch'
+    const fixedLabels: Record<string, string> = {
+      GRAM: 'g',
+      KILOGRAM: 'kg',
+      MILLILITER: 'ml',
+      LITER: 'L',
+      TEASPOON: 'tsp',
+      TABLESPOON: 'tbsp',
+      PINCH: 'pinch',
     };
 
-    return `${baseQuantity} ${labels[unit] ?? ''}`;
+    if (unit === 'CUP') {
+      return `${baseQuantity} ${baseQuantity === 1 ? 'cup' : 'cups'}`;
+    }
+
+    if (unit === 'PIECE') {
+      return `${baseQuantity} ${baseQuantity === 1 ? 'piece' : 'pieces'}`;
+    }
+
+    return `${baseQuantity} ${fixedLabels[unit] ?? ''}`;
   }
 }
