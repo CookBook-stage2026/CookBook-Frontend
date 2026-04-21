@@ -11,7 +11,7 @@ export class IngredientService {
 
   getIngredients(
     query?: string,
-    excludedIds: string[] = [],
+    selectedIds: string[] = [],
     page = 0,
     size = 10
   ): Observable<Ingredient[]> {
@@ -23,9 +23,9 @@ export class IngredientService {
       params = params.set('query', query);
     }
 
-    if (excludedIds.length > 0) {
-      excludedIds.forEach(id => {
-        params = params.append('excludedIds', id);
+    if (selectedIds.length > 0) {
+      selectedIds.forEach(id => {
+        params = params.append('selectedIds', id);
       });
     }
 
