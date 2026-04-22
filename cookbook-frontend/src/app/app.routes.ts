@@ -12,6 +12,16 @@ export const routes: Routes = [
     loadComponent: () =>
       import('@core/components/typescript/auth/callback.component').then((m) => m.CallbackComponent),
   },
+  {
+    path: 'recipes',
+    canActivate: [authGuard],
+    loadComponent: () => import('@features/recipe/recipe.page'),
+  },
+  {
+    path: 'auth/callback',
+    loadComponent: () =>
+      import('@core/components/typescript/auth/callback.component').then((m) => m.CallbackComponent),
+  },
 
   {
     path: '',
