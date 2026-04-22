@@ -5,3 +5,10 @@ export interface Ingredient {
   name: string;
   unit?: Unit | null;
 }
+
+export interface IngredientSearchRequest {
+  query?: string;
+  alreadySelectedIds?: string[];
+  page?: number;
+  size?: number;
+}

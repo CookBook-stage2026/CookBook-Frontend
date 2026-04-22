@@ -31,7 +31,7 @@ export class RecipeIngredientsFormComponent {
     this.searchSubject.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap(query => this.ingredientService.getIngredients(query)),
+      switchMap(query => this.ingredientService.searchIngredients(query)),
       takeUntilDestroyed()
     ).subscribe(results => {
       this.allIngredients.set(results);

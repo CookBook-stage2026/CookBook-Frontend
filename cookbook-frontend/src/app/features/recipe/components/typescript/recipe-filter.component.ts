@@ -53,7 +53,7 @@ export class RecipeFilterComponent {
     params: () => ({ query: this.debouncedQuery() }),
     stream: ({ params }) => {
       if (params.query.length < 1) return of([]);
-      return this.ingredientService.getIngredients(params.query);
+      return this.ingredientService.searchIngredients(params.query);
     }
   });
 

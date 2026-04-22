@@ -1,34 +1,27 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environment';
-import { Ingredient } from '@shared/domain/ingredient';
+import { Ingredient, IngredientSearchRequest } from '@shared/domain/ingredient';
 
 @Injectable({ providedIn: 'root' })
 export class IngredientService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/ingredients`;
 
-  getIngredients(
+  searchIngredients(
     query?: string,
-    selectedIds: string[] = [],
+    alreadySelectedIds: string[] = [],
     page = 0,
     size = 10
   ): Observable<Ingredient[]> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', size.toString());
+    const body: IngredientSearchRequest = {
+      query: query?.trim() || undefined,
+      alreadySelectedIds: alreadySelectedIds.length > 0 ? alreadySelectedIds : undefined,
+      page,
+      size,
+    };
 
-    if (query && query.trim() !== '') {
-      params = params.set('query', query);
-    }
-
-    if (selectedIds.length > 0) {
-      selectedIds.forEach(id => {
-        params = params.append('selectedIds', id);
-      });
-    }
-
-    return this.http.get<Ingredient[]>(this.apiUrl, { params });
+    return this.http.post<Ingredient[]>(`${this.apiUrl}/search`, body);
   }
 }
