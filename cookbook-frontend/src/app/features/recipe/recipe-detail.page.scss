@@ -1,0 +1,20 @@
+.page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header-meta {
+  margin-bottom: 1rem;
+}
+
+.loading-shade {
+  display: flex;
+  justify-content: center;
+  padding: 5rem;
+}
+
+mat-chip.static-chip {
+  --mdc-chip-disabled-label-text-color: var(--mat-sys-on-surface);
+  --mdc-chip-disabled-container-color: var(--mat-sys-surface-container-high);
+}

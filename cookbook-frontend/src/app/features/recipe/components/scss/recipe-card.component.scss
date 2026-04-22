@@ -5,6 +5,15 @@
   background-color: var(--bg-surface);
 }
 
+.clickable-card {
+  cursor: pointer;
+  transition: box-shadow 0.2s ease-in-out;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  }
+}
+
 .title {
   display: -webkit-box;
   -webkit-line-clamp: 2;
