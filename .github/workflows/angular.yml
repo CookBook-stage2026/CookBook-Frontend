@@ -4,14 +4,15 @@ on:
   workflow_dispatch:
   push:
     branches: [ "main", "development" ]
-  pull_request:
-    branches: [ "main", "development" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    defaults:
+      run:
+        working-directory: ./cookbook-frontend
 
     steps:
       - uses: actions/checkout@v4
@@ -63,3 +64,4 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+          context: ./cookbook-frontend

@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, inject, output, signal, input } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
 import { RecipeService } from '@shared/services/recipe/recipe.service';
-import { CreateRecipeDto, RecipeIngredientDto } from '@shared/domain/recipe';
+import { CreateRecipeDto, CreateRecipeIngredientDto } from '@shared/domain/recipe';
 import { RecipeIngredientsFormComponent } from './recipe-ingredients-form.component';
 import { RecipeStepsComponent } from './recipe-steps.component';
 
@@ -43,7 +43,7 @@ export class RecipeCreateModalComponent {
 
       const rawFormValue = this.recipeForm.value;
 
-      const mappedIngredients: RecipeIngredientDto[] = rawFormValue.ingredients.map((ing: any) => ({
+      const mappedIngredients: CreateRecipeIngredientDto[] = rawFormValue.ingredients.map((ing: any) => ({
         ingredientId: ing.id,
         baseQuantity: Number(ing.quantity)
       }));

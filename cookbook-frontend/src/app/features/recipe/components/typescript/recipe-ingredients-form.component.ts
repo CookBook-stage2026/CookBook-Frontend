@@ -134,6 +134,10 @@ function getLocalizedUnit(unitEnum: string, quantity: number): string {
       return isPlural
         ? $localize`:@@unit.piece.plural:Pieces`
         : $localize`:@@unit.piece:Piece`;
+    case 'PINCH':
+      return isPlural
+        ? $localize`:@@unit.pinch.plural:Pinches`
+        : $localize`:@@unit.pinch:Pinch`;
     default:
       return unitEnum;
   }

@@ -1,4 +1,4 @@
-export type Unit = 'Tablespoon' | 'Teaspoon' | 'Kilogram' | 'Gram' | 'Liter' | 'Milliliter' | 'Cup' | 'Piece';
+export type Unit = 'GRAM' | 'KILOGRAM' | 'MILLILITER' | 'LITER' | 'TEASPOON' | 'TABLESPOON' | 'CUP' | 'PIECE' | 'PINCH' | 'NONE';
 
 export interface Ingredient {
   id?: string;
