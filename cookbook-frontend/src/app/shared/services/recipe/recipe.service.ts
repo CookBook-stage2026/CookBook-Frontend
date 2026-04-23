@@ -64,4 +64,8 @@ export class RecipeService {
       })
     );
   }
+
+  getRecipeById(id: string): Observable<RecipeDto> {
+    return this.http.get<RecipeDto>(`${this.apiUrl}/${id}`)
+  }
 }
