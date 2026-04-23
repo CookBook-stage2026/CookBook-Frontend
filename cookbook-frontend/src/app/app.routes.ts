@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from '@core/services/auth/auth.guard';
-import {MainLayoutComponent} from '@core/components/typescript/main-layout.component';
+import { MainLayoutComponent } from '@core/components/typescript/main-layout.component';
 
 export const routes: Routes = [
   {
@@ -25,6 +25,10 @@ export const routes: Routes = [
       {
         path: 'preferences',
         loadComponent: () => import('@features/user/preferences.page'),
+      },
+      {
+        path: 'schedule',
+        loadComponent: () => import('@features/user/schedule.page'),
       },
       {
         path: '',

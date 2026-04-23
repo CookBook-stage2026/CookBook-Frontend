@@ -43,4 +43,25 @@ export class RecipeService {
   getRecipeById(id: string): Observable<RecipeDto> {
     return this.http.get<RecipeDto>(`${this.apiUrl}/${id}`)
   }
+
+  searchRecipes(
+    query: string | null,
+    page = 0,
+    size = 10
+  ): Observable<RecipeSummary[]> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    if (query?.trim()) {
+      params = params.set('query', query.trim());
+    }
+
+    return this.http.get<RecipeSummary[]>(`${this.apiUrl}/search`, { params }).pipe(
+      catchError(err => {
+        console.error('Search failed:', err);
+        return throwError(() => err);
+      })
+    );
+  }
 }

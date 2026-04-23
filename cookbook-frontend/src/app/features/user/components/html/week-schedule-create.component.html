@@ -1,0 +1,76 @@
+<div
+  class="modal-backdrop"
+  (click)="onClose()"
+  (keydown.escape)="onClose()"
+  tabindex="-1"
+></div>
+
+<dialog class="modal-container" open [attr.aria-labelledby]="'modal-title'">
+  <div class="modal-header">
+    <h2 id="modal-title" class="modal-title">Create Week Schedule</h2>
+    <button mat-icon-button (click)="onClose()" aria-label="Close dialog">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-body">
+    <p class="modal-description">Plan your meals for the upcoming week. Select a recipe or skip each day.</p>
+
+    <div class="timeline-row">
+      <ol class="timeline-track">
+        @for (day of firstRowDays(); track day; let idx = $index; let last = $last) {
+          <li class="timeline-step" [class.active]="getDailyControl(day).value !== ''">
+            <div class="step-circle" [id]="'step-' + day">
+              <span class="day-label">{{ dayLabels[day] }}</span>
+            </div>
+            <div class="step-content">
+              <app-recipe-autocomplete
+                [label]="'Recipe for ' + dayLabels[day]"
+                [control]="getDailyControl(day)"
+              />
+            </div>
+          </li>
+        }
+      </ol>
+    </div>
+
+    <div class="snake-row-turn">
+      <div class="turn-line"></div>
+      <mat-icon class="turn-arrow" aria-hidden="true">turn_right</mat-icon>
+    </div>
+
+    <div class="timeline-row reversed">
+      <ol class="timeline-track">
+        @for (day of secondRowDays(); track day; let idx = $index; let last = $last) {
+          <li class="timeline-step" [class.active]="getDailyControl(day).value !== ''">
+            <div class="step-circle" [id]="'step-' + day">
+              <span class="day-label">{{ dayLabels[day] }}</span>
+            </div>
+            <div class="step-content">
+              <app-recipe-autocomplete
+                [label]="'Recipe for ' + dayLabels[day]"
+                [control]="getDailyControl(day)"
+              />
+            </div>
+          </li>
+        }
+      </ol>
+    </div>
+
+    <div class="modal-actions">
+      <button mat-stroked-button type="button" (click)="onClose()" [disabled]="isSubmitting()">
+        Cancel
+      </button>
+      <button
+        mat-flat-button
+        color="primary"
+        type="submit"
+        [disabled]="form.invalid || isSubmitting()"
+        [attr.aria-busy]="isSubmitting()"
+      >
+        {{ isSubmitting() ? 'Saving...' : 'Save Schedule' }}
+      </button>
+    </div>
+  </form>
+</dialog>
+
