@@ -1,0 +1,41 @@
+::ng-deep {
+  .mat-mdc-autocomplete-panel {
+    background-color: var(--bg-surface) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--radius-md) !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .mat-mdc-option {
+    color: var(--text-main) !important;
+    font-family: inherit !important;
+
+    &:hover,
+    &.mdc-list-item--selected,
+    &.mat-mdc-option-active {
+      background-color: var(--bg-main) !important;
+      color: var(--element-primary) !important;
+    }
+  }
+}
+
+.selected-ingredients {
+  margin-top: 1rem;
+}
+
+.form-control {
+  width: 280px;
+  box-sizing: border-box;
+  padding: 0.75rem 1rem;
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: var(--element-primary);
+  }
+}
