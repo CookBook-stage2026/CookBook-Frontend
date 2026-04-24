@@ -1,0 +1,58 @@
+@if (isLoading()) {
+  <div class="loading-container">
+    <mat-spinner diameter="40"></mat-spinner>
+    <p>Loading your schedule…</p>
+  </div>
+} @else if (loadError()) {
+  <div class="error-state">
+    <mat-icon color="warn" class="error-icon">error_outline</mat-icon>
+    <p>{{ loadError() }}</p>
+    <button mat-stroked-button (click)="fetchSchedule()">Retry</button>
+  </div>
+} @else if (noSchedule()) {
+  <div class="empty-state">
+    <mat-icon class="empty-icon">event_busy</mat-icon>
+    <h3>No schedule yet</h3>
+    <p>Plan your meals for the week to get started.</p>
+    <ng-content select="[create-button]"></ng-content>
+  </div>
+} @else {
+  <div class="schedule-timeline">
+    @for (day of daysOfWeek; track day) {
+      <div class="day-card" [class.empty]="!getRecipeForDay(day)">
+        <div class="day-header">
+          <span class="day-label">{{ dayLabels[day] }}</span>
+          @if (getRecipeForDay(day); as recipe) {
+            <a
+              mat-icon-button
+              [routerLink]="['/recipes', recipe.id]"
+              matTooltip="View recipe details"
+              aria-label="View recipe for {{ dayLabels[day] }}"
+              class="recipe-link"
+            >
+              <mat-icon>open_in_new</mat-icon>
+            </a>
+          }
+        </div>
+
+        <div class="day-content">
+          @if (getRecipeForDay(day); as recipe) {
+            <mat-card appearance="outlined" class="recipe-card">
+              <mat-card-header>
+                <mat-card-title>{{ recipe.name }}</mat-card-title>
+                <mat-card-subtitle>{{ recipe.durationInMinutes }} min</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <p class="recipe-description">{{ recipe.description }}</p>
+              </mat-card-content>
+            </mat-card>
+          } @else {
+            <div class="empty-recipe">
+              <span>No recipe planned</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+}
