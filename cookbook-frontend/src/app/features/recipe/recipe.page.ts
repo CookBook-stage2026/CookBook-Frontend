@@ -5,12 +5,14 @@ import { RecipeListComponent } from './components/typescript/recipe-list.compone
 import { RecipeService } from '@shared/services/recipe';
 import { RecipeFilterComponent } from '@features/recipe/components/typescript/recipe-filter.component';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-recipe-list-page',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RecipeCreateModalComponent, ToastComponent, RecipeListComponent, RecipeFilterComponent],
+  imports: [RecipeCreateModalComponent, ToastComponent, RecipeListComponent, RecipeFilterComponent, MatButton, MatIcon],
   templateUrl: './recipe.page.html',
   styleUrl: './recipe.page.scss'
 })
@@ -21,23 +23,31 @@ export default class RecipePage {
   readonly pageSize = signal(20);
   readonly pageIndex = signal(0);
   readonly selectedIngredientIds = signal<string[]>([]);
+  readonly applyPreferences = signal(true);
 
   readonly recipeResource = rxResource({
     params: () => ({
       page: this.pageIndex(),
       size: this.pageSize(),
-      ingredients: this.selectedIngredientIds()
+      ingredients: this.selectedIngredientIds(),
+      applyPrefs: this.applyPreferences()
     }),
-    stream: ({ params }) => this.recipeService.getRecipes(
+    stream: ({ params }) => this.recipeService.searchRecipes(
+      params.ingredients,
+      params.applyPrefs,
       params.page,
-      params.size,
-      params.ingredients
+      params.size
     )
   });
 
   readonly recipes = computed(() => this.recipeResource.value()?.content ?? []);
   readonly totalPages = computed(() => this.recipeResource.value()?.page.totalPages ?? 0);
   readonly isLoading = this.recipeResource.isLoading;
+
+  togglePreferences(): void {
+    this.applyPreferences.update(val => !val);
+    this.pageIndex.set(0);
+  }
 
   onFilterChange(ingredientIds: string[]): void {
     this.selectedIngredientIds.set(ingredientIds);

@@ -1,0 +1,39 @@
+<app-toast />
+
+<div class="page-container">
+  <header class="page-header">
+    <div>
+      <h1>Dietary Preferences</h1>
+      <p class="subtitle">Customize the ingredients you want to avoid.</p>
+    </div>
+
+    <div class="header-actions">
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="savePreferences()"
+        [disabled]="isSaving() || preferencesResource.isLoading()">
+        <mat-icon>save</mat-icon>
+        {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+      </button>
+    </div>
+  </header>
+
+  @if (preferencesResource.isLoading()) {
+    <div class="loading-state">
+      <p>Loading your preferences...</p>
+    </div>
+  } @else {
+    <main class="preferences-content">
+      <section class="preferences-section">
+        <app-exclude-ingredients [(excludedIngredients)]="excludedIngredients" />
+      </section>
+
+      <hr class="section-divider" />
+
+      <section class="preferences-section">
+        <app-exclude-categories [(excludedCategories)]="excludedCategories" />
+      </section>
+    </main>
+  }
+</div>

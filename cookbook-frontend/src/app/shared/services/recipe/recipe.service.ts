@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { catchError, Observable, tap, throwError } from 'rxjs';
-import { CreateRecipeDto, RecipeDto, RecipeSummary } from '@shared/domain/recipe';
+import { CreateRecipeDto, RecipeDto, RecipeSearchRequest, RecipeSummary } from '@shared/domain/recipe';
 import { ToastService } from '@core/services';
 import { environment } from '../../../../environment';
 import { PaginatedResponse } from '@shared/domain/paginated-response';
@@ -24,27 +24,20 @@ export class RecipeService {
     );
   }
 
-  getRecipes(
-    page: number,
-    size: number,
-    ingredientIds?: string[]
+  searchRecipes(
+    ingredientIds: string[] = [],
+    applyPreferences: boolean = true,
+    page: number = 0,
+    size: number = 20
   ): Observable<PaginatedResponse<RecipeSummary>> {
-    let params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', size.toString());
+    const body: RecipeSearchRequest = {
+      ingredientIds: ingredientIds?.length > 0 ? ingredientIds : undefined,
+      applyPreferences,
+      page,
+      size,
+    };
 
-    if (ingredientIds && ingredientIds.length > 0) {
-      ingredientIds.forEach(id => {
-        params = params.append('ingredientIds', id);
-      });
-    }
-
-    return this.http.get<PaginatedResponse<RecipeSummary>>(this.apiUrl, { params }).pipe(
-      catchError(err => {
-        this.toastService.show('Failed to load recipes.', 'error');
-        return throwError(() => err);
-      })
-    );
+    return this.http.post<PaginatedResponse<RecipeSummary>>(`${this.apiUrl}/search`, body);
   }
 
   getRecipeById(id: string): Observable<RecipeDto> {

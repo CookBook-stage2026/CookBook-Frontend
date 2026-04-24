@@ -1,0 +1,34 @@
+<h2>Exclude Specific Ingredients</h2>
+<p>Search and select specific ingredients you want to avoid in your recipes.</p>
+
+<div class="ingredient-search-wrapper">
+  <label for="ingredient-search" class="visually-hidden">Search ingredients to exclude</label>
+  <input
+    id="ingredient-search"
+    #searchInput
+    type="text"
+    placeholder="Search ingredients..."
+    [formControl]="searchControl"
+    [matAutocomplete]="auto"
+    class="search-input"
+  />
+
+  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onIngredientSelected($event)">
+    @for (ingredient of filteredResults(); track ingredient.id) {
+      <mat-option [value]="ingredient">
+        {{ ingredient.name }}
+      </mat-option>
+    }
+  </mat-autocomplete>
+</div>
+
+<mat-chip-grid aria-label="Excluded ingredients">
+  @for (ingredient of excludedIngredients(); track ingredient.id) {
+    <mat-chip-row (removed)="removeIngredient(ingredient)">
+      {{ ingredient.name }}
+      <button matChipRemove [attr.aria-label]="'Remove ' + ingredient.name">
+        <mat-icon>cancel</mat-icon>
+      </button>
+    </mat-chip-row>
+  }
+</mat-chip-grid>

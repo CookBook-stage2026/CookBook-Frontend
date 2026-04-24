@@ -23,6 +23,10 @@ export const routes: Routes = [
         loadComponent: () => import('@features/recipe/recipe.page'),
       },
       {
+        path: 'preferences',
+        loadComponent: () => import('@features/user/preferences.page'),
+      },
+      {
         path: '',
         redirectTo: 'recipes',
         pathMatch: 'full'
