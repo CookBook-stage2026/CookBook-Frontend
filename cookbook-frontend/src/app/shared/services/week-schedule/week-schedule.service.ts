@@ -7,9 +7,12 @@ import {ToastService} from '@core/services';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environment';
 import { UpdateUserPreferencesRequest, UserPreferencesDto } from '@shared/domain/user';
+import { catchError, tap, throwError } from 'rxjs';
+import { ToastService } from '@core/services';
+import {CreateWeekScheduleRequest, WeekScheduleResponse} from '@shared/domain/week-schedule';
 
 @Injectable({ providedIn: 'root' })
-export class UserService {
+export class WeekScheduleService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/users`;
   private readonly baseUrl = '/api/user';
@@ -24,9 +27,10 @@ export class UserService {
     }
   createSchedule(request: CreateWeekScheduleRequest) {
     return this.http.post<WeekScheduleResponse>(`${this.baseUrl}/schedule`, request).pipe(
-      tap(() => this.toastService.show("Schedule created successfully.", "success")),
+      tap(response => this.toastService.show('Schedule created successfully.', 'success')),
       catchError(err => {
-        this.toastService.show('Failed to create a schedule.', 'error');
+        const message = err.error?.detail ?? 'Failed to create a schedule.';
+        this.toastService.show(message, 'error');
         return throwError(() => err);
       })
     );

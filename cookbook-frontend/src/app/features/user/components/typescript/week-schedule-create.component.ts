@@ -3,10 +3,14 @@ import { FormBuilder, ReactiveFormsModule, Validators, FormControl } from '@angu
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { ToastService } from '@core/services';
-import { DAYS_OF_WEEK, DAY_LABELS, DayOfWeek, CreateWeekScheduleRequest } from '@shared/domain/user';
-import { UserService } from '@shared/services/user';
-import {RecipeAutocompleteComponent, SKIP_DAY_VALUE} from './recipe-autocomplete.component';
+import { WeekScheduleService } from '@shared/services/week-schedule';
+import { RecipeAutocompleteComponent, SKIP_DAY_VALUE } from './recipe-autocomplete.component';
+import {
+  CreateDayScheduleRequest,
+  CreateWeekScheduleRequest, DAY_LABELS,
+  DayOfWeek,
+  DAYS_OF_WEEK
+} from '@shared/domain/week-schedule';
 
 @Component({
   selector: 'app-week-schedule-create',
@@ -26,8 +30,7 @@ export class WeekScheduleCreateComponent {
   readonly closeModal = output<void>();
 
   private readonly fb = inject(FormBuilder).nonNullable;
-  private readonly userService = inject(UserService);
-  private readonly toastService = inject(ToastService);
+  private readonly weekScheduleService = inject(WeekScheduleService);
 
   readonly daysOfWeek = DAYS_OF_WEEK;
   readonly dayLabels = DAY_LABELS;
@@ -37,19 +40,17 @@ export class WeekScheduleCreateComponent {
   readonly secondRowDays = computed(() => this.daysOfWeek.slice(4, 7).reverse());
 
   readonly form = this.fb.group({
-    dailyRecipeIds: this.fb.group({
-      MONDAY: ['', Validators.required],
-      TUESDAY: ['', Validators.required],
-      WEDNESDAY: ['', Validators.required],
-      THURSDAY: ['', Validators.required],
-      FRIDAY: ['', Validators.required],
-      SATURDAY: ['', Validators.required],
-      SUNDAY: ['', Validators.required],
-    })
+    MONDAY: ['', Validators.required],
+    TUESDAY: ['', Validators.required],
+    WEDNESDAY: ['', Validators.required],
+    THURSDAY: ['', Validators.required],
+    FRIDAY: ['', Validators.required],
+    SATURDAY: ['', Validators.required],
+    SUNDAY: ['', Validators.required],
   });
 
-  getDailyControl(day: DayOfWeek): FormControl<string | null> {
-    return this.form.get('dailyRecipeIds')?.get(day) as FormControl<string | null>;
+  getDailyControl(day: DayOfWeek): FormControl<string> {
+    return this.form.get(day) as FormControl<string>;
   }
 
   onSubmit(): void {
@@ -58,17 +59,17 @@ export class WeekScheduleCreateComponent {
     this.isSubmitting.set(true);
     const formValue = this.form.getRawValue();
 
-    const dailyRecipeIds: Partial<Record<DayOfWeek, string>> = {};
+    const days: CreateDayScheduleRequest[] = [];
     for (const day of this.daysOfWeek) {
-      const recipeId = formValue.dailyRecipeIds[day];
+      const recipeId = formValue[day];
       if (recipeId && recipeId !== SKIP_DAY_VALUE) {
-        dailyRecipeIds[day] = recipeId;
+        days.push({ recipeId, day });
       }
     }
 
-    const request: CreateWeekScheduleRequest = { dailyRecipeIds };
+    const request: CreateWeekScheduleRequest = { days };
 
-    this.userService.createSchedule(request).subscribe({
+    this.weekScheduleService.createSchedule(request).subscribe({
       next: () => {
         this.isSubmitting.set(false);
         this.scheduleCreated.emit();

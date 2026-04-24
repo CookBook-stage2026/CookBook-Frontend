@@ -29,11 +29,22 @@ export const DAY_LABELS: Record<DayOfWeek, string> = {
   SUNDAY: 'Sunday',
 };
 
+export interface DayScheduleResponse {
+  readonly dayScheduleId: string;
+  readonly recipeSummary: RecipeSummary;
+  readonly day: DayOfWeek;
+}
+
 export interface WeekScheduleResponse {
   readonly id: string;
-  readonly dailyRecipes: Partial<Record<DayOfWeek, RecipeSummary>>;
+  readonly days: DayScheduleResponse[];
+}
+
+export interface CreateDayScheduleRequest {
+  readonly recipeId: string;
+  readonly day: DayOfWeek;
 }
 
 export interface CreateWeekScheduleRequest {
-  readonly dailyRecipeIds: Partial<Record<DayOfWeek, string>>;
+  readonly days: CreateDayScheduleRequest[];
 }
