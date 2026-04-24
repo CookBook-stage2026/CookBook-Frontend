@@ -15,7 +15,7 @@ import {CreateWeekScheduleRequest, WeekScheduleResponse} from '@shared/domain/we
 export class WeekScheduleService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/users`;
-  private readonly baseUrl = '/api/user';
+  private readonly baseUrl = '/api/schedules';
   private readonly toastService = inject(ToastService);
 
   getPreferences(): Observable<UserPreferencesDto> {
@@ -26,7 +26,7 @@ export class WeekScheduleService {
     return this.http.put<void>(`${this.apiUrl}/preferences`, request);
     }
   createSchedule(request: CreateWeekScheduleRequest) {
-    return this.http.post<WeekScheduleResponse>(`${this.baseUrl}/schedule`, request).pipe(
+    return this.http.post<WeekScheduleResponse>(`${this.baseUrl}`, request).pipe(
       tap(response => this.toastService.show('Schedule created successfully.', 'success')),
       catchError(err => {
         const message = err.error?.detail ?? 'Failed to create a schedule.';
