@@ -1,16 +1,27 @@
-import { Component, ChangeDetectionStrategy, inject, signal, output, computed } from '@angular/core';
+import {
+  Component,
+  ChangeDetectionStrategy,
+  inject,
+  signal,
+  output,
+} from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { WeekScheduleService } from '@shared/services/week-schedule';
-import { RecipeAutocompleteComponent, SKIP_DAY_VALUE } from './recipe-autocomplete.component';
+import {
+  RecipeAutocompleteComponent,
+  SKIP_DAY_VALUE,
+} from './recipe-autocomplete.component';
 import {
   CreateDayScheduleRequest,
-  CreateWeekScheduleRequest, DAY_LABELS,
+  CreateWeekScheduleRequest,
+  DAY_LABELS,
   DayOfWeek,
-  DAYS_OF_WEEK
+  DAYS_OF_WEEK,
 } from '@shared/domain/week-schedule';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-week-schedule-create',
@@ -22,7 +33,8 @@ import {
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    RecipeAutocompleteComponent
+    RecipeAutocompleteComponent,
+    MatTooltip,
   ],
 })
 export class WeekScheduleCreateComponent {
@@ -36,8 +48,17 @@ export class WeekScheduleCreateComponent {
   readonly dayLabels = DAY_LABELS;
   readonly isSubmitting = signal(false);
 
-  readonly firstRowDays = computed(() => this.daysOfWeek.slice(0, 4));
-  readonly secondRowDays = computed(() => this.daysOfWeek.slice(4, 7).reverse());
+  readonly skippedDays = signal<ReadonlySet<DayOfWeek>>(new Set());
+
+  readonly dayShortLabels: Record<DayOfWeek, string> = {
+    MONDAY: 'MON',
+    TUESDAY: 'TUE',
+    WEDNESDAY: 'WED',
+    THURSDAY: 'THU',
+    FRIDAY: 'FRI',
+    SATURDAY: 'SAT',
+    SUNDAY: 'SUN',
+  };
 
   readonly form = this.fb.group({
     MONDAY: ['', Validators.required],
@@ -51,6 +72,27 @@ export class WeekScheduleCreateComponent {
 
   getDailyControl(day: DayOfWeek): FormControl<string> {
     return this.form.get(day) as FormControl<string>;
+  }
+
+  isSkipped(day: DayOfWeek): boolean {
+    return this.skippedDays().has(day);
+  }
+
+  toggleSkip(day: DayOfWeek): void {
+    const control = this.getDailyControl(day);
+    const currentlySkipped = this.skippedDays().has(day);
+
+    this.skippedDays.update(prev => {
+      const next = new Set(prev);
+      if (currentlySkipped) {
+        next.delete(day);
+        control.setValue('');
+      } else {
+        next.add(day);
+        control.setValue(SKIP_DAY_VALUE);
+      }
+      return next;
+    });
   }
 
   onSubmit(): void {
@@ -77,7 +119,7 @@ export class WeekScheduleCreateComponent {
       },
       error: () => {
         this.isSubmitting.set(false);
-      }
+      },
     });
   }
 

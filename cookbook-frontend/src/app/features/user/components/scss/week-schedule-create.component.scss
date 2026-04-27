@@ -1,198 +1,222 @@
-:root {
-  --timeline-line-color: var(--element-primary, #2563eb);
-  --timeline-circle-size: 3rem;
-  --timeline-line-height: 3px;
-}
+// Use your custom properties exclusively
+$step-size: 2.5rem;
+$modal-max-width: 700px;
+$modal-max-height: 85vh;
 
+// ===========================
+// Backdrop – centers the modal without transform
+// ===========================
 .modal-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+// ===========================
+// Modal container – flex column layout
+// ===========================
 .modal-container {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: var(--mat-sys-surface, #fff);
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-main);
   border-radius: 12px;
   width: 95%;
-  max-width: 1200px;
-  max-height: 90vh;
-  overflow-y: auto;
-  z-index: 101;
-  padding: 2rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  max-width: $modal-max-width;
+  max-height: $modal-max-height;
+  overflow: hidden;             // let inner body handle scrolling
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+  border: none;                 // remove default dialog border
+  margin: auto;                 // center within the backdrop flex container
 }
 
+// ===========================
+// Fixed header
+// ===========================
 .modal-header {
+  padding: 1.5rem 2rem 1rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
 }
 
 .modal-title {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 600;
   color: var(--text-main);
   margin: 0;
 }
 
+// ===========================
+// Form wrapper (needed for sticky footer)
+// ===========================
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  flex: 1;
+}
+
+// ===========================
+// Scrollable body
+// ===========================
+.modal-body {
+  padding: 1.5rem 2rem 1rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
 .modal-description {
   color: var(--text-muted);
-  margin-bottom: 2.5rem;
+  margin: 0 0 1.5rem;
   font-size: 0.95rem;
 }
 
-.modal-body {
+// ===========================
+// Fixed footer
+// ===========================
+.modal-actions {
+  padding: 1rem 2rem;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  flex-shrink: 0;
+  background: var(--bg-main);   // prevent transparency through body
+}
+
+// ===========================
+// Vertical Timeline
+// ===========================
+.timeline-vertical {
   display: flex;
   flex-direction: column;
-}
-
-.timeline-row {
-  margin-bottom: 0.5rem;
-}
-
-.timeline-track {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  list-style: none;
-  padding: 0;
-  margin: 0;
+  gap: 1.25rem;
   position: relative;
+  padding-left: calc($step-size + 1rem);
 
+  // Vertical line
   &::before {
     content: '';
     position: absolute;
-    top: calc(var(--timeline-circle-size) / 2);
-    left: calc(var(--timeline-circle-size) / 2);
-    right: calc(var(--timeline-circle-size) / 2);
-    height: var(--timeline-line-height);
-    background: var(--timeline-line-color);
-    z-index: 0;
-    opacity: 0.4;
-    border-radius: var(--timeline-line-height);
+    left: calc($step-size / 2);
+    top: calc($step-size / 2);
+    bottom: calc($step-size / 2);
+    width: 3px;
+    background: var(--element-primary);
+    opacity: 0.3;
+    border-radius: 3px;
   }
 }
 
-.timeline-step {
+.day-step {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  flex: 1;
-  min-width: 0;
+  align-items: flex-start;
   position: relative;
-  z-index: 1;
-  padding: 0 0.5rem;
-}
 
-.step-circle {
-  width: var(--timeline-circle-size);
-  height: var(--timeline-circle-size);
-  border-radius: 50%;
-  background: var(--mat-sys-surface-container, #f0f0f0);
-  border: 2px solid var(--timeline-line-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1rem;
-  position: relative;
-  z-index: 2;
-  transition: all 0.3s ease;
-
-  .timeline-step.active & {
-    background: var(--timeline-line-color);
-    border-color: var(--timeline-line-color);
+  // Active state – filled circle
+  &.active .step-marker {
+    background: var(--element-primary);
+    border-color: var(--element-primary);
 
     .day-label {
-      color: #ffffff;
+      color: var(--element-primary-contrast);
     }
   }
 }
 
-.day-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--text-muted);
-  text-align: center;
-  line-height: 1.1;
-  transition: color 0.3s ease;
+// The circle marker
+.step-marker {
+  width: $step-size;
+  height: $step-size;
+  border-radius: 50%;
+  background: var(--bg-surface);
+  border: 2px solid var(--element-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  margin-left: calc(-1 * $step-size - 1rem);
+  flex-shrink: 0;
+  position: relative;
+  transition: background 0.3s, border-color 0.3s;
+
+  .day-label {
+    font-size: 0.65rem;            // reduced slightly
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--element-primary);
+    text-align: center;
+    line-height: 1;
+    // Avoid overflow
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    padding: 0 2px;
+  }
 }
 
-.step-content {
-  width: 100%;
+.step-body {
+  flex: 1;
   min-width: 0;
 }
 
-.snake-row-turn {
+.step-input-group {
   display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-right: 1rem;
-  margin: 0.25rem 0;
-  height: 2rem;
-  position: relative;
+  align-items: flex-start;
+  gap: 0.5rem;
 }
 
-.turn-line {
-  position: absolute;
-  right: calc(var(--timeline-circle-size) / 1.5);
-  top: -0.5rem;
-  bottom: -0.5rem;
-  width: var(--timeline-line-height);
-  background: var(--timeline-line-color);
-  opacity: 0.4;
-  border-radius: var(--timeline-line-height);
+.flex-1 {
+  flex: 1;
 }
 
-.turn-arrow {
-  color: var(--timeline-line-color);
-  font-size: 24px;
-  transform: scaleY(-1);
-  margin-right: 0.5rem;
+// Skip button
+.skip-btn {
+  margin-top: 8px;                 // vertical align with input
+  flex-shrink: 0;
+  color: var(--text-muted);       // use your muted tone
 }
 
-.timeline-row.reversed .timeline-track {
-  flex-direction: row-reverse;
-}
-
-.modal-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  margin-top: 2.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid var(--border-color);
-}
-
-@media (max-width: 800px) {
-  .timeline-track {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem 1rem;
+.skipped-field {
+  ::ng-deep .mat-mdc-input-element:disabled {
+    color: var(--text-muted);
+    font-style: italic;
+    -webkit-text-fill-color: var(--text-muted);
   }
 
-  .timeline-track::before {
-    display: none;
-  }
-
-  .timeline-row.reversed .timeline-track {
-    flex-direction: row;
-  }
-
-  .snake-row-turn {
-    display: none;
+  ::ng-deep .mat-mdc-form-field-icon-suffix {
+    color: var(--text-muted);
   }
 }
 
-@media (max-width: 500px) {
-  .timeline-track {
-    grid-template-columns: 1fr;
+// ===========================
+// Mobile optimizations
+// ===========================
+@media (max-width: 600px) {
+  .modal-header,
+  .modal-body,
+  .modal-actions {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .timeline-vertical {
+    padding-left: calc($step-size + 0.5rem);
+  }
+
+  .step-input-group {
+    flex-direction: column;
+
+    .skip-btn {
+      align-self: flex-end;
+      margin-top: 0;
+    }
   }
 }
