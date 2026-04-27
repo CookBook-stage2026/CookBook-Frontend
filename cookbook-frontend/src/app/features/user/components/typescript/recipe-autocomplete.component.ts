@@ -100,7 +100,6 @@ export class RecipeAutocompleteComponent implements AfterViewInit {
       .subscribe((results) => {
         this.allRecipes.set(results);
 
-        // Ensure the panel opens now that options are available
         const trigger = this.autocompleteTrigger();
         if (trigger && results.length > 0) {
           trigger.openPanel();

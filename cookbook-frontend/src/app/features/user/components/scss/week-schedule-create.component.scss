@@ -1,11 +1,7 @@
-// Use your custom properties exclusively
 $step-size: 2.5rem;
 $modal-max-width: 700px;
 $modal-max-height: 85vh;
 
-// ===========================
-// Backdrop – centers the modal without transform
-// ===========================
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -16,9 +12,6 @@ $modal-max-height: 85vh;
   justify-content: center;
 }
 
-// ===========================
-// Modal container – flex column layout
-// ===========================
 .modal-container {
   display: flex;
   flex-direction: column;
@@ -27,15 +20,12 @@ $modal-max-height: 85vh;
   width: 95%;
   max-width: $modal-max-width;
   max-height: $modal-max-height;
-  overflow: hidden;             // let inner body handle scrolling
+  overflow: hidden;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
-  border: none;                 // remove default dialog border
-  margin: auto;                 // center within the backdrop flex container
+  border: none;
+  margin: auto;
 }
 
-// ===========================
-// Fixed header
-// ===========================
 .modal-header {
   padding: 1.5rem 2rem 1rem;
   display: flex;
@@ -52,9 +42,6 @@ $modal-max-height: 85vh;
   margin: 0;
 }
 
-// ===========================
-// Form wrapper (needed for sticky footer)
-// ===========================
 .modal-form {
   display: flex;
   flex-direction: column;
@@ -62,9 +49,6 @@ $modal-max-height: 85vh;
   flex: 1;
 }
 
-// ===========================
-// Scrollable body
-// ===========================
 .modal-body {
   padding: 1.5rem 2rem 1rem;
   overflow-y: auto;
@@ -77,9 +61,6 @@ $modal-max-height: 85vh;
   font-size: 0.95rem;
 }
 
-// ===========================
-// Fixed footer
-// ===========================
 .modal-actions {
   padding: 1rem 2rem;
   border-top: 1px solid var(--border-color);
@@ -87,12 +68,9 @@ $modal-max-height: 85vh;
   justify-content: flex-end;
   gap: 1rem;
   flex-shrink: 0;
-  background: var(--bg-main);   // prevent transparency through body
+  background: var(--bg-main);
 }
 
-// ===========================
-// Vertical Timeline
-// ===========================
 .timeline-vertical {
   display: flex;
   flex-direction: column;
@@ -100,7 +78,6 @@ $modal-max-height: 85vh;
   position: relative;
   padding-left: calc($step-size + 1rem);
 
-  // Vertical line
   &::before {
     content: '';
     position: absolute;
@@ -119,7 +96,6 @@ $modal-max-height: 85vh;
   align-items: flex-start;
   position: relative;
 
-  // Active state – filled circle
   &.active .step-marker {
     background: var(--element-primary);
     border-color: var(--element-primary);
@@ -130,7 +106,6 @@ $modal-max-height: 85vh;
   }
 }
 
-// The circle marker
 .step-marker {
   width: $step-size;
   height: $step-size;
@@ -147,13 +122,12 @@ $modal-max-height: 85vh;
   transition: background 0.3s, border-color 0.3s;
 
   .day-label {
-    font-size: 0.65rem;            // reduced slightly
+    font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
     color: var(--element-primary);
     text-align: center;
     line-height: 1;
-    // Avoid overflow
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -177,11 +151,10 @@ $modal-max-height: 85vh;
   flex: 1;
 }
 
-// Skip button
 .skip-btn {
-  margin-top: 8px;                 // vertical align with input
+  margin-top: 8px;
   flex-shrink: 0;
-  color: var(--text-muted);       // use your muted tone
+  color: var(--text-muted);
 }
 
 .skipped-field {
@@ -196,9 +169,6 @@ $modal-max-height: 85vh;
   }
 }
 
-// ===========================
-// Mobile optimizations
-// ===========================
 @media (max-width: 600px) {
   .modal-header,
   .modal-body,
