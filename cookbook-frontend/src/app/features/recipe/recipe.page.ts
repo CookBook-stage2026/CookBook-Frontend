@@ -23,14 +23,14 @@ export default class RecipePage {
   readonly pageSize = signal(20);
   readonly pageIndex = signal(0);
   readonly selectedIngredientIds = signal<string[]>([]);
-  readonly applyPreferences = signal(true);
+  readonly shouldApplyPreferences = signal(true);
 
   readonly recipeResource = rxResource({
     params: () => ({
       page: this.pageIndex(),
       size: this.pageSize(),
       ingredients: this.selectedIngredientIds(),
-      applyPrefs: this.applyPreferences()
+      applyPrefs: this.shouldApplyPreferences()
     }),
     stream: ({ params }) => this.recipeService.searchRecipes(
       params.ingredients,
@@ -45,7 +45,7 @@ export default class RecipePage {
   readonly isLoading = this.recipeResource.isLoading;
 
   togglePreferences(): void {
-    this.applyPreferences.update(val => !val);
+    this.shouldApplyPreferences.update(val => !val);
     this.pageIndex.set(0);
   }
 

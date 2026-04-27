@@ -12,10 +12,10 @@
         mat-stroked-button
         type="button"
         (click)="togglePreferences()"
-        [color]="applyPreferences() ? 'primary' : ''"
-        [attr.aria-pressed]="applyPreferences()">
-        <mat-icon>{{ applyPreferences() ? 'visibility' : 'visibility_off' }}</mat-icon>
-        {{ applyPreferences() ? 'Using Preferences' : 'Ignoring Preferences' }}
+        [color]="shouldApplyPreferences() ? 'primary' : ''"
+        [attr.aria-pressed]="shouldApplyPreferences()">
+        <mat-icon>{{ shouldApplyPreferences() ? 'visibility' : 'visibility_off' }}</mat-icon>
+        {{ shouldApplyPreferences() ? 'Using Preferences' : 'Ignoring Preferences' }}
       </button>
 
       <button

@@ -2,31 +2,48 @@
 <p>Search and select specific ingredients you want to avoid in your recipes.</p>
 
 <div class="ingredient-search-wrapper">
-  <label for="ingredient-search" class="visually-hidden">Search ingredients to exclude</label>
-  <input
-    id="ingredient-search"
-    #searchInput
-    type="text"
-    placeholder="Search ingredients..."
-    [formControl]="searchControl"
-    [matAutocomplete]="auto"
-    class="search-input"
-  />
+  <div class="form-group">
+    <label for="ingredient-search">Search ingredients to exclude</label>
 
-  <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onIngredientSelected($event)">
-    @for (ingredient of filteredResults(); track ingredient.id) {
-      <mat-option [value]="ingredient">
-        {{ ingredient.name }}
-      </mat-option>
-    }
-  </mat-autocomplete>
+    <div class="input-with-spinner">
+      <input
+        #searchInput
+        type="text"
+        id="ingredient-search"
+        [formControl]="searchControl"
+        placeholder="Search ingredients..."
+        class="form-control"
+        autocomplete="off"
+        [matAutocomplete]="auto">
+
+      @if (ingredientResource.isLoading()) {
+        <mat-spinner class="input-spinner" diameter="20" strokeWidth="2"></mat-spinner>
+      }
+    </div>
+
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onIngredientSelected($event)">
+      @for (ingredient of filteredResults(); track ingredient.id) {
+        <mat-option [value]="ingredient">
+          {{ ingredient.name }}
+        </mat-option>
+      }
+    </mat-autocomplete>
+  </div>
 </div>
 
 <mat-chip-grid aria-label="Excluded ingredients">
   @for (ingredient of excludedIngredients(); track ingredient.id) {
-    <mat-chip-row (removed)="removeIngredient(ingredient)">
-      {{ ingredient.name }}
-      <button matChipRemove [attr.aria-label]="'Remove ' + ingredient.name">
+    <mat-chip-row
+      class="excluded-ingredient-chip"
+      (removed)="removeIngredient(ingredient)"
+      (click)="removeIngredient(ingredient)"
+      (keydown.enter)="removeIngredient(ingredient)"
+      (keydown.space)="removeIngredient(ingredient)">
+      <div class="chip-content">
+        <mat-icon class="ban-icon" aria-hidden="true">block</mat-icon>
+        <span class="ingredient-name">{{ ingredient.name }}</span>
+      </div>
+      <button matChipRemove [attr.aria-label]="'Remove ' + ingredient.name" (click)="$event.stopPropagation()">
         <mat-icon>cancel</mat-icon>
       </button>
     </mat-chip-row>

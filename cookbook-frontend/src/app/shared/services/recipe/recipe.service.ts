@@ -26,13 +26,13 @@ export class RecipeService {
 
   searchRecipes(
     ingredientIds: string[] = [],
-    applyPreferences: boolean = true,
+    shouldApplyPreferences: boolean = true,
     page: number = 0,
     size: number = 20
   ): Observable<PaginatedResponse<RecipeSummary>> {
     const body: RecipeSearchRequest = {
-      ingredientIds: ingredientIds?.length > 0 ? ingredientIds : undefined,
-      applyPreferences,
+      ingredientIds,
+      shouldApplyPreferences: shouldApplyPreferences,
       page,
       size,
     };

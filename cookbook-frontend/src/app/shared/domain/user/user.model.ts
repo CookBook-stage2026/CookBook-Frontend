@@ -1,11 +1,11 @@
-import { Category, Ingredient } from '@shared/domain/ingredient';
+import { Ingredient } from '@shared/domain/ingredient';
 
 export interface UpdateUserPreferencesRequest {
-  excludedCategories: Category[];
+  excludedCategories: string[];
   excludedIngredientIds: string[];
 }
 
 export interface UserPreferencesDto {
-  excludedCategories: Category[];
+  excludedCategories: string[];
   excludedIngredients: Ingredient[];
 }

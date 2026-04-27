@@ -5,7 +5,7 @@ import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { Category, Ingredient } from '@shared/domain/ingredient';
+import { Ingredient } from '@shared/domain/ingredient';
 import { ToastService } from '@core/services';
 import { UserService } from '@shared/services/user';
 import { ToastComponent } from '@shared/components/toast/toast.component';
@@ -32,7 +32,7 @@ export default class PreferencesPage {
   private readonly userService = inject(UserService);
   private readonly toastService = inject(ToastService);
 
-  readonly excludedCategories = signal<Category[]>([]);
+  readonly excludedCategories = signal<string[]>([]);
   readonly excludedIngredients = signal<Ingredient[]>([]);
   readonly isSaving = signal(false);
 

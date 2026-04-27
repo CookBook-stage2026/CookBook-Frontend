@@ -24,4 +24,8 @@ export class IngredientService {
 
     return this.http.post<Ingredient[]>(`${this.apiUrl}/search`, body);
   }
+
+  getCategories(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/categories`);
+  }
 }

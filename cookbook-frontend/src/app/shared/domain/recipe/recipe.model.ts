@@ -39,8 +39,8 @@ export interface RecipeSummary {
 }
 
 export interface RecipeSearchRequest {
-  ingredientIds?: string[];
-  applyPreferences?: boolean;
-  page?: number;
-  size?: number;
+  ingredientIds: string[];
+  shouldApplyPreferences: boolean;
+  page: number;
+  size: number;
 }

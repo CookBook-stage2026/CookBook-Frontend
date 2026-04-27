@@ -7,11 +7,12 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { IngredientService } from '@shared/services/ingredient';
 import { Ingredient } from '@shared/domain/ingredient';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-exclude-ingredients',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, MatAutocompleteModule, MatChipsModule, MatIconModule],
+  imports: [ReactiveFormsModule, MatAutocompleteModule, MatChipsModule, MatIconModule, MatProgressSpinner],
   templateUrl: '../html/exclude-ingredients.component.html',
   styleUrl: '../scss/exclude-ingredients.component.scss'
 })
