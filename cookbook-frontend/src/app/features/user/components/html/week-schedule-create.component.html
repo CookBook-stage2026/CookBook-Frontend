@@ -1,0 +1,60 @@
+<div
+  class="modal-backdrop"
+  (click)="onClose()"
+  (keydown.escape)="onClose()"
+  tabindex="-1"
+>
+  <dialog class="modal-container" open (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Create Week Schedule</h2>
+      <button mat-icon-button (click)="onClose()" aria-label="Close">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-form">
+      <div class="modal-body">
+        <p class="modal-description">Plan your meals. Select a recipe or skip each day.</p>
+
+        <div class="timeline-vertical">
+          @for (day of daysOfWeek; track day) {
+            <div class="day-step" [class.active]="getDailyControl(day).value !== ''">
+              <div class="step-marker">
+                <span class="day-label">{{ dayShortLabels[day] }}</span>
+              </div>
+
+              <div class="step-body">
+                <div class="step-input-group">
+                  <app-recipe-autocomplete
+                    [label]="'Recipe for ' + dayLabels[day]"
+                    [control]="getDailyControl(day)"
+                    class="flex-1"
+                  />
+                  <button
+                    mat-icon-button
+                    type="button"
+                    class="skip-btn"
+                    (click)="toggleSkip(day)"
+                    [attr.aria-label]="isSkipped(day) ? 'Unskip ' + dayLabels[day] : 'Skip ' + dayLabels[day]"
+                    [matTooltip]="isSkipped(day) ? 'Unskip' : 'Skip this day'"
+                  >
+                    <mat-icon>{{ isSkipped(day) ? 'undo' : 'skip_next' }}</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button mat-stroked-button type="button" (click)="onClose()" [disabled]="isSubmitting()">
+          Cancel
+        </button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || isSubmitting()">
+          {{ isSubmitting() ? 'Saving...' : 'Save Schedule' }}
+        </button>
+      </div>
+    </form>
+  </dialog>
+</div>

@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 import { CreateRecipeDto, RecipeDto, RecipeSearchRequest, RecipeSummary } from '@shared/domain/recipe';
 import { ToastService } from '@core/services';
@@ -24,7 +24,7 @@ export class RecipeService {
     );
   }
 
-  searchRecipes(
+  searchRecipesByFilter(
     ingredientIds: string[] = [],
     shouldApplyPreferences: boolean = true,
     page: number = 0,
@@ -37,10 +37,31 @@ export class RecipeService {
       size,
     };
 
-    return this.http.post<PaginatedResponse<RecipeSummary>>(`${this.apiUrl}/search`, body);
+    return this.http.post<PaginatedResponse<RecipeSummary>>(`${this.apiUrl}/filter`, body);
   }
 
   getRecipeById(id: string): Observable<RecipeDto> {
     return this.http.get<RecipeDto>(`${this.apiUrl}/${id}`)
+  }
+
+  searchRecipesByName(
+    query: string | null,
+    page = 0,
+    size = 10
+  ): Observable<RecipeSummary[]> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    if (query?.trim()) {
+      params = params.set('query', query.trim());
+    }
+
+    return this.http.get<RecipeSummary[]>(`${this.apiUrl}/search`, { params }).pipe(
+      catchError(err => {
+        console.error('Search failed:', err);
+        return throwError(() => err);
+      })
+    );
   }
 }
