@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpParams} from '@angular/common/http';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 import { CreateRecipeDto, RecipeDto, RecipeSearchRequest, RecipeSummary } from '@shared/domain/recipe';
 import { ToastService } from '@core/services';
@@ -24,7 +24,7 @@ export class RecipeService {
     );
   }
 
-  searchRecipes(
+  searchRecipesByFilter(
     ingredientIds: string[] = [],
     shouldApplyPreferences: boolean = true,
     page: number = 0,
@@ -44,7 +44,7 @@ export class RecipeService {
     return this.http.get<RecipeDto>(`${this.apiUrl}/${id}`)
   }
 
-  searchRecipes(
+  searchRecipesByName(
     query: string | null,
     page = 0,
     size = 10

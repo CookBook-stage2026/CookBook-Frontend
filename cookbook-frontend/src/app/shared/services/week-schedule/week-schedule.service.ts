@@ -1,14 +1,12 @@
-import { Injectable, inject } from '@angular/core';
-import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import {CreateWeekScheduleRequest, WeekScheduleResponse} from '@shared/domain/user';
-import {catchError, tap, throwError} from 'rxjs';
+import {inject, Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {
+  UpdateUserPreferencesRequest,
+  UserPreferencesDto,
+} from '@shared/domain/user';
+import {catchError, Observable, tap, throwError} from 'rxjs';
 import {ToastService} from '@core/services';
-import { Observable } from 'rxjs';
-import { environment } from '../../../../environment';
-import { UpdateUserPreferencesRequest, UserPreferencesDto } from '@shared/domain/user';
-import { catchError, tap, throwError } from 'rxjs';
-import { ToastService } from '@core/services';
+import {environment} from '../../../../environment';
 import {CreateWeekScheduleRequest, WeekScheduleResponse} from '@shared/domain/week-schedule';
 
 @Injectable({ providedIn: 'root' })

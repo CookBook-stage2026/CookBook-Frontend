@@ -91,7 +91,7 @@ export class RecipeAutocompleteComponent implements AfterViewInit {
         debounceTime(300),
         distinctUntilChanged(),
         switchMap((query) =>
-          this.recipeService.searchRecipes(query, 0, 10).pipe(
+          this.recipeService.searchRecipesByName(query, 0, 10).pipe(
             catchError(() => of([] as RecipeSummary[]))
           )
         ),

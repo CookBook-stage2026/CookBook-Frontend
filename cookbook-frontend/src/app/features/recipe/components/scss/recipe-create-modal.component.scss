@@ -392,34 +392,11 @@ dialog {
     background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
   }
-
-  .modal-content {
-    background: var(--bg-surface);
-    border-radius: var(--radius-lg);
-    display: flex;
-    flex-direction: column;
-    max-height: 90vh;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    animation: slideUp 0.3s ease-out;
-  }
 }
 
 .input-wrapper {
   position: relative;
   width: 100%;
-}
-
-.tooltip-error.tooltip-below {
-  top: 100%;
-  bottom: auto;
-  margin-top: 0.5rem;
-  margin-bottom: 0;
-
-  &::after {
-    top: auto;
-    bottom: 100%;
-    border-color: transparent transparent #dc3545 transparent;
-  }
 }
 
 .tooltip-error {
@@ -526,23 +503,4 @@ dialog {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-::ng-deep .mat-mdc-autocomplete-panel {
-  background-color: var(--bg-surface) !important;
-  border: 1px solid var(--border-color) !important;
-  border-radius: var(--radius-md) !important;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
-}
-
-::ng-deep .mat-mdc-option {
-  color: var(--text-main) !important;
-  font-family: inherit !important;
-
-  &:hover,
-  &.mdc-list-item--selected,
-  &.mat-mdc-option-active {
-    background-color: var(--bg-main) !important;
-    color: var(--element-primary) !important;
-  }
 }

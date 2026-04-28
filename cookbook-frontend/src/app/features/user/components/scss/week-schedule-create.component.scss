@@ -157,18 +157,6 @@ $modal-max-height: 85vh;
   color: var(--text-muted);
 }
 
-.skipped-field {
-  ::ng-deep .mat-mdc-input-element:disabled {
-    color: var(--text-muted);
-    font-style: italic;
-    -webkit-text-fill-color: var(--text-muted);
-  }
-
-  ::ng-deep .mat-mdc-form-field-icon-suffix {
-    color: var(--text-muted);
-  }
-}
-
 @media (max-width: 600px) {
   .modal-header,
   .modal-body,

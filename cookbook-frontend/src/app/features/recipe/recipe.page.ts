@@ -32,7 +32,7 @@ export default class RecipePage {
       ingredients: this.selectedIngredientIds(),
       applyPrefs: this.shouldApplyPreferences()
     }),
-    stream: ({ params }) => this.recipeService.searchRecipes(
+    stream: ({ params }) => this.recipeService.searchRecipesByFilter(
       params.ingredients,
       params.applyPrefs,
       params.page,
