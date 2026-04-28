@@ -35,7 +35,7 @@ export class WeekScheduleService {
   }
 
   getSchedule() {
-    return this.http.get<WeekScheduleResponse>(`${this.baseUrl}/user`).pipe(
+    return this.http.get<WeekScheduleResponse>(`${this.baseUrl}`).pipe(
       catchError((err: HttpErrorResponse) => {
         if (err.status === 404) {
           return of(undefined);
