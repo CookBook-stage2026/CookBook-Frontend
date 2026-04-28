@@ -37,7 +37,7 @@ export class RecipeService {
       size,
     };
 
-    return this.http.post<PaginatedResponse<RecipeSummary>>(`${this.apiUrl}/search`, body);
+    return this.http.post<PaginatedResponse<RecipeSummary>>(`${this.apiUrl}/filter`, body);
   }
 
   getRecipeById(id: string): Observable<RecipeDto> {
