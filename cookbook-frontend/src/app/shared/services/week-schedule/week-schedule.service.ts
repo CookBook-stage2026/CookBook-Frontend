@@ -21,6 +21,8 @@ export class WeekScheduleService {
   updatePreferences(request: UpdateUserPreferencesRequest): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/preferences`, request);
     }
+
+
   createSchedule(request: CreateWeekScheduleRequest) {
     return this.http.post<WeekScheduleResponse>(`${this.baseUrl}`, request).pipe(
       tap(() => this.toastService.show('Schedule created successfully.', 'success')),

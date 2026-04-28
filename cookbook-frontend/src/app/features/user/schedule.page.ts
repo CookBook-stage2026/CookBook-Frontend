@@ -3,50 +3,18 @@ import { WeekScheduleCreateComponent } from './components/typescript/week-schedu
 import { WeekScheduleViewComponent } from './components/typescript/week-schedule-view.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatDialogModule } from '@angular/material/dialog';
 import { ToastComponent } from '@shared/components/toast/toast.component';
 
 @Component({
   selector: 'app-schedule-page',
-  template: `
-    <app-toast></app-toast>
-    <div class="schedule-container">
-      <h2>Your Week Schedule</h2>
-
-      <app-week-schedule-view [refreshTrigger]="refreshSignal()">
-        <button
-          create-button
-          mat-flat-button
-          color="primary"
-          (click)="openCreateModal()"
-        >
-          <mat-icon>add</mat-icon> Create New Schedule
-        </button>
-      </app-week-schedule-view>
-    </div>
-
-    @if (isCreateModalOpen()) {
-      <app-week-schedule-create
-        (closeModal)="closeCreateModal()"
-        (scheduleCreated)="onScheduleCreated()"
-      />
-    }
-  `,
-  styles: [`
-    .schedule-container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-    h2 {
-      margin-bottom: 1.5rem;
-      text-align: center;
-      color: var(--text-main);
-    }
-  `],
+  templateUrl: './schedule.page.html',
+  styleUrls: ['./schedule.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatButtonModule,
     MatIconModule,
+    MatDialogModule,
     WeekScheduleCreateComponent,
     WeekScheduleViewComponent,
     ToastComponent

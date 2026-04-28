@@ -1,53 +1,60 @@
 @if (isLoading()) {
-  <div class="loading-container">
-    <mat-spinner diameter="40"></mat-spinner>
-    <p>Loading your schedule…</p>
+  <div class="state-container loading">
+    <mat-spinner diameter="48" strokeWidth="3"></mat-spinner>
+    <p class="state-text">Loading your schedule…</p>
   </div>
 } @else if (loadError()) {
-  <div class="error-state">
-    <mat-icon color="warn" class="error-icon">error_outline</mat-icon>
-    <p>{{ loadError() }}</p>
-    <button mat-stroked-button (click)="fetchSchedule()">Retry</button>
+  <div class="state-container error">
+    <div class="state-icon error">
+      <mat-icon>error_outline</mat-icon>
+    </div>
+    <h3 class="state-title">Something went wrong</h3>
+    <p class="state-text">{{ loadError() }}</p>
+    <button mat-stroked-button color="primary" (click)="fetchSchedule()" class="retry-btn">
+      <mat-icon>refresh</mat-icon>
+      Try Again
+    </button>
   </div>
 } @else if (noSchedule()) {
-  <div class="empty-state">
-    <mat-icon class="empty-icon">event_busy</mat-icon>
-    <h3>No schedule yet</h3>
-    <p>Plan your meals for the week to get started.</p>
-    <ng-content select="[create-button]"></ng-content>
+  <div class="state-container empty">
+    <div class="state-icon empty">
+      <mat-icon>calendar_today</mat-icon>
+    </div>
+    <h3 class="state-title">No schedule yet</h3>
+    <p class="state-text">Plan your meals for the week to get started.</p>
   </div>
 } @else {
-  <div class="schedule-timeline">
+  <div class="schedule-grid">
     @for (day of daysOfWeek; track day) {
-      <div class="day-card" [class.empty]="!getRecipeForDay(day)">
+      <div class="day-card" [class.has-recipe]="!!getRecipeForDay(day)">
         <div class="day-header">
-          <span class="day-label">{{ dayLabels[day] }}</span>
-          @if (getRecipeForDay(day); as recipe) {
-            <a
-              mat-icon-button
-              [routerLink]="['/recipes', recipe.id]"
-              matTooltip="View recipe details"
-              aria-label="View recipe for {{ dayLabels[day] }}"
-              class="recipe-link"
-            >
-              <mat-icon>open_in_new</mat-icon>
-            </a>
-          }
+          <div class="day-badge">{{ dayLabels[day] }}</div>
+          <a
+            mat-icon-button
+            [routerLink]="getRecipeForDay(day) ? ['/recipes', getRecipeForDay(day)?.id] : null"
+            [matTooltip]="getRecipeForDay(day) ? 'View recipe' : ''"
+            class="action-btn"
+            [style.visibility]="!getRecipeForDay(day) ? 'hidden' : 'visible'"
+          >
+            <mat-icon>open_in_new</mat-icon>
+          </a>
         </div>
 
         <div class="day-content">
           @if (getRecipeForDay(day); as recipe) {
-            <mat-card appearance="outlined" class="recipe-card">
-              <mat-card-header>
-                <mat-card-title>{{ recipe.name }}</mat-card-title>
-                <mat-card-subtitle>{{ recipe.durationInMinutes }} min</mat-card-subtitle>
-              </mat-card-header>
-              <mat-card-content>
-                <p class="recipe-description">{{ recipe.description }}</p>
-              </mat-card-content>
-            </mat-card>
+            <div class="recipe-info">
+              <h4 class="recipe-name">{{ recipe.name }}</h4>
+              <div class="recipe-meta">
+                <span class="meta-item">
+                  <mat-icon>schedule</mat-icon>
+                  {{ recipe.durationInMinutes }} min
+                </span>
+              </div>
+              <p class="recipe-desc">{{ recipe.description }}</p>
+            </div>
           } @else {
-            <div class="empty-recipe">
+            <div class="empty-slot">
+              <mat-icon>restaurant</mat-icon>
               <span>No recipe planned</span>
             </div>
           }

@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatChipsModule } from '@angular/material/chips';
 import { RouterLink } from '@angular/router';
 import { WeekScheduleService } from '@shared/services/week-schedule';
 import { WeekScheduleResponse, DAYS_OF_WEEK, DAY_LABELS, DayOfWeek } from '@shared/domain/week-schedule';
@@ -19,6 +20,7 @@ import { WeekScheduleResponse, DAYS_OF_WEEK, DAY_LABELS, DayOfWeek } from '@shar
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
+    MatChipsModule,
     RouterLink
   ]
 })
