@@ -37,3 +37,10 @@ export interface RecipeSummary {
   description: string;
   durationInMinutes: number;
 }
+
+export interface RecipeSearchRequest {
+  ingredientIds: string[];
+  shouldApplyPreferences: boolean;
+  page: number;
+  size: number;
+}

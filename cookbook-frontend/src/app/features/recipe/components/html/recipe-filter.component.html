@@ -28,16 +28,16 @@
 
   @if (selectedIngredients().length > 0) {
     <div class="selected-ingredients">
-      <mat-chip-set aria-label="Selected ingredients">
+      <mat-chip-grid aria-label="Selected ingredients">
         @for (ingredient of selectedIngredients(); track ingredient.id) {
-          <mat-chip (removed)="removeIngredient(ingredient)">
+          <mat-chip-row (removed)="removeIngredient(ingredient)">
             {{ ingredient.name }}
-            <button matChipRemove>
-              <mat-icon>close</mat-icon>
+            <button matChipRemove [attr.aria-label]="'Remove ' + ingredient.name">
+              <mat-icon>cancel</mat-icon>
             </button>
-          </mat-chip>
+          </mat-chip-row>
         }
-      </mat-chip-set>
+      </mat-chip-grid>
     </div>
   }
 </div>

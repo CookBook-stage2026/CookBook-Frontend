@@ -1,0 +1,90 @@
+h2 {
+  margin-bottom: 8px;
+}
+
+p {
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+}
+
+.ingredient-search-wrapper {
+  margin-bottom: 16px;
+}
+
+.input-with-spinner {
+  position: relative;
+  width: fit-content;
+}
+
+.form-control {
+  width: 280px;
+  box-sizing: border-box;
+  margin-top: 6px;
+  padding: 0.75rem 2.5rem 0.75rem 1rem;
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: var(--element-primary);
+  }
+}
+
+.input-spinner {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+.excluded-ingredient-chip {
+  --mdc-chip-elevated-container-color: #fee2e2;
+  --mdc-chip-label-text-color: #991b1b;
+  --mdc-chip-with-icon-icon-color: #dc2626;
+  border: 1px solid #ef4444;
+
+  .chip-content {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-left: 4px;
+
+    .ban-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #dc2626;
+    }
+
+    .ingredient-name {
+      text-decoration: line-through;
+      font-weight: 500;
+    }
+  }
+
+  button[matChipRemove] mat-icon {
+    color: #991b1b;
+    opacity: 0.8;
+    transition: opacity 0.2s ease;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+}

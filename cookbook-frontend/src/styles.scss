@@ -29,6 +29,7 @@ body {
   --bg-main: #ffffff;
   --bg-surface: #f8fafc;
   --border-color: #e2e8f0;
+  --hover-color: #f1f5f9;
   /* Text */
   --text-main: #0f172a;
   --text-muted: #475569;
@@ -37,6 +38,11 @@ body {
   --element-primary-contrast: #ffffff;
   --spacing-unit: 4px;
   --radius-md: 6px;
+  /* Excluded/danger state */
+  --danger-border: #ef4444;
+  --danger-text: #991b1b;
+  --danger-hover: #fca5a5;
+  --danger-icon: #dc2626;
 
   --mat-sys-primary: var(--element-primary);
   --mat-sys-on-primary: var(--element-primary-contrast);
@@ -60,5 +66,10 @@ body {
     --text-muted: #94a3b8;
     --element-primary: #60a5fa;
     --element-primary-contrast: #020617;
+    --hover-color: #1e293b;
+    --danger-border: #f87171;
+    --danger-text: #fca5a5;
+    --danger-hover: #7f1d1d;
+    --danger-icon: #f87171;
   }
 }
