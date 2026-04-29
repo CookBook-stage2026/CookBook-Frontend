@@ -1,0 +1,65 @@
+@if (isLoading()) {
+  <div class="state-container loading">
+    <mat-spinner diameter="48" strokeWidth="3"></mat-spinner>
+    <p class="state-text">Loading your schedule…</p>
+  </div>
+} @else if (loadError()) {
+  <div class="state-container error">
+    <div class="state-icon error">
+      <mat-icon>error_outline</mat-icon>
+    </div>
+    <h3 class="state-title">Something went wrong</h3>
+    <p class="state-text">{{ loadError() }}</p>
+    <button mat-stroked-button color="primary" (click)="fetchSchedule()" class="retry-btn">
+      <mat-icon>refresh</mat-icon>
+      Try Again
+    </button>
+  </div>
+} @else if (noSchedule()) {
+  <div class="state-container empty">
+    <div class="state-icon empty">
+      <mat-icon>calendar_today</mat-icon>
+    </div>
+    <h3 class="state-title">No schedule yet</h3>
+    <p class="state-text">Plan your meals for the week to get started.</p>
+  </div>
+} @else {
+  <div class="schedule-grid">
+    @for (day of daysOfWeek; track day) {
+      <div class="day-card" [class.has-recipe]="!!getRecipeForDay(day)">
+        <div class="day-header">
+          <div class="day-badge">{{ dayLabels[day] }}</div>
+          <a
+            mat-icon-button
+            [routerLink]="getRecipeForDay(day) ? ['/recipes', getRecipeForDay(day)?.id] : null"
+            [matTooltip]="getRecipeForDay(day) ? 'View recipe' : ''"
+            class="action-btn"
+            [style.visibility]="!getRecipeForDay(day) ? 'hidden' : 'visible'"
+          >
+            <mat-icon>open_in_new</mat-icon>
+          </a>
+        </div>
+
+        <div class="day-content">
+          @if (getRecipeForDay(day); as recipe) {
+            <div class="recipe-info">
+              <h4 class="recipe-name">{{ recipe.name }}</h4>
+              <div class="recipe-meta">
+                <span class="meta-item">
+                  <mat-icon>schedule</mat-icon>
+                  {{ recipe.durationInMinutes }} min
+                </span>
+              </div>
+              <p class="recipe-desc">{{ recipe.description }}</p>
+            </div>
+          } @else {
+            <div class="empty-slot">
+              <mat-icon>restaurant</mat-icon>
+              <span>No recipe planned</span>
+            </div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+}

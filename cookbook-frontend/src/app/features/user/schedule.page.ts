@@ -1,42 +1,28 @@
 import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { WeekScheduleCreateComponent } from './components/typescript/week-schedule-create.component';
+import { WeekScheduleViewComponent } from './components/typescript/week-schedule-view.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import {ToastComponent} from '@shared/components/toast/toast.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { ToastComponent } from '@shared/components/toast/toast.component';
 
 @Component({
   selector: 'app-schedule-page',
-  template: `
-    <app-toast></app-toast>
-    <div class="schedule-container">
-      <h2>Your Week Schedule</h2>
-      <p>This is a placeholder!</p>
-
-      <button mat-flat-button color="primary" (click)="openCreateModal()">
-        <mat-icon>add</mat-icon> Create New Schedule
-      </button>
-    </div>
-
-    @if (isCreateModalOpen()) {
-      <app-week-schedule-create
-        (closeModal)="closeCreateModal()"
-        (scheduleCreated)="onScheduleCreated()"
-      />
-    }
-  `,
-  styles: [`
-    .schedule-container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-    h2 { margin-bottom: 1rem; }
-  `],
+  templateUrl: './schedule.page.html',
+  styleUrls: ['./schedule.page.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatButtonModule, MatIconModule, WeekScheduleCreateComponent, ToastComponent]
+  imports: [
+    MatButtonModule,
+    MatIconModule,
+    MatDialogModule,
+    WeekScheduleCreateComponent,
+    WeekScheduleViewComponent,
+    ToastComponent
+  ]
 })
 export default class SchedulePage {
   readonly isCreateModalOpen = signal(false);
+  readonly refreshSignal = signal(0);
 
   openCreateModal(): void {
     this.isCreateModalOpen.set(true);
@@ -47,5 +33,7 @@ export default class SchedulePage {
   }
 
   onScheduleCreated(): void {
+    this.closeCreateModal();
+    this.refreshSignal.update(v => v + 1);
   }
 }

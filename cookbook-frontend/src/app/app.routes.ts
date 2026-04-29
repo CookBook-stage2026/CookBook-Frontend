@@ -34,13 +34,12 @@ export const routes: Routes = [
         path: '',
         redirectTo: 'recipes',
         pathMatch: 'full'
+      },
+      {
+        path: 'recipes/:recipeId',
+        loadComponent: () => import('@features/recipe/recipe-detail.page')
       }
     ]
-  },
-
-  {
-    path: 'recipes/:recipeId',
-    loadComponent: () => import('@features/recipe/recipe-detail.page')
   },
   {
     path: '**',
