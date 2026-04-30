@@ -6,7 +6,6 @@ export type Theme = 'light' | 'dark' | 'system';
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private readonly document = inject(DOCUMENT);
-
   readonly currentTheme = signal<Theme>('system');
 
   constructor() {
@@ -15,9 +14,10 @@ export class ThemeService {
       const htmlEl = this.document.documentElement;
 
       if (theme === 'system') {
-        delete htmlEl.dataset["theme"];
+        const prefersDark = this.document.defaultView?.matchMedia('(prefers-color-scheme: dark)').matches;
+        htmlEl.dataset['theme'] = prefersDark ? 'dark' : 'light';
       } else {
-        htmlEl.dataset["theme"] = theme;
+        htmlEl.dataset['theme'] = theme;
       }
     });
   }
@@ -26,7 +26,6 @@ export class ThemeService {
     this.currentTheme.update(theme => {
       if (theme === 'dark') return 'light';
       if (theme === 'light') return 'dark';
-
       const prefersDark = this.document.defaultView?.matchMedia('(prefers-color-scheme: dark)').matches;
       return prefersDark ? 'light' : 'dark';
     });
