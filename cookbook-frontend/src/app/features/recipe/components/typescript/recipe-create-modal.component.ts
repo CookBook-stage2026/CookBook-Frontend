@@ -97,34 +97,32 @@ export class RecipeCreateModalComponent {
   }
 
   onDurationInput(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    const rawValue = target.value;
-    if (rawValue === '') {
-      this.recipeForm.get('durationInMinutes')?.setValue(null, { emitEvent: false });
-      return;
-    }
-    const value = Number.parseInt(rawValue, 10);
-    if (Number.isNaN(value) || value < 1) {
-      this.recipeForm.get('durationInMinutes')?.setValue(1, { emitEvent: false });
-      target.value = '1';
-      return;
-    }
-    this.recipeForm.get('durationInMinutes')?.setValue(value, { emitEvent: false });
+    this.handleIntegerInput(event, 'durationInMinutes');
   }
 
   onServingsInput(event: Event): void {
+    this.handleIntegerInput(event, 'servings');
+  }
+
+  private handleIntegerInput(event: Event, controlName: string): void {
     const target = event.target as HTMLInputElement;
     const rawValue = target.value;
+    const control = this.recipeForm.get(controlName);
+
+    if (!control) return;
+
     if (rawValue === '') {
-      this.recipeForm.get('servings')?.setValue(null, { emitEvent: false });
+      control.setValue(null, { emitEvent: false });
       return;
     }
+
     const value = Number.parseInt(rawValue, 10);
     if (Number.isNaN(value) || value < 1) {
-      this.recipeForm.get('servings')?.setValue(1, { emitEvent: false });
+      control.setValue(1, { emitEvent: false });
       target.value = '1';
       return;
     }
-    this.recipeForm.get('servings')?.setValue(value, { emitEvent: false });
+
+    control.setValue(value, { emitEvent: false });
   }
 }
