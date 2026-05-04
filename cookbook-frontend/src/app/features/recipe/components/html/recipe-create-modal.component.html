@@ -81,6 +81,28 @@
                 }
               </div>
             </div>
+
+            <div class="form-group">
+              <label for="servings">Servings *</label>
+              <div class="input-wrapper">
+                <input
+                  type="number"
+                  id="servings"
+                  formControlName="servings"
+                  placeholder="4"
+                  class="form-control"
+                  min="1"
+                  step="1"
+                  (input)="onServingsInput($event)"
+                  [class.is-invalid]="recipeForm.get('servings')?.invalid && recipeForm.get('servings')?.touched"
+                  aria-required="true">
+                @if (recipeForm.get('servings')?.invalid && recipeForm.get('servings')?.touched) {
+                  <div class="tooltip-error" role="tooltip">
+                    <span>Servings must be at least 1</span>
+                  </div>
+                }
+              </div>
+            </div>
           </div>
 
           <hr class="divider">

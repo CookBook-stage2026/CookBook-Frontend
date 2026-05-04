@@ -25,6 +25,7 @@ export class RecipeCreateModalComponent {
     name: ['', Validators.required],
     description: ['', Validators.required],
     durationInMinutes: [null, [Validators.required, Validators.min(1)]],
+    servings: [null, [Validators.required, Validators.min(1)]],
     steps: this.fb.array([this.fb.control('', Validators.required)]),
     ingredients: this.fb.array([])
   });
@@ -43,9 +44,9 @@ export class RecipeCreateModalComponent {
 
       const rawFormValue = this.recipeForm.value;
 
-      const mappedIngredients: CreateRecipeIngredientDto[] = rawFormValue.ingredients.map((ing: any) => ({
-        ingredientId: ing.id,
-        baseQuantity: Number(ing.quantity)
+      const mappedIngredients: CreateRecipeIngredientDto[] = rawFormValue.ingredients.map((ing: Record<string, unknown>) => ({
+        ingredientId: ing['id'],
+        baseQuantity: Number(ing['quantity'])
       }));
 
       const dto: CreateRecipeDto = {
@@ -54,7 +55,7 @@ export class RecipeCreateModalComponent {
         durationInMinutes: rawFormValue.durationInMinutes,
         steps: rawFormValue.steps,
         ingredients: mappedIngredients,
-        servings: 1
+        servings: Number(rawFormValue.servings)
       };
 
       this.recipeService.createRecipe(dto).subscribe({
@@ -96,8 +97,32 @@ export class RecipeCreateModalComponent {
   }
 
   onDurationInput(event: Event): void {
-    let value = Number.parseInt((event.target as HTMLInputElement).value, 10);
-    if (Number.isNaN(value) || value < 1) value = 1;
-    this.recipeForm.get('durationInMinutes')?.setValue(value, { emitEvent: false });
+    this.handleIntegerInput(event, 'durationInMinutes');
+  }
+
+  onServingsInput(event: Event): void {
+    this.handleIntegerInput(event, 'servings');
+  }
+
+  private handleIntegerInput(event: Event, controlName: string): void {
+    const target = event.target as HTMLInputElement;
+    const rawValue = target.value;
+    const control = this.recipeForm.get(controlName);
+
+    if (!control) return;
+
+    if (rawValue === '') {
+      control.setValue(null, { emitEvent: false });
+      return;
+    }
+
+    const value = Number.parseInt(rawValue, 10);
+    if (Number.isNaN(value) || value < 1) {
+      control.setValue(1, { emitEvent: false });
+      target.value = '1';
+      return;
+    }
+
+    control.setValue(value, { emitEvent: false });
   }
 }

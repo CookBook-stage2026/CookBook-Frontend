@@ -1,12 +1,10 @@
-import {
-  Component, ChangeDetectionStrategy, input, output, inject, signal
-} from '@angular/core';
-import { ReactiveFormsModule, FormArray, FormGroup, AbstractControl } from '@angular/forms';
-import { Subject, debounceTime, distinctUntilChanged, switchMap } from 'rxjs';
+import { ChangeDetectionStrategy, Component, inject, input, output, signal } from '@angular/core';
+import { AbstractControl, FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { debounceTime, of, Subject, switchMap } from 'rxjs';
 import { IngredientService } from '@shared/services/ingredient';
 import { Ingredient } from '@shared/domain/ingredient';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
-import {takeUntilDestroyed} from '@angular/core/rxjs-interop';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-recipe-ingredients',
@@ -29,16 +27,29 @@ export class RecipeIngredientsFormComponent {
 
   constructor() {
     this.searchSubject.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap(query => this.ingredientService.searchIngredients(query)),
+      debounceTime(100),
+      switchMap(query => {
+        if (!query.trim()) return of([]);
+        return this.ingredientService.searchIngredients(query);
+      }),
       takeUntilDestroyed()
     ).subscribe(results => {
-      this.allIngredients.set(results);
+      const selectedIds = new Set(
+        this.ingredients().controls
+          .map(ctrl => ctrl.get('id')?.value)
+          .filter(id => id !== null)
+      );
+
+      const availableIngredients = results.filter(
+        ingredient => !selectedIds.has(ingredient.id)
+      );
+
+      this.allIngredients.set(availableIngredients);
     });
   }
 
   add(): void {
+    this.allIngredients.set([]);
     this.addIngredient.emit();
   }
 
