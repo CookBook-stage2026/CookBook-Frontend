@@ -29,7 +29,7 @@ export class RecipeIngredientsFormComponent {
 
   constructor() {
     this.searchSubject.pipe(
-      debounceTime(300),
+      debounceTime(100),
       distinctUntilChanged(),
       switchMap(query => this.ingredientService.searchIngredients(query)),
       takeUntilDestroyed()
