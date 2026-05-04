@@ -1,0 +1,99 @@
+<div class="array-section">
+  <div class="section-header">
+    <h3>Ingredients *</h3>
+    <button type="button" class="btn-text" (click)="add()" [disabled]="isSubmitting()">
+      + Add Ingredient
+    </button>
+  </div>
+
+  <div class="array-container">
+    @for (ingredientCtrl of ingredients().controls; track $index) {
+      <div [formGroup]="ingredientCtrl" class="ingredient-row">
+
+        <div class="form-group flex-2">
+          <label for="ingredient-name-{{ $index }}">Ingredient Name *</label>
+          <div class="input-wrapper">
+            @if (ingredientCtrl.get('id')?.invalid && ingredientCtrl.get('name')?.touched) {
+              <div [id]="'name-error-' + $index" class="tooltip-error tooltip-above" role="tooltip">
+                <span>Please select a valid ingredient from the list</span>
+              </div>
+            }
+            <input
+              type="text"
+              formControlName="name"
+              id="ingredient-name-{{ $index }}"
+              placeholder="e.g., Flour"
+              class="form-control"
+              autocomplete="off"
+              aria-required="true"
+              [matAutocomplete]="auto"
+              [attr.aria-describedby]="ingredientCtrl.get('id')?.invalid && ingredientCtrl.get('name')?.touched ? 'name-error-' + $index : null"
+              [class.is-invalid]="ingredientCtrl.get('id')?.invalid && ingredientCtrl.get('name')?.touched"
+              (input)="onNameChange($event, ingredientCtrl)">
+
+            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event, ingredientCtrl)">
+              @for (ingredient of allIngredients(); track ingredient.id) {
+                <mat-option [value]="ingredient.name">{{ ingredient.name }}</mat-option>
+              }
+            </mat-autocomplete>
+          </div>
+        </div>
+
+        <div class="form-group flex-1">
+          <label for="quantity-{{ $index }}">Quantity *</label>
+          <div class="input-wrapper">
+            @if (ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched) {
+              <div [id]="'quantity-error-' + $index" class="tooltip-error tooltip-above" role="tooltip">
+                <span>Must be > 0</span>
+              </div>
+            }
+            <input
+              type="text"
+              inputmode="decimal"
+              formControlName="quantity"
+              id="quantity-{{ $index }}"
+              placeholder="2.5"
+              class="form-control"
+              aria-required="true"
+              [attr.aria-describedby]="ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched ? 'quantity-error-' + $index : null"
+              [class.is-invalid]="ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched"
+              (input)="onQuantityInput($event, ingredientCtrl.get('quantity')!)">
+          </div>
+        </div>
+
+        <div class="form-group flex-1">
+          <label for="unit-{{ $index }}">Unit</label>
+          <div class="input-wrapper">
+            <input
+              type="text"
+              [value]="getDisplayUnit(ingredientCtrl)"
+              id="unit-{{ $index }}"
+              class="form-control read-only-unit"
+              readonly
+              tabindex="-1">
+          </div>
+        </div>
+
+        <div class="form-group action-group">
+          <div class="invisible-label" aria-hidden="true">&nbsp;</div>
+          <div class="action-btn-wrapper">
+            <button
+              type="button"
+              class="btn-icon danger"
+              (click)="remove($index)"
+              [disabled]="isSubmitting()"
+              [attr.aria-label]="'Remove ingredient ' + (ingredientCtrl.get('name')?.value || $index + 1)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    } @empty {
+      <p class="empty-text">No ingredients added yet. Click "+ Add Ingredient" to add some.</p>
+    }
+  </div>
+</div>

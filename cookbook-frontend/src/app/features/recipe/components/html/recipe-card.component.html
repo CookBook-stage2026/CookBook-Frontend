@@ -1,0 +1,14 @@
+<mat-card class="recipe-card clickable-card" [routerLink]="['/recipes', recipe().id]">
+  <mat-card-header>
+    <mat-card-title class="title">{{ recipe().name }}</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content>
+    <p class="description">{{ recipe().description }}</p>
+  </mat-card-content>
+
+  <mat-card-actions class="recipe-footer">
+    <mat-icon>schedule</mat-icon>
+    <span>{{ recipe().durationInMinutes | duration }}</span>
+  </mat-card-actions>
+</mat-card>

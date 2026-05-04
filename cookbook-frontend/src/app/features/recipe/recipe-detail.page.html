@@ -1,0 +1,33 @@
+<div class="page-container">
+  @if (recipe.isLoading()) {
+    <div class="loading-shade">
+      <mat-spinner aria-label="Loading recipe" />
+    </div>
+  } @else if (recipe.error()) {
+    <p role="alert">Could not load recipe. Please try again.</p>
+  } @else if (recipe.value(); as r) {
+    <header>
+      <h1>{{ r.name }}</h1>
+      <p class="mat-body-large">{{ r.description }}</p>
+
+      <mat-chip-set class="header-meta" aria-label="Recipe metadata">
+        <mat-chip disabled class="static-chip">
+          <mat-icon matChipAvatar>schedule</mat-icon>
+          {{ r.durationInMinutes }} min
+        </mat-chip>
+        <mat-chip disabled class="static-chip">
+          <mat-icon matChipAvatar>people</mat-icon>
+          {{ r.servings }} servings
+        </mat-chip>
+      </mat-chip-set>
+    </header>
+
+    <mat-divider />
+
+    <app-recipe-ingredients-list [ingredients]="r.ingredients" />
+
+    <mat-divider />
+
+    <app-recipe-preparation-list [steps]="r.steps" />
+  }
+</div>

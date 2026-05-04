@@ -1,0 +1,23 @@
+<div class="list-container">
+  <div>
+    <nav class="pagination" aria-label="Recipe pagination">
+      <button mat-stroked-button (click)="onPrevPage()" [disabled]="isPrevDisabled()">Prev</button>
+      <span class="page-info" aria-live="polite">Page {{ displayPage() }} / {{ displayTotalPages() }}</span>
+      <button mat-stroked-button (click)="onNextPage()" [disabled]="isNextDisabled()">Next</button>
+    </nav>
+  </div>
+
+  @if (isLoading()) {
+    <div class="status-msg" aria-live="polite">Loading recipes...</div>
+  } @else if (recipes().length === 0) {
+    <div class="status-msg" aria-live="polite">No recipes found.</div>
+  } @else {
+    <ul class="grid">
+      @for (recipe of recipes(); track recipe.id) {
+        <li>
+          <app-recipe-card [recipe]="recipe" />
+        </li>
+      }
+    </ul>
+  }
+</div>

@@ -1,0 +1,20 @@
+.selected-ingredients {
+  margin-top: 1rem;
+}
+
+.form-control {
+  width: 280px;
+  box-sizing: border-box;
+  padding: 0.75rem 1rem;
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  transition: border-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: var(--element-primary);
+  }
+}
