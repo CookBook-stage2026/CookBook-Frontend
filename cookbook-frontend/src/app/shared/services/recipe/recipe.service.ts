@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import { catchError, Observable, tap, throwError } from 'rxjs';
-import { CreateRecipeDto, RecipeDto, RecipeSearchRequest, RecipeSummary } from '@shared/domain/recipe';
+import { CreateRecipeDto, RecipeDto, RecipeSearchRequest, RecipeSummary, UpdateRecipeDto } from '@shared/domain/recipe';
 import { ToastService } from '@core/services';
 import { environment } from '../../../../environment';
 import { PaginatedResponse } from '@shared/domain/paginated-response';
@@ -63,5 +63,13 @@ export class RecipeService {
         return throwError(() => err);
       })
     );
+  }
+
+  enhanceRecipe(id: string): Observable<RecipeDto> {
+    return this.http.get<RecipeDto>(`${this.apiUrl}/${id}/enhance`);
+  }
+
+  updateRecipe(id: string, dto: UpdateRecipeDto): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}`, dto);
   }
 }
