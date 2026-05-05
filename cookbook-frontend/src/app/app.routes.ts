@@ -27,8 +27,12 @@ export const routes: Routes = [
         loadComponent: () => import('@features/user/preferences.page'),
       },
       {
-        path: 'schedule',
+        path: 'schedules',
         loadComponent: () => import('@features/user/schedule.page'),
+      },
+      {
+        path: 'households',
+        loadComponent: () => import('@features/household/household.page'),
       },
       {
         path: '',
