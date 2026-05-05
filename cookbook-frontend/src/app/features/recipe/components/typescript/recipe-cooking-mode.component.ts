@@ -1,13 +1,13 @@
 import {ChangeDetectionStrategy, Component, computed, input, output, signal} from '@angular/core';
 import {RecipeDto} from '@shared/domain/recipe';
-import {MatIconButton} from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {MatDivider} from '@angular/material/divider';
 
 @Component({
   selector: 'app-recipe-cooking-mode',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [MatIconButton, MatIcon, MatDivider],
+  imports: [ MatIconButton, MatIcon, MatDivider, MatButton ],
   templateUrl: '../html/recipe-cooking-mode.component.html',
   styleUrls: ['../scss/recipe-cooking-mode.component.scss']
 })

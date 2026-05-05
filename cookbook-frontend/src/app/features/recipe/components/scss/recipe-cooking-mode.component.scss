@@ -1,11 +1,15 @@
 .cooking-overlay {
   position: fixed;
-  inset: 0;
+  top: 64px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 9999;
   background-color: var(--bg-main);
   color: var(--text-main);
   display: flex;
   flex-direction: column;
+  border-top: 2px solid var(--element-primary);
 }
 
 .cooking-header {
@@ -115,41 +119,6 @@
   }
 }
 
-.control-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 2rem;
-  font-size: 1.125rem;
-  font-weight: 600;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
-  background-color: var(--bg-main);
-  color: var(--text-main);
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-
-  &:hover:not(:disabled) {
-    background-color: var(--hover-color);
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &.primary-btn {
-    background-color: var(--element-primary);
-    color: var(--element-primary-contrast);
-    border: none;
-
-    &:hover:not(:disabled) {
-      filter: brightness(1.1);
-    }
-  }
-}
-
 .sr-only {
   position: absolute;
   width: 1px;
@@ -200,11 +169,6 @@
 
   .cooking-controls {
     padding: 0.75rem 1rem;
-
-    .control-btn {
-      padding: 0.75rem 1rem;
-      font-size: 1rem;
-    }
 
     .ingredients-toggle-btn {
       display: inline-flex;
