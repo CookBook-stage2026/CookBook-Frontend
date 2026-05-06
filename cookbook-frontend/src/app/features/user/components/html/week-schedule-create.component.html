@@ -6,7 +6,7 @@
 >
   <dialog class="modal-container" open (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
     <div class="modal-header">
-      <h2 class="modal-title">Create Week Schedule</h2>
+      <h2 class="modal-title">{{ isEditMode() ? 'Edit Week Schedule' : 'Create Week Schedule' }}</h2>
       <button mat-icon-button (click)="onClose()" aria-label="Close">
         <mat-icon>close</mat-icon>
       </button>
@@ -15,6 +15,15 @@
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-form">
       <div class="modal-body">
         <p class="modal-description">Plan your meals. Select a recipe or skip each day.</p>
+
+        @if (!isEditMode()) {
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Week Start Date</mat-label>
+            <input matInput [matDatepicker]="picker" formControlName="weekStartDate" />
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker></mat-datepicker>
+          </mat-form-field>
+        }
 
         <div class="timeline-vertical">
           @for (day of daysOfWeek; track day) {
@@ -28,6 +37,7 @@
                   <app-recipe-autocomplete
                     [label]="'Recipe for ' + dayLabels[day]"
                     [control]="getDailyControl(day)"
+                    [preselectedRecipe]="getPreselectedRecipe(day)"
                     class="flex-1"
                   />
                   <button
@@ -52,7 +62,7 @@
           Cancel
         </button>
         <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || isSubmitting()">
-          {{ isSubmitting() ? 'Saving...' : 'Save Schedule' }}
+          {{ isSubmitting() ? 'Saving...' : (isEditMode() ? 'Update Schedule' : 'Save Schedule') }}
         </button>
       </div>
     </form>

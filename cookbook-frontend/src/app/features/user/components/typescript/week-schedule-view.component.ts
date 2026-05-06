@@ -1,13 +1,13 @@
-import { Component, ChangeDetectionStrategy, inject, input, signal, effect } from '@angular/core';
+import { Component, ChangeDetectionStrategy, inject, input, signal, effect, output } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatChipsModule } from '@angular/material/chips';
 import { RouterLink } from '@angular/router';
 import { WeekScheduleService } from '@shared/services/week-schedule';
 import { WeekScheduleResponse, DAYS_OF_WEEK, DAY_LABELS, DayOfWeek } from '@shared/domain/week-schedule';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-week-schedule-view',
@@ -20,12 +20,14 @@ import { WeekScheduleResponse, DAYS_OF_WEEK, DAY_LABELS, DayOfWeek } from '@shar
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    MatChipsModule,
-    RouterLink
+    RouterLink,
+    DatePipe
   ]
 })
 export class WeekScheduleViewComponent {
+  readonly weekStartDate = input.required<Date>();
   readonly refreshTrigger = input(0, { transform: (value: number) => value });
+  readonly editSchedule = output<WeekScheduleResponse>();
 
   private readonly scheduleService = inject(WeekScheduleService);
 
@@ -36,6 +38,7 @@ export class WeekScheduleViewComponent {
 
   constructor() {
     effect(() => {
+      this.weekStartDate();
       this.refreshTrigger();
       this.fetchSchedule();
     });
@@ -46,21 +49,32 @@ export class WeekScheduleViewComponent {
     this.loadError.set(null);
     this.noSchedule.set(false);
 
-    this.scheduleService.getSchedule().subscribe({
+    const start = this.formatIso(this.weekStartDate());
+    const end = this.formatIso(this.getEndOfWeek(this.weekStartDate()));
+
+    this.scheduleService.getSchedules(start, end).subscribe({
       next: (data) => {
         this.isLoading.set(false);
-        if (data === undefined) {
+        const matchingSchedule = data.length > 0 ? data[0] : undefined;
+        if (matchingSchedule === undefined) {
           this.noSchedule.set(true);
           this.schedule.set(undefined);
         } else {
-          this.schedule.set(data);
+          this.schedule.set(matchingSchedule);
         }
       },
-      error: (err) => {
+      error: () => {
         this.isLoading.set(false);
         this.loadError.set('Could not load your schedule. Please try again.');
       }
     });
+  }
+
+  onEdit(): void {
+    const s = this.schedule();
+    if (s) {
+      this.editSchedule.emit(s);
+    }
   }
 
   getRecipeForDay(day: DayOfWeek) {
@@ -71,4 +85,14 @@ export class WeekScheduleViewComponent {
 
   readonly daysOfWeek = DAYS_OF_WEEK;
   readonly dayLabels = DAY_LABELS;
+
+  private formatIso(date: Date): string {
+    return date.toISOString().split('T')[0];
+  }
+
+  private getEndOfWeek(start: Date): Date {
+    const end = new Date(start);
+    end.setDate(end.getDate() + 6);
+    return end;
+  }
 }
