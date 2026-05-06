@@ -1,35 +1,26 @@
 <app-toast></app-toast>
 
-<div class="page-header">
-  <div class="header-content">
-    <h1>Your Week Schedule</h1>
-    <p class="subtitle">Plan your meals for the week ahead</p>
-  </div>
-  <button
-    mat-flat-button
-    class="create-btn"
-    (click)="openCreateModal()"
-  >
-    <mat-icon>add</mat-icon>
-    Create New Schedule
-  </button>
-</div>
-
 <div class="schedule-container">
-  <div class="week-navigator">
+  <div class="page-title-row">
+    <div>
+      <h1>Your Week Schedule</h1>
+      <p class="subtitle">Plan your meals for the week ahead</p>
+    </div>
     <button
-      mat-icon-button
-      (click)="previousWeek()"
-      [attr.aria-label]="'Previous week'"
-    >
+      mat-flat-button
+      color="primary"
+      (click)="openCreateModal()">
+      <mat-icon>add</mat-icon>
+      Create New Schedule
+    </button>
+  </div>
+
+  <div class="week-navigator">
+    <button mat-icon-button (click)="previousWeek()" aria-label="Previous week">
       <mat-icon>chevron_left</mat-icon>
     </button>
     <span class="week-range" aria-live="polite">{{ weekRangeLabel() }}</span>
-    <button
-      mat-icon-button
-      (click)="nextWeek()"
-      [attr.aria-label]="'Next week'"
-    >
+    <button mat-icon-button (click)="nextWeek()" aria-label="Next week">
       <mat-icon>chevron_right</mat-icon>
     </button>
   </div>
@@ -42,17 +33,15 @@
 </div>
 
 @if (isCreateModalOpen()) {
-  <dialog
+  <div
     class="modal-overlay"
     (click)="closeCreateModal()"
-    (keydown.esc)="closeCreateModal()"
-    aria-modal="true"
-    [attr.aria-label]="editingSchedule() ? 'Edit schedule' : 'Create schedule'"
+    (keydown.escape)="closeCreateModal()"
   >
     <div
-      class="modal-container"
+      class="modal-wrapper"
       (click)="$event.stopPropagation()"
-      (keydown.esc)="$event.stopPropagation()"
+      (keydown.escape)="$event.stopPropagation()"
     >
       <div class="modal-header">
         <h3>{{ editingSchedule() ? 'Edit Schedule' : 'Create Schedule' }}</h3>
@@ -68,9 +57,10 @@
       <app-week-schedule-create
         [existingSchedule]="editingSchedule()"
         [weekStartDate]="selectedWeekStart()"
+        [existingSchedules]="existingSchedules()"
         (closeModal)="closeCreateModal()"
         (scheduleCreated)="onScheduleCreated()"
       />
     </div>
-  </dialog>
+  </div>
 }

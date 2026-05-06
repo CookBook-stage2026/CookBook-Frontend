@@ -37,6 +37,10 @@ export default class SchedulePage {
     return `${this.formatDate(start)} – ${this.formatDate(end)}`;
   });
 
+  constructor() {
+    this.loadSchedules();
+  }
+
   private loadSchedules(): void {
     this.weekScheduleService.getSchedules().subscribe(schedules => {
       this.existingSchedules.set(schedules);
@@ -92,6 +96,13 @@ export default class SchedulePage {
     return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   }
 
+  private toLocalDateString(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
   private findNextAvailableMonday(): Date {
     const today = new Date();
     const nextMonday = this.getMonday(today);
@@ -103,7 +114,7 @@ export default class SchedulePage {
       this.existingSchedules().map(s => s.weekStartDate)
     );
 
-    while (scheduledMondays.has(nextMonday.toISOString().split('T')[0])) {
+    while (scheduledMondays.has(this.toLocalDateString(nextMonday))) {
       nextMonday.setDate(nextMonday.getDate() + 7);
     }
 

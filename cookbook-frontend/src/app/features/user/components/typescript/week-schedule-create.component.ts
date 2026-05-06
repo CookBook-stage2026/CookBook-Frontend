@@ -61,6 +61,7 @@ export class WeekScheduleCreateComponent {
   readonly dayLabels = DAY_LABELS;
   readonly isSubmitting = signal(false);
   readonly isEditMode = signal(false);
+  readonly existingSchedules = input<WeekScheduleResponse[]>([]);
 
   readonly skippedDays = signal<ReadonlySet<DayOfWeek>>(new Set());
 
@@ -124,6 +125,19 @@ export class WeekScheduleCreateComponent {
     return this.skippedDays().has(day);
   }
 
+  myDateFilter = (date: Date | null): boolean => {
+    if (!date) return false;
+
+    if (date.getDay() !== 1) return false;
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateString = `${year}-${month}-${day}`;
+
+    return !this.existingSchedules().some(s => s.weekStartDate === dateString);
+  };
+
   toggleSkip(day: DayOfWeek): void {
     const control = this.getDailyControl(day);
     const currentlySkipped = this.skippedDays().has(day);
@@ -173,7 +187,7 @@ export class WeekScheduleCreateComponent {
       });
     } else {
       const request: CreateWeekScheduleRequest = {
-        weekStartDate: formValue.weekStartDate.toISOString().split('T')[0],
+        weekStartDate: this.formatDateToString(formValue.weekStartDate),
         days,
       };
 
@@ -198,5 +212,12 @@ export class WeekScheduleCreateComponent {
 
   onClose(): void {
     this.closeModal.emit();
+  }
+
+  private formatDateToString(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }
