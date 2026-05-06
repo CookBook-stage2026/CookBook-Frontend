@@ -1,0 +1,29 @@
+<div class="page-container">
+  <app-toast></app-toast>
+  <header class="page-header">
+    <div class="header-text">
+      <h1 class="page-title">Households</h1>
+      <p class="page-subtitle">Manage your shared spaces, recipes, and family members.</p>
+    </div>
+
+    <button mat-flat-button color="primary" (click)="openCreateModal()">
+      <mat-icon>add</mat-icon>
+      New Household
+    </button>
+  </header>
+
+  <main class="page-content">
+    <div class="empty-state">
+      <mat-icon class="empty-icon" aria-hidden="true">home_work</mat-icon>
+      <h2>No Households Yet</h2>
+      <p>You aren't part of any households right now. Create one to get started!</p>
+    </div>
+  </main>
+
+  @if (isCreateModalOpen()) {
+    <app-create-household
+      (closeModal)="closeCreateModal()"
+      (householdCreated)="onHouseholdCreated()"
+    />
+  }
+</div>
