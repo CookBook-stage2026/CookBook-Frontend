@@ -6,28 +6,44 @@
   } @else if (recipe.error()) {
     <p role="alert">Could not load recipe. Please try again.</p>
   } @else if (recipe.value(); as r) {
-    <header>
-      <h1>{{ r.name }}</h1>
-      <p class="mat-body-large">{{ r.description }}</p>
 
-      <mat-chip-set class="header-meta" aria-label="Recipe metadata">
-        <mat-chip disabled class="static-chip">
-          <mat-icon matChipAvatar>schedule</mat-icon>
-          {{ r.durationInMinutes }} min
-        </mat-chip>
-        <mat-chip disabled class="static-chip">
-          <mat-icon matChipAvatar>people</mat-icon>
-          {{ r.servings }} servings
-        </mat-chip>
-      </mat-chip-set>
-    </header>
+    @if (isCookingMode()) {
+      <app-recipe-cooking-mode
+        [recipe]="r"
+        (exit)="exitCookingMode()" />
+    } @else {
+      <header>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div>
+            <h1>{{ r.name }}</h1>
+            <p class="mat-body-large">{{ r.description }}</p>
+          </div>
 
-    <mat-divider />
+          <button mat-flat-button color="primary" (click)="enterCookingMode()">
+            <mat-icon>restaurant</mat-icon>
+            Start Cooking
+          </button>
+        </div>
 
-    <app-recipe-ingredients-list [ingredients]="r.ingredients" />
+        <mat-chip-set class="header-meta" aria-label="Recipe metadata">
+          <mat-chip disabled class="static-chip">
+            <mat-icon matChipAvatar>schedule</mat-icon>
+            {{ r.durationInMinutes }} min
+          </mat-chip>
+          <mat-chip disabled class="static-chip">
+            <mat-icon matChipAvatar>people</mat-icon>
+            {{ r.servings }} servings
+          </mat-chip>
+        </mat-chip-set>
+      </header>
 
-    <mat-divider />
+      <mat-divider />
 
-    <app-recipe-preparation-list [steps]="r.steps" />
+      <app-recipe-ingredients-list [ingredients]="r.ingredients" />
+
+      <mat-divider />
+
+      <app-recipe-preparation-list [steps]="r.steps" />
+    }
   }
 </div>
