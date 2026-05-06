@@ -2,6 +2,7 @@ import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CreateHouseholdComponent } from '@features/household/components/typescript/create-household.component';
+import { ToastComponent } from '@shared/components/toast/toast.component';
 
 @Component({
   selector: 'app-households-page',
@@ -12,6 +13,7 @@ import { CreateHouseholdComponent } from '@features/household/components/typescr
     MatButtonModule,
     MatIconModule,
     CreateHouseholdComponent,
+    ToastComponent,
   ],
 })
 export default class HouseholdsPageComponent {

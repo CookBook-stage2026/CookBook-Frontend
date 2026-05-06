@@ -12,6 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { HouseholdService } from '@shared/services/household/household.service';
 import { CreateHouseholdRequest } from '@shared/domain/household';
+import { ToastService } from '@core/services';
 
 @Component({
   selector: 'app-create-household',
@@ -32,6 +33,7 @@ export class CreateHouseholdComponent {
 
   private readonly fb = inject(FormBuilder).nonNullable;
   private readonly householdService = inject(HouseholdService);
+  private readonly toastService = inject(ToastService);
 
   readonly isSubmitting = signal(false);
   readonly errorMessage = signal<string | null>(null);
@@ -52,11 +54,13 @@ export class CreateHouseholdComponent {
     this.householdService.createHousehold(request).subscribe({
       next: () => {
         this.isSubmitting.set(false);
+        this.toastService.show("Household successfully created!", "success");
         this.householdCreated.emit();
         this.closeModal.emit();
       },
       error: () => {
         this.isSubmitting.set(false);
+        this.toastService.show('Failed to create a household.', 'error');
       }
     });
   }
