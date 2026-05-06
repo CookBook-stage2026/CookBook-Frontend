@@ -15,27 +15,29 @@
       <header>
         <div class="header-title-row">
           <h1>{{ r.name }}</h1>
-          <button
-            mat-flat-button
-            color="accent"
-            (click)="enhanceRecipe()"
-            [disabled]="enhancedRecipe.isLoading()"
-          >
-            @if (enhancedRecipe.isLoading()) {
-              <mat-spinner diameter="20" aria-hidden="true"/>
-            } @else {
-              <mat-icon aria-hidden="true">auto_awesome</mat-icon>
-            }
+          <div class="action-buttons">
+            <button
+              mat-flat-button
+              color="accent"
+              (click)="enhanceRecipe()"
+              [disabled]="enhancedRecipe.isLoading()"
+            >
+              @if (enhancedRecipe.isLoading()) {
+                <mat-spinner diameter="20" aria-hidden="true"/>
+              } @else {
+                <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+              }
 
-            @if (!enhancedRecipe.isLoading()) {
-              <span>Enhance Recipe</span>
-            }
-          </button>
+              @if (!enhancedRecipe.isLoading()) {
+                <span>Enhance Recipe</span>
+              }
+            </button>
 
-          <button mat-flat-button color="primary" (click)="enterCookingMode()">
-            <mat-icon>restaurant</mat-icon>
-            Start Cooking
-          </button>
+            <button mat-flat-button color="primary" (click)="enterCookingMode()">
+              <mat-icon>restaurant</mat-icon>
+              Start Cooking
+            </button>
+          </div>
         </div>
 
         <mat-chip-set class="header-meta" aria-label="Recipe metadata">

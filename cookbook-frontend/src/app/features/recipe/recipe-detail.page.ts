@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, input, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, signal, untracked } from '@angular/core';
 import { RecipeService } from '@shared/services/recipe';
 import { RecipeDto } from '@shared/domain/recipe';
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -11,7 +11,9 @@ import { RecipePreparationComponent } from '@features/recipe/components/typescri
 import { MatDialog } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
 import { ToastService } from '@core/services';
-import { ToastComponent } from '@shared/components/toast/toast.component';
+import { RecipeEnhanceModalComponent } from '@features/recipe/components/typescript/recipe-enhance-modal.component';
+import { of } from 'rxjs';
+import { RecipeCookingModeComponent } from '@features/recipe/components/typescript/recipe-cooking-mode.component';
 
 @Component({
   selector: 'app-recipe-detail-page',
@@ -27,7 +29,6 @@ import { ToastComponent } from '@shared/components/toast/toast.component';
     RecipeIngredientsComponent,
     RecipePreparationComponent,
     MatButton,
-    ToastComponent,
     RecipeCookingModeComponent
   ],
   styleUrls: ['./recipe-detail.page.scss']
@@ -72,10 +73,9 @@ export default class RecipeDetailPage {
       const error = this.enhancedRecipe.error();
       if (error) {
         untracked(() => {
-          this.toastService.show('Failed to get an enhanced recipe.', 'error');
+          this.toastService.show(error.message, 'error');
           this.enhanceRequest.set(undefined);
         });
-
         return;
       }
 

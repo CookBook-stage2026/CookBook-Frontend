@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 import { CreateRecipeDto, RecipeDto, RecipeSearchRequest, RecipeSummary, UpdateRecipeDto } from '@shared/domain/recipe';
 import { ToastService } from '@core/services';
@@ -66,7 +66,19 @@ export class RecipeService {
   }
 
   enhanceRecipe(id: string): Observable<RecipeDto> {
-    return this.http.get<RecipeDto>(`${this.apiUrl}/${id}/enhance`);
+    return this.http.get<RecipeDto>(`${this.apiUrl}/${id}/enhance`).pipe(
+      catchError((error: HttpErrorResponse) => {
+        let errorMessage = 'An unexpected error occurred.';
+
+        if (error.status === 502) {
+          errorMessage = 'AI failed to respond, please try again.';
+        } else if (error.status === 503) {
+          errorMessage = 'AI is currently unavailable, please try again later.';
+        }
+
+        return throwError(() => new Error(errorMessage));
+      })
+    );
   }
 
   updateRecipe(id: string, dto: UpdateRecipeDto): Observable<void> {
