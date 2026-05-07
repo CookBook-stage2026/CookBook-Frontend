@@ -1,3 +1,16 @@
+.header-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+
+  h1 {
+    margin: 0;
+  }
+}
+
 .page-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -17,4 +30,10 @@
 mat-chip.static-chip {
   --mdc-chip-disabled-label-text-color: var(--mat-sys-on-surface);
   --mdc-chip-disabled-container-color: var(--mat-sys-surface-container-high);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }

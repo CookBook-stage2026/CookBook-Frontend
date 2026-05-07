@@ -1,6 +1,6 @@
 import { Unit } from '@shared/domain/ingredient';
 
-export interface CreateRecipeIngredientDto {
+export interface NewRecipeIngredientDto {
   ingredientId: string;
   baseQuantity: number;
 }
@@ -10,7 +10,7 @@ export interface CreateRecipeDto {
   description: string;
   durationInMinutes: number;
   steps: string[];
-  ingredients: CreateRecipeIngredientDto[];
+  ingredients: NewRecipeIngredientDto[];
   servings: number;
 }
 
@@ -43,4 +43,13 @@ export interface RecipeSearchRequest {
   shouldApplyPreferences: boolean;
   page: number;
   size: number;
+}
+
+export interface UpdateRecipeDto {
+  name: string;
+  description: string;
+  durationInMinutes: number;
+  steps: string[];
+  ingredients: NewRecipeIngredientDto[];
+  servings: number;
 }
