@@ -2,7 +2,22 @@
   display: block;
 }
 
-/* State containers (loading, error, empty) */
+.schedule-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.schedule-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-main, #1e293b);
+}
+
 .state-container {
   display: flex;
   flex-direction: column;
@@ -108,7 +123,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--text-main, #1e293b);
+  color: var(--text-on-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -122,7 +137,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-main, #1e293b);
+  color: var(--text-on-primary);
   flex-shrink: 0;
 }
 
@@ -210,7 +225,6 @@
   overflow-wrap: break-word;
 }
 
-/* Responsive */
 @media (max-width: 1200px) {
   .schedule-grid {
     grid-template-columns: repeat(4, 1fr);

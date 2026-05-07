@@ -20,7 +20,7 @@ $modal-max-height: 85vh;
   width: 95%;
   max-width: $modal-max-width;
   max-height: $modal-max-height;
-  overflow: hidden;
+  overflow-y: auto;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
   border: none;
   margin: auto;
@@ -45,7 +45,6 @@ $modal-max-height: 85vh;
 .modal-form {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   flex: 1;
 }
 
@@ -76,7 +75,7 @@ $modal-max-height: 85vh;
   flex-direction: column;
   gap: 1.25rem;
   position: relative;
-  padding-left: calc($step-size + 1rem);
+  padding-left: calc($step-size + 1.5rem);
 
   &::before {
     content: '';
@@ -116,7 +115,7 @@ $modal-max-height: 85vh;
   align-items: center;
   justify-content: center;
   z-index: 1;
-  margin-left: calc(-1 * $step-size - 1rem);
+  margin-left: calc(-1 * $step-size - 1.5rem);
   flex-shrink: 0;
   position: relative;
   transition: background 0.3s, border-color 0.3s;
@@ -145,10 +144,12 @@ $modal-max-height: 85vh;
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
+  width: 100%;
 }
 
 .flex-1 {
   flex: 1;
+  min-width: 0;
 }
 
 .skip-btn {
@@ -166,7 +167,11 @@ $modal-max-height: 85vh;
   }
 
   .timeline-vertical {
-    padding-left: calc($step-size + 0.5rem);
+    padding-left: calc($step-size + 0.75rem);
+  }
+
+  .step-marker {
+    margin-left: calc(-1 * $step-size - 0.75rem);
   }
 
   .step-input-group {

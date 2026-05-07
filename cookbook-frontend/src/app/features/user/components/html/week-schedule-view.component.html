@@ -24,6 +24,19 @@
     <p class="state-text">Plan your meals for the week to get started.</p>
   </div>
 } @else {
+  <div class="schedule-header">
+    <h2 class="schedule-title">Week of {{ weekStartDate() | date:'mediumDate' }}</h2>
+    <button
+      mat-stroked-button
+      color="primary"
+      (click)="onEdit()"
+      [attr.aria-label]="'Edit schedule'"
+    >
+      <mat-icon>edit</mat-icon>
+      Edit Schedule
+    </button>
+  </div>
+
   <div class="schedule-grid">
     @for (day of daysOfWeek; track day) {
       <div class="day-card" [class.has-recipe]="!!getRecipeForDay(day)">
@@ -35,6 +48,7 @@
             [matTooltip]="getRecipeForDay(day) ? 'View recipe' : ''"
             class="action-btn"
             [style.visibility]="!getRecipeForDay(day) ? 'hidden' : 'visible'"
+            [attr.aria-hidden]="!getRecipeForDay(day)"
           >
             <mat-icon>open_in_new</mat-icon>
           </a>
