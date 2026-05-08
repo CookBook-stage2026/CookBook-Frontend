@@ -97,3 +97,4 @@ jobs:
         with:
           push: true
           tags: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/cookbook/frontend:latest
+          context: ./cookbook-frontend
