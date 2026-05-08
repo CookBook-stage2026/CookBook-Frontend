@@ -1,25 +1,31 @@
-# Stage 1: Build the application
+# Stage 1: Build
 FROM node:alpine AS builder
 
 WORKDIR /app
 
 COPY package.json ./
-
 RUN npm install
 
 COPY src/ ./src/
 COPY public/ ./public/
-COPY angular.json tsconfig*.json ./
+COPY angular.json ./
+COPY tsconfig*.json ./
+COPY src/environment.prod.ts ./src/environment.prod.ts
 
-RUN npm run build
+RUN npm run build:prod
 
-# Stage 2: Run the application
-FROM nginxinc/nginx-unprivileged:alpine-perl
+# Stage 2: Serve
+FROM node:alpine
 
-COPY --from=builder /app/dist/cookbook-frontend/browser /usr/share/nginx/html
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+WORKDIR /app
 
-EXPOSE 8081
+RUN npm install -g serve
 
-CMD ["nginx", "-g", "daemon off;"]
+USER appuser
+
+COPY --from=builder /app/dist ./dist
+
+EXPOSE 3000
+CMD ["serve", "-s", "dist", "-l", "3000"]
