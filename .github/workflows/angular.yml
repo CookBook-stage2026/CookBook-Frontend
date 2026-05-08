@@ -4,6 +4,9 @@ on:
   workflow_dispatch:
   push:
     branches: [ "main", "development" ]
+  # This below is temporary
+  pull_request:
+    branches: [ "development" ]
 
 jobs:
   build:
