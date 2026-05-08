@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
   apiUrl: '/api',
-  authRedirectUrl: 'http://cookbook-env.eba-phbrz3hh.eu-north-1.elasticbeanstalk.com'
+  authRedirectUrl: 'https://d64m1ytsn90cc.cloudfront.net'
 };
