@@ -1,5 +1,3 @@
-import { Unit } from '@shared/domain/ingredient';
-
 export interface NewRecipeIngredientDto {
   ingredientId: string;
   baseQuantity: number;
@@ -28,7 +26,7 @@ export interface RecipeIngredientDto {
   ingredientId: string;
   name: string;
   baseQuantity: number;
-  unit?: Unit | null;
+  unit: string;
 }
 
 export interface RecipeSummary {

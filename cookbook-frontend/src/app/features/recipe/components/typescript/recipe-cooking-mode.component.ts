@@ -3,6 +3,7 @@ import {RecipeDto} from '@shared/domain/recipe';
 import { MatButton, MatIconButton } from '@angular/material/button';
 import {MatIcon} from '@angular/material/icon';
 import {MatDivider} from '@angular/material/divider';
+import { formatUnit } from '@shared/domain/ingredient';
 
 @Component({
   selector: 'app-recipe-cooking-mode',
@@ -42,4 +43,6 @@ export class RecipeCookingModeComponent {
   toggleIngredients(): void {
     this.isMobileIngredientsOpen.update(val => !val);
   }
+
+  protected readonly formatUnit = formatUnit;
 }

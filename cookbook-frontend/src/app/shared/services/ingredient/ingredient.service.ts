@@ -28,4 +28,8 @@ export class IngredientService {
   getCategories(): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}/categories`);
   }
+
+  getUnits(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/units`);
+  }
 }
