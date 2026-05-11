@@ -26,9 +26,9 @@ jobs:
         run: npm install
 
       - name: Build
-        run: npm run build
+        run: npm run build:prod
 
-  docker:
+  docker-github:
     runs-on: ubuntu-latest
     needs: build
     if: github.event_name == 'push'
@@ -65,3 +65,54 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           context: ./cookbook-frontend
+
+  docker-aws:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.event_name == 'push' && github.ref_name == 'development'
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@d979d5b3a71173a29b74b5b88418bfda9437d885 # v6.1.1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@fa648b43de3d4d023bcb3f89ed6940096949c419 # v2.1.5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+
+      - name: Build and push
+        uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
+        with:
+          push: true
+          tags: ${{ secrets.AWS_FRONTEND_TAG }}
+          context: ./cookbook-frontend
+
+      - name: Zip deploy files
+        run: |
+          cd deploy-files
+          zip -r ../${{ github.run_id }}.zip .
+
+      - name: Deploy
+        run: |
+          aws s3 cp "${{ github.run_id }}.zip" s3://elasticbeanstalk-eu-north-1-819109475556/deploy-files/
+          aws elasticbeanstalk create-application-version \
+            --application-name CookBook \
+            --version-label ${{ github.run_id }} \
+            --description ${{ github.run_id }} \
+            --source-bundle S3Bucket="elasticbeanstalk-eu-north-1-819109475556",S3Key="deploy-files/${{ github.run_id }}.zip"
+          aws elasticbeanstalk update-environment \
+            --application-name CookBook \
+            --environment-name CookBook-env \
+            --version-label ${{ github.run_id }}
+          aws elasticbeanstalk wait environment-updated \
+            --application-name CookBook \
+            --environment-name CookBook-env
