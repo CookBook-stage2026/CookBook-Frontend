@@ -93,7 +93,7 @@ jobs:
         uses: docker/build-push-action@d08e5c354a6adb9ed34480a06d141179aa583294 # v7.0.0
         with:
           push: true
-          tags: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ secrets.AWS_REGION }}.amazonaws.com/cookbook/frontend:latest
+          tags: ${{ secrets.AWS_FRONTEND_TAG }}
           context: ./cookbook-frontend
 
       - name: Zip deploy files
@@ -102,22 +102,17 @@ jobs:
           zip -r ../${{ github.run_id }}.zip .
 
       - name: Deploy
-        env:
-          ELASTIC_BEANSTALK_NAME: CookBook
-          ELASTIC_BEANSTALK_ENV_NAME: CookBook-env
-          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
         run: |
-          aws s3 cp "${{ github.run_id }}.zip" s3://elasticbeanstalk-$AWS_REGION-$AWS_ACCOUNT_ID/deploy-files/
+          aws s3 cp "${{ github.run_id }}.zip" s3://elasticbeanstalk-eu-north-1-819109475556/deploy-files/
           aws elasticbeanstalk create-application-version \
-            --application-name $ELASTIC_BEANSTALK_NAME \
+            --application-name CookBook \
             --version-label ${{ github.run_id }} \
             --description ${{ github.run_id }} \
-            --source-bundle S3Bucket="elasticbeanstalk-$AWS_REGION-$AWS_ACCOUNT_ID",S3Key="deploy-files/${{ github.run_id }}.zip"
+            --source-bundle S3Bucket="elasticbeanstalk-eu-north-1-819109475556",S3Key="deploy-files/${{ github.run_id }}.zip"
           aws elasticbeanstalk update-environment \
-            --application-name $ELASTIC_BEANSTALK_NAME \
-            --environment-name $ELASTIC_BEANSTALK_ENV_NAME \
+            --application-name CookBook \
+            --environment-name CookBook-env \
             --version-label ${{ github.run_id }}
           aws elasticbeanstalk wait environment-updated \
-            --application-name $ELASTIC_BEANSTALK_NAME \
-            --environment-name $ELASTIC_BEANSTALK_ENV_NAME
+            --application-name CookBook \
+            --environment-name CookBook-env
