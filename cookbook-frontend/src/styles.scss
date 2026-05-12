@@ -44,6 +44,11 @@ body {
   --danger-text: #991b1b;
   --danger-hover: #fca5a5;
   --danger-icon: #dc2626;
+  /* Included/success state */
+  --success-border: #22c55e;
+  --success-text: #166534;
+  --success-hover: #bbf7d0;
+  --success-icon: #16a34a;
 
   --mat-sys-primary: var(--element-primary);
   --mat-sys-on-primary: var(--element-primary-contrast);
@@ -72,5 +77,9 @@ body {
     --danger-text: #fca5a5;
     --danger-hover: #7f1d1d;
     --danger-icon: #f87171;
+    --success-border: #15803d;
+    --success-text: #86efac;
+    --success-hover: #052e16;
+    --success-icon: #4ade80;
   }
 }

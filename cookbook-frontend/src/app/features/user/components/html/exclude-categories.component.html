@@ -1,10 +1,14 @@
 <fieldset class="category-fieldset">
-  <legend><h2>Exclude Ingredient Categories</h2></legend>
-  <p>Select entire categories of ingredients to exclude globally.</p>
+  <legend><h2>Ingredient Categories</h2></legend>
+  <p>Select entire categories of ingredients you want to avoid in your recipes.</p>
 
   <div class="category-grid">
     @for (category of categories(); track category) {
-      <label class="category-item" [class.is-excluded]="isCategoryExcluded(category)">
+      <label
+        class="category-item"
+        [class.is-excluded]="isCategoryExcluded(category)"
+        [class.is-included]="!isCategoryExcluded(category)"
+      >
         <input
           type="checkbox"
           class="visually-hidden"
@@ -14,7 +18,7 @@
 
         <div class="item-content">
           <mat-icon aria-hidden="true" class="status-icon">
-            {{ isCategoryExcluded(category) ? 'block' : 'add' }}
+            {{ isCategoryExcluded(category) ? 'block' : 'check_circle' }}
           </mat-icon>
           <span class="category-name">
                 {{ formatCategoryLabel(category) }}
