@@ -12,6 +12,9 @@
         [recipe]="r"
         (exit)="exitCookingMode()"/>
     } @else {
+      <button mat-icon-button (click)="location.back()" aria-label="Back to schedule">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
       <header class="page-header">
         <div>
           <h1 class="page-title">{{ r.name }}</h1>
