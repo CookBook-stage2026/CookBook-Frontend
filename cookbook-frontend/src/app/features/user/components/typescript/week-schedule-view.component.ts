@@ -9,6 +9,8 @@ import { WeekScheduleService } from '@shared/services/week-schedule';
 import { WeekScheduleResponse, DAYS_OF_WEEK, DAY_LABELS, DayOfWeek } from '@shared/domain/week-schedule';
 import { DatePipe } from '@angular/common';
 import { ToastService } from '@core/services';
+import { ConfirmDeleteComponent } from '@features/user/components/typescript/confirm-delete-component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-week-schedule-view',
@@ -33,6 +35,7 @@ export class WeekScheduleViewComponent {
 
   private readonly toastService = inject(ToastService);
   private readonly scheduleService = inject(WeekScheduleService);
+  private readonly dialog = inject(MatDialog);
 
   readonly schedule = signal<WeekScheduleResponse | undefined>(undefined);
   readonly isLoading = signal(true);
@@ -91,20 +94,27 @@ export class WeekScheduleViewComponent {
     const s = this.schedule();
     if (!s) return;
 
-    this.isDeleting.set(true);
+    const dialogRef = this.dialog.open(ConfirmDeleteComponent, {
+      data: { message: 'Are you sure you want to delete this schedule? This cannot be undone.' }
+    });
 
-    this.scheduleService.deleteSchedule(s.id).subscribe({
-      next: () => {
-        this.isDeleting.set(false);
-        this.toastService.show("Household successfully deleted!", "success");
-        this.schedule.set(undefined);
-        this.noSchedule.set(true);
-        this.deleteSchedule.emit();
-      },
-      error: () => {
-        this.isDeleting.set(false);
-        this.toastService.show('Failed to delete a household.', 'error');
-      }
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (!confirmed) return;
+
+      this.isDeleting.set(true);
+      this.scheduleService.deleteSchedule(s.id).subscribe({
+        next: () => {
+          this.isDeleting.set(false);
+          this.toastService.show('Schedule successfully deleted!', 'success');
+          this.schedule.set(undefined);
+          this.noSchedule.set(true);
+          this.deleteSchedule.emit();
+        },
+        error: () => {
+          this.isDeleting.set(false);
+          this.toastService.show('Failed to delete schedule.', 'error');
+        }
+      });
     });
   }
 
