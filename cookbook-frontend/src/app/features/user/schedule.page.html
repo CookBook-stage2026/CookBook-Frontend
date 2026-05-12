@@ -1,19 +1,21 @@
-<app-toast></app-toast>
+<app-toast/>
 
-<div class="schedule-container">
-  <div class="page-title-row">
+<div class="page-container">
+  <header class="page-header">
     <div>
-      <h1>Your Week Schedule</h1>
-      <p class="subtitle">Plan your meals for the week ahead</p>
+      <h1 class="page-title">Your Week Schedule</h1>
+      <p class="page-subtitle">Plan your meals for the week ahead.</p>
     </div>
-    <button
-      mat-flat-button
-      color="primary"
-      (click)="openCreateModal()">
-      <mat-icon>add</mat-icon>
-      Create New Schedule
-    </button>
-  </div>
+    <div class="header-actions">
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="openCreateModal()">
+        <mat-icon>add</mat-icon>
+        Create New Schedule
+      </button>
+    </div>
+  </header>
 
   <div class="week-navigator">
     <button mat-icon-button (click)="previousWeek()" aria-label="Previous week">

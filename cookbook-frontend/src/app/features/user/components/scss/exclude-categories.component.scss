@@ -34,13 +34,13 @@ p { color: var(--text-secondary); margin-bottom: 16px; }
     }
 
     .status-icon {
-      color: var(--success-icon);
+      color: var(--success-text);
     }
   }
 
   &.is-excluded {
-    border-color: #ef4444;
-    color: #991b1b;
+    border-color: var(--danger-border);
+    color: var(--danger-text);
 
     &:hover {
       background-color: var(--danger-hover);
@@ -51,7 +51,7 @@ p { color: var(--text-secondary); margin-bottom: 16px; }
     }
 
     .status-icon {
-      color: #dc2626;
+      color: var(--danger-text);
     }
   }
 }
