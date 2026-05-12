@@ -29,7 +29,7 @@
       <ul class="ingredient-list">
         @for (ing of recipe().ingredients; track ing.ingredientId) {
           <li>
-            <span class="qty">{{ ing.baseQuantity }} {{ ing.unit || '' }}</span>
+            <span class="qty">{{ ing.baseQuantity }} {{ formatUnit(ing.unit, ing.baseQuantity) || '' }}</span>
             <span class="name">{{ ing.name }}</span>
           </li>
         }
