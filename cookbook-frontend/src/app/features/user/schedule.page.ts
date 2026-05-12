@@ -32,6 +32,7 @@ export default class SchedulePage {
   readonly existingSchedules = signal<WeekScheduleResponse[]>([]);
   readonly router = inject(Router);
   readonly route = inject(ActivatedRoute);
+  readonly modalWeekStart = signal<Date>(this.getMonday(new Date()));
 
   readonly weekRangeLabel = computed(() => {
     const start = this.selectedWeekStart();
@@ -56,7 +57,7 @@ export default class SchedulePage {
 
   openCreateModal(): void {
     this.editingSchedule.set(undefined);
-    this.selectedWeekStart.set(this.findNextAvailableMonday());
+    this.modalWeekStart.set(this.selectedWeekStart());
     this.isCreateModalOpen.set(true);
   }
 
@@ -110,24 +111,6 @@ export default class SchedulePage {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
-  }
-
-  private findNextAvailableMonday(): Date {
-    const today = new Date();
-    const nextMonday = this.getMonday(today);
-    if (nextMonday <= today) {
-      nextMonday.setDate(nextMonday.getDate() + 7);
-    }
-
-    const scheduledMondays = new Set(
-      this.existingSchedules().map(s => s.weekStartDate)
-    );
-
-    while (scheduledMondays.has(this.toLocalDateString(nextMonday))) {
-      nextMonday.setDate(nextMonday.getDate() + 7);
-    }
-
-    return nextMonday;
   }
 
   private updateRouteParam(date: Date): void {

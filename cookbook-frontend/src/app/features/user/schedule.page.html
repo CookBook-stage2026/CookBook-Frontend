@@ -58,7 +58,7 @@
       </div>
       <app-week-schedule-create
         [existingSchedule]="editingSchedule()"
-        [weekStartDate]="selectedWeekStart()"
+        [weekStartDate]="modalWeekStart()"
         [existingSchedules]="existingSchedules()"
         (closeModal)="closeCreateModal()"
         (scheduleCreated)="onScheduleCreated()"
