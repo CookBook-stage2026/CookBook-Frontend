@@ -11,4 +11,8 @@ export class HouseholdService {
   createHousehold(request: CreateHouseholdRequest): Observable<Household> {
     return this.http.post<Household>(this.apiUrl, request);
   }
+
+  getHouseholds(): Observable<Household[]> {
+    return this.http.get<Household[]>(this.apiUrl);
+  }
 }

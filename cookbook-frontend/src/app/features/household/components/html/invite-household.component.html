@@ -1,0 +1,152 @@
+<div
+  class="modal-backdrop"
+  (click)="onClose()"
+  (keydown.escape)="onClose()"
+  tabindex="-1"
+>
+  <dialog
+    class="modal-container"
+    open
+    aria-labelledby="invite-dialog-title"
+    (click)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()"
+  >
+    <div class="modal-header">
+      <h2 class="modal-title" id="invite-dialog-title">
+        <mat-icon aria-hidden="true">group_add</mat-icon>
+        Invite to Household
+      </h2>
+      <button mat-icon-button (click)="onClose()" aria-label="Close dialog">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      @if (!invite()) {
+        <p class="modal-description">
+          Generate a shareable link to invite someone to your household.
+          Choose how long the link stays valid.
+        </p>
+
+        <form [formGroup]="form" (ngSubmit)="createInvite()" class="invite-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Link expires in</mat-label>
+            <mat-select formControlName="durationMinutes" panelClass="duration-select-panel">
+              @for (opt of durationOptions; track opt.value) {
+                <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button
+              mat-stroked-button
+              type="button"
+              (click)="onClose()"
+              [disabled]="isCreating()"
+            >
+              Cancel
+            </button>
+            <button
+              mat-flat-button
+              color="primary"
+              type="submit"
+              [disabled]="isCreating()"
+            >
+              @if (isCreating()) {
+                <mat-spinner diameter="18"/> Generating…
+              } @else {
+                <ng-container matButtonIcon>
+                  <mat-icon>link</mat-icon>
+                  Generate Link
+                </ng-container>
+              }
+            </button>
+          </div>
+        </form>
+      } @else {
+        <p class="modal-description">
+          Share the link below to invite someone.
+          @if (invite()!.expiresAt) {
+            Expires <strong>{{ invite()!.expiresAt | date: 'medium' }}</strong>.
+          } @else {
+            This link <strong>never expires</strong>.
+          }
+        </p>
+
+        <div class="link-box">
+  <span class="link-text" aria-label="Invite link URL" title="{{ inviteLink() }}">
+    {{ inviteLink() }}
+  </span>
+          <button
+            mat-icon-button
+            (click)="copyLink()"
+            [attr.aria-label]="isCopied() ? 'Copied to clipboard' : 'Copy invite link'"
+            [matTooltip]="isCopied() ? 'Copied!' : 'Copy link'"
+          >
+            <mat-icon>{{ isCopied() ? 'check_circle' : 'content_copy' }}</mat-icon>
+          </button>
+        </div>
+
+        <div class="share-section">
+          <p class="share-label" id="share-group-label">Share via</p>
+            <button
+              mat-stroked-button
+              type="button"
+              class="share-btn share-btn--whatsapp"
+              (click)="shareViaWhatsApp()"
+              aria-label="Share via WhatsApp"
+            >
+              <mat-icon aria-hidden="true">chat</mat-icon>
+              WhatsApp
+            </button>
+
+            <button
+              mat-stroked-button
+              type="button"
+              class="share-btn share-btn--email"
+              (click)="shareViaEmail()"
+              aria-label="Share via Email"
+            >
+              <mat-icon aria-hidden="true">mail_outline</mat-icon>
+              Email
+            </button>
+
+            @if (hasNativeShare) {
+              <button
+                mat-stroked-button
+                type="button"
+                class="share-btn"
+                (click)="shareViaNative()"
+                aria-label="More sharing options"
+              >
+                <mat-icon aria-hidden="true">ios_share</mat-icon>
+                More
+              </button>
+            }
+        </div>
+
+        <div class="revoke-section">
+          <button
+            mat-button
+            type="button"
+            class="revoke-btn"
+            (click)="revokeInvite()"
+            [disabled]="isRevoking()"
+          >
+            @if (isRevoking()) {
+              <mat-spinner diameter="16" aria-hidden="true"/> Revoking…
+              <span class="visually-hidden">Revoke link in progress</span>
+            } @else {
+              <ng-container matButtonIcon>
+                <mat-icon aria-hidden="true">link_off</mat-icon>
+                Revoke link
+                <span class="visually-hidden">Revoke link</span>
+              </ng-container>
+            }
+          </button>
+        </div>
+      }
+    </div>
+  </dialog>
+</div>

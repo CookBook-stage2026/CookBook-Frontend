@@ -1,7 +1,18 @@
-import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { HouseholdService } from '@shared/services/household/household.service';
 import { CreateHouseholdComponent } from '@features/household/components/typescript/create-household.component';
+import { HouseholdCardComponent } from '@features/household/components/typescript/household-card.component';
+import { InviteHouseholdComponent } from '@features/household/components/typescript/invite-household.component';
 import { ToastComponent } from '@shared/components/toast/toast.component';
 
 @Component({
@@ -12,12 +23,32 @@ import { ToastComponent } from '@shared/components/toast/toast.component';
   imports: [
     MatButtonModule,
     MatIconModule,
+    MatProgressSpinnerModule,
     CreateHouseholdComponent,
+    HouseholdCardComponent,
+    InviteHouseholdComponent,
     ToastComponent,
   ],
 })
 export default class HouseholdsPageComponent {
+  private readonly householdService = inject(HouseholdService);
+
+  readonly householdsResource = rxResource({
+    stream: () => this.householdService.getHouseholds(),
+  });
+
+  readonly hasHouseholds = computed(
+    () => (this.householdsResource.value()?.length ?? 0) > 0,
+  );
+
+  readonly isCentered = computed(
+    () => !this.hasHouseholds() || this.householdsResource.isLoading(),
+  );
+
   readonly isCreateModalOpen = signal(false);
+  readonly selectedHouseholdId = signal<string | null>(null);
+
+  readonly isInviteModalOpen = computed(() => !!this.selectedHouseholdId());
 
   openCreateModal(): void {
     this.isCreateModalOpen.set(true);
@@ -29,5 +60,14 @@ export default class HouseholdsPageComponent {
 
   onHouseholdCreated(): void {
     this.closeCreateModal();
+    this.householdsResource.reload();
+  }
+
+  openInviteModal(householdId: string): void {
+    this.selectedHouseholdId.set(householdId);
+  }
+
+  closeInviteModal(): void {
+    this.selectedHouseholdId.set(null);
   }
 }

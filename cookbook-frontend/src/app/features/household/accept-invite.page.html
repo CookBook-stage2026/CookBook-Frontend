@@ -1,0 +1,64 @@
+<main class="invite-page" aria-labelledby="invite-page-title">
+  <div class="invite-card">
+    <mat-icon class="brand-icon" aria-hidden="true">home_work</mat-icon>
+
+    @switch (state()) {
+      @case ('idle') {
+        <h1 class="invite-title" id="invite-page-title">You've been invited!</h1>
+        <p class="invite-description">
+          You received an invitation to join a household. Accept it to start
+          sharing recipes and planning meals together.
+        </p>
+        <button
+          mat-flat-button
+          color="primary"
+          class="action-btn"
+          (click)="acceptInvite()"
+        >
+          <mat-icon>check</mat-icon>
+          Accept Invitation
+        </button>
+      }
+
+      @case ('loading') {
+        <h1 class="invite-title" id="invite-page-title">Joining household…</h1>
+        <mat-spinner diameter="40" aria-label="Processing invitation" />
+      }
+
+      @case ('success') {
+        <mat-icon class="state-icon state-icon--success" aria-hidden="true">
+          check_circle
+        </mat-icon>
+        <h1 class="invite-title" id="invite-page-title">Welcome aboard!</h1>
+        <p class="invite-description">
+          You've successfully joined the household. You can now view and manage
+          shared recipes.
+        </p>
+        <button
+          mat-flat-button
+          color="primary"
+          class="action-btn"
+          (click)="goToHouseholds()"
+        >
+          <mat-icon>home</mat-icon>
+          Go to Households
+        </button>
+      }
+
+      @case ('error') {
+        <mat-icon class="state-icon state-icon--error" aria-hidden="true">
+          error_outline
+        </mat-icon>
+        <h1 class="invite-title" id="invite-page-title">Invite unavailable</h1>
+        <p class="invite-description">
+          This invite link is invalid, has already been used, or has expired.
+          Ask the household owner to send you a new one.
+        </p>
+        <button mat-stroked-button class="action-btn" (click)="goToHouseholds()">
+          <mat-icon>arrow_back</mat-icon>
+          Back to Households
+        </button>
+      }
+    }
+  </div>
+</main>
