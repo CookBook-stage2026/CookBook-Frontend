@@ -1,9 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { catchError, of, tap, throwError } from 'rxjs';
+import { catchError, tap, throwError } from 'rxjs';
 import { ToastService } from '@core/services';
 import { environment } from '../../../../environment';
-import { CreateWeekScheduleRequest, UpdateWeekScheduleRequest, WeekScheduleResponse } from '@shared/domain/week-schedule';
+import {
+  CreateWeekScheduleRequest,
+  UpdateWeekScheduleRequest,
+  WeekScheduleResponse
+} from '@shared/domain/week-schedule';
 
 @Injectable({ providedIn: 'root' })
 export class WeekScheduleService {
@@ -44,5 +48,9 @@ export class WeekScheduleService {
         return throwError(() => err);
       })
     );
+  }
+
+  deleteSchedule(id: string) {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

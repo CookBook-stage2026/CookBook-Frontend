@@ -26,15 +26,28 @@
 } @else {
   <div class="schedule-header">
     <h2 class="schedule-title">Week of {{ weekStartDate() | date:'mediumDate' }}</h2>
-    <button
-      mat-stroked-button
-      color="primary"
-      (click)="onEdit()"
-      [attr.aria-label]="'Edit schedule'"
-    >
-      <mat-icon>edit</mat-icon>
-      Edit Schedule
-    </button>
+    <div class="action-buttons">
+      <button
+        mat-stroked-button
+        color="primary"
+        (click)="onEdit()"
+        [attr.aria-label]="'Edit schedule'"
+      >
+        <mat-icon>edit</mat-icon>
+        Edit Schedule
+      </button>
+
+      <button
+        mat-stroked-button
+        color="warn"
+        (click)="onDelete()"
+        [disabled]="isDeleting()"
+        [attr.aria-label]="'Delete schedule'"
+      >
+        <mat-icon>delete</mat-icon>
+        {{ isDeleting() ? 'Deleting…' : 'Delete Schedule' }}
+      </button>
+    </div>
   </div>
 
   <div class="schedule-grid">
