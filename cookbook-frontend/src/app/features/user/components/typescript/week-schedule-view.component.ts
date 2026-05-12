@@ -8,6 +8,7 @@ import { RouterLink } from '@angular/router';
 import { WeekScheduleService } from '@shared/services/week-schedule';
 import { WeekScheduleResponse, DAYS_OF_WEEK, DAY_LABELS, DayOfWeek } from '@shared/domain/week-schedule';
 import { DatePipe } from '@angular/common';
+import { ToastService } from '@core/services';
 
 @Component({
   selector: 'app-week-schedule-view',
@@ -28,13 +29,16 @@ export class WeekScheduleViewComponent {
   readonly weekStartDate = input.required<Date>();
   readonly refreshTrigger = input(0, { transform: (value: number) => value });
   readonly editSchedule = output<WeekScheduleResponse>();
+  readonly deleteSchedule = output<void>();
 
+  private readonly toastService = inject(ToastService);
   private readonly scheduleService = inject(WeekScheduleService);
 
   readonly schedule = signal<WeekScheduleResponse | undefined>(undefined);
   readonly isLoading = signal(true);
   readonly loadError = signal<string | null>(null);
   readonly noSchedule = signal(false);
+  readonly isDeleting = signal(false);
 
   constructor() {
     effect(() => {
@@ -81,6 +85,27 @@ export class WeekScheduleViewComponent {
     const s = this.schedule();
     if (!s) return undefined;
     return s.days.find(d => d.day === day)?.recipeSummary;
+  }
+
+  onDelete(): void {
+    const s = this.schedule();
+    if (!s) return;
+
+    this.isDeleting.set(true);
+
+    this.scheduleService.deleteSchedule(s.id).subscribe({
+      next: () => {
+        this.isDeleting.set(false);
+        this.toastService.show("Household successfully deleted!", "success");
+        this.schedule.set(undefined);
+        this.noSchedule.set(true);
+        this.deleteSchedule.emit();
+      },
+      error: () => {
+        this.isDeleting.set(false);
+        this.toastService.show('Failed to delete a household.', 'error');
+      }
+    });
   }
 
   readonly daysOfWeek = DAYS_OF_WEEK;
