@@ -1,12 +1,12 @@
-import { Component, ChangeDetectionStrategy, inject, input, signal, effect, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { WeekScheduleService } from '@shared/services/week-schedule';
-import { WeekScheduleResponse, DAYS_OF_WEEK, DAY_LABELS, DayOfWeek } from '@shared/domain/week-schedule';
+import { DAY_LABELS, DayOfWeek, DAYS_OF_WEEK, WeekScheduleResponse } from '@shared/domain/week-schedule';
 import { DatePipe } from '@angular/common';
 import { ToastService } from '@core/services';
 import { ConfirmDeleteComponent } from '@features/user/components/typescript/confirm-delete-component';
@@ -32,6 +32,7 @@ export class WeekScheduleViewComponent {
   readonly refreshTrigger = input(0, { transform: (value: number) => value });
   readonly editSchedule = output<WeekScheduleResponse>();
   readonly deleteSchedule = output<void>();
+  readonly router = inject(Router);
 
   private readonly toastService = inject(ToastService);
   private readonly scheduleService = inject(WeekScheduleService);

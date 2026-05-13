@@ -9,11 +9,12 @@ import { MatDivider } from '@angular/material/list';
 import { RecipeIngredientsComponent } from '@features/recipe/components/typescript/recipe-ingredients-list.component';
 import { RecipePreparationComponent } from '@features/recipe/components/typescript/recipe-preparation-list';
 import { MatDialog } from '@angular/material/dialog';
-import { MatButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { ToastService } from '@core/services';
 import { RecipeEnhanceModalComponent } from '@features/recipe/components/typescript/recipe-enhance-modal.component';
 import { of } from 'rxjs';
 import { RecipeCookingModeComponent } from '@features/recipe/components/typescript/recipe-cooking-mode.component';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-recipe-detail-page',
@@ -29,7 +30,8 @@ import { RecipeCookingModeComponent } from '@features/recipe/components/typescri
     RecipeIngredientsComponent,
     RecipePreparationComponent,
     MatButton,
-    RecipeCookingModeComponent
+    RecipeCookingModeComponent,
+    MatIconButton
   ],
   styleUrls: ['./recipe-detail.page.scss']
 })
@@ -37,6 +39,7 @@ export default class RecipeDetailPage {
   readonly recipeService = inject(RecipeService);
   readonly dialog = inject(MatDialog);
   readonly toastService = inject(ToastService);
+  readonly location = inject(Location);
 
   readonly recipeId = input.required<string>();
   readonly isCookingMode = signal(false);

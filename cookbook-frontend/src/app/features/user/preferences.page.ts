@@ -32,8 +32,8 @@ export default class PreferencesPage {
   private readonly userService = inject(UserService);
   private readonly toastService = inject(ToastService);
 
-  readonly excludedCategories = signal<string[]>([]);
-  readonly excludedIngredients = signal<Ingredient[]>([]);
+  excludedCategories = signal<string[]>([]);
+  excludedIngredients = signal<Ingredient[]>([]);
   readonly isSaving = signal(false);
 
   readonly preferencesResource = rxResource({

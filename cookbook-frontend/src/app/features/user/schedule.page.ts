@@ -7,6 +7,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { ToastComponent } from '@shared/components/toast/toast.component';
 import { WeekScheduleResponse } from '@shared/domain/week-schedule';
 import { WeekScheduleService } from '@shared/services/week-schedule';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-schedule-page',
@@ -29,6 +30,9 @@ export default class SchedulePage {
   readonly editingSchedule = signal<WeekScheduleResponse | undefined>(undefined);
   private readonly weekScheduleService = inject(WeekScheduleService);
   readonly existingSchedules = signal<WeekScheduleResponse[]>([]);
+  readonly router = inject(Router);
+  readonly route = inject(ActivatedRoute);
+  readonly modalWeekStart = signal<Date>(this.getMonday(new Date()));
 
   readonly weekRangeLabel = computed(() => {
     const start = this.selectedWeekStart();
@@ -38,6 +42,10 @@ export default class SchedulePage {
   });
 
   constructor() {
+    const weekParam = this.route.snapshot.queryParamMap.get('week');
+    if (weekParam) {
+      this.selectedWeekStart.set(this.getMonday(new Date(weekParam)));
+    }
     this.loadSchedules();
   }
 
@@ -49,7 +57,7 @@ export default class SchedulePage {
 
   openCreateModal(): void {
     this.editingSchedule.set(undefined);
-    this.selectedWeekStart.set(this.findNextAvailableMonday());
+    this.modalWeekStart.set(this.selectedWeekStart());
     this.isCreateModalOpen.set(true);
   }
 
@@ -73,6 +81,7 @@ export default class SchedulePage {
     this.selectedWeekStart.update(date => {
       const d = new Date(date);
       d.setDate(d.getDate() - 7);
+      this.updateRouteParam(d);
       return d;
     });
   }
@@ -81,6 +90,7 @@ export default class SchedulePage {
     this.selectedWeekStart.update(date => {
       const d = new Date(date);
       d.setDate(d.getDate() + 7);
+      this.updateRouteParam(d);
       return d;
     });
   }
@@ -103,21 +113,10 @@ export default class SchedulePage {
     return `${year}-${month}-${day}`;
   }
 
-  private findNextAvailableMonday(): Date {
-    const today = new Date();
-    const nextMonday = this.getMonday(today);
-    if (nextMonday <= today) {
-      nextMonday.setDate(nextMonday.getDate() + 7);
-    }
-
-    const scheduledMondays = new Set(
-      this.existingSchedules().map(s => s.weekStartDate)
-    );
-
-    while (scheduledMondays.has(this.toLocalDateString(nextMonday))) {
-      nextMonday.setDate(nextMonday.getDate() + 7);
-    }
-
-    return nextMonday;
+  private updateRouteParam(date: Date): void {
+    this.router.navigate([], {
+      queryParams: { week: this.toLocalDateString(date) },
+      replaceUrl: true
+    });
   }
 }

@@ -12,44 +12,46 @@
         [recipe]="r"
         (exit)="exitCookingMode()"/>
     } @else {
-      <header>
-        <div class="header-title-row">
-          <h1>{{ r.name }}</h1>
-          <div class="action-buttons">
-            <button
-              mat-flat-button
-              color="accent"
-              (click)="enhanceRecipe()"
-              [disabled]="enhancedRecipe.isLoading()"
-            >
-              @if (enhancedRecipe.isLoading()) {
-                <mat-spinner diameter="20" aria-hidden="true"/>
-              } @else {
-                <mat-icon aria-hidden="true">auto_awesome</mat-icon>
-              }
-
-              @if (!enhancedRecipe.isLoading()) {
-                <span>Enhance Recipe</span>
-              }
-            </button>
-
-            <button mat-flat-button color="primary" (click)="enterCookingMode()">
-              <mat-icon>restaurant</mat-icon>
-              Start Cooking
-            </button>
-          </div>
+      <button mat-icon-button (click)="location.back()" aria-label="Back to schedule">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+      <header class="page-header">
+        <div>
+          <h1 class="page-title">{{ r.name }}</h1>
+          <mat-chip-set class="recipe-chips" aria-label="Recipe metadata">
+            <mat-chip disabled class="static-chip">
+              <mat-icon matChipAvatar>schedule</mat-icon>
+              {{ r.durationInMinutes }} min
+            </mat-chip>
+            <mat-chip disabled class="static-chip">
+              <mat-icon matChipAvatar>people</mat-icon>
+              {{ r.servings }} servings
+            </mat-chip>
+          </mat-chip-set>
         </div>
+        <div class="header-actions">
+          <button
+            mat-flat-button
+            color="accent"
+            (click)="enhanceRecipe()"
+            [disabled]="enhancedRecipe.isLoading()"
+          >
+            @if (enhancedRecipe.isLoading()) {
+              <mat-spinner diameter="20" aria-hidden="true"/>
+            } @else {
+              <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+            }
 
-        <mat-chip-set class="header-meta" aria-label="Recipe metadata">
-          <mat-chip disabled class="static-chip">
-            <mat-icon matChipAvatar>schedule</mat-icon>
-            {{ r.durationInMinutes }} min
-          </mat-chip>
-          <mat-chip disabled class="static-chip">
-            <mat-icon matChipAvatar>people</mat-icon>
-            {{ r.servings }} servings
-          </mat-chip>
-        </mat-chip-set>
+            @if (!enhancedRecipe.isLoading()) {
+              <span>Enhance Recipe</span>
+            }
+          </button>
+
+          <button mat-flat-button color="primary" (click)="enterCookingMode()">
+            <mat-icon>restaurant</mat-icon>
+            Start Cooking
+          </button>
+        </div>
       </header>
 
       <mat-divider/>

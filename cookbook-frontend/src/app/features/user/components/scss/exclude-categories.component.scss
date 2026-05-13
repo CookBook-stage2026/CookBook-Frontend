@@ -25,13 +25,22 @@ p { color: var(--text-secondary); margin-bottom: 16px; }
   background-color: var(--surface-color);
   transition: all 0.2s ease;
 
-  &:hover {
-    background-color: var(--hover-color);
+  &.is-included {
+    border-color: var(--success-border);
+    color: var(--success-text);
+
+    &:hover {
+      background-color: var(--success-hover);
+    }
+
+    .status-icon {
+      color: var(--success-text);
+    }
   }
 
   &.is-excluded {
-    border-color: #ef4444;
-    color: #991b1b;
+    border-color: var(--danger-border);
+    color: var(--danger-text);
 
     &:hover {
       background-color: var(--danger-hover);
@@ -42,7 +51,7 @@ p { color: var(--text-secondary); margin-bottom: 16px; }
     }
 
     .status-icon {
-      color: #dc2626;
+      color: var(--danger-text);
     }
   }
 }
