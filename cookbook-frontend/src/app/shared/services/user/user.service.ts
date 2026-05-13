@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environment';
-import { UpdateUserPreferencesRequest, UserPreferencesDto } from '@shared/domain/user';
+import { UpdateUserPreferencesRequest, User, UserPreferencesDto } from '@shared/domain/user';
 
 @Injectable({ providedIn: 'root' })
 export class UserService {
@@ -15,5 +15,9 @@ export class UserService {
 
   updatePreferences(request: UpdateUserPreferencesRequest): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/preferences`, request);
+  }
+
+  getCurrentUser(): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/me`);
   }
 }

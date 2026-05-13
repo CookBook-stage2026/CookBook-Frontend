@@ -11,7 +11,7 @@
         <h2 class="card-name">{{ household().name }}</h2>
         <p class="card-creator">
           <mat-icon class="meta-icon" aria-hidden="true">person_outline</mat-icon>
-          {{ household().creator.displayName }}
+          <span class="creator-name">{{ household().creator.displayName }}</span>
         </p>
       </div>
     </div>
@@ -53,15 +53,17 @@
       <span class="member-count" aria-hidden="true">{{ memberLabel() }}</span>
     </div>
 
-    <button
-      mat-stroked-button
-      class="invite-btn"
-      type="button"
-      (click)="onInviteClick()"
-      [attr.aria-label]="'Invite someone to ' + household().name"
-    >
-      <mat-icon>person_add</mat-icon>
-      Invite
-    </button>
+    @if (isCreator()) {
+      <button
+        mat-stroked-button
+        class="invite-btn"
+        type="button"
+        (click)="onInviteClick()"
+        [attr.aria-label]="'Invite someone to ' + household().name"
+      >
+        <mat-icon>person_add</mat-icon>
+        Invite
+      </button>
+    }
   </div>
 </article>

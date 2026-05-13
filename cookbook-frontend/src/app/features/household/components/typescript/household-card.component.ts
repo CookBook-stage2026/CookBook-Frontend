@@ -1,10 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  computed,
-  input,
-  output,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output, } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
@@ -20,6 +14,7 @@ import { User } from '@shared/domain/user';
 })
 export class HouseholdCardComponent {
   readonly household = input.required<Household>();
+  readonly currentUser = input.required<User>();
   readonly inviteClicked = output<string>();
 
   private readonly MAX_VISIBLE_MEMBERS = 4;
@@ -36,6 +31,10 @@ export class HouseholdCardComponent {
     const count = this.household().members.length;
     return count === 1 ? '1 member' : `${count} members`;
   });
+
+  readonly isCreator = computed(() =>
+    this.currentUser().userId === this.household().creator.userId,
+  );
 
   getInitials(user: User): string {
     return user.displayName

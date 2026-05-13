@@ -54,7 +54,8 @@
               [disabled]="isCreating()"
             >
               @if (isCreating()) {
-                <mat-spinner diameter="18"/> Generating…
+                <span class="inline-spinner" aria-hidden="true"><mat-spinner
+                  diameter="18"></mat-spinner></span> Generating…
               } @else {
                 <ng-container matButtonIcon>
                   <mat-icon>link</mat-icon>
@@ -67,11 +68,7 @@
       } @else {
         <p class="modal-description">
           Share the link below to invite someone.
-          @if (invite()!.expiresAt) {
             Expires <strong>{{ invite()!.expiresAt | date: 'medium' }}</strong>.
-          } @else {
-            This link <strong>never expires</strong>.
-          }
         </p>
 
         <div class="link-box">
@@ -135,12 +132,11 @@
             [disabled]="isRevoking()"
           >
             @if (isRevoking()) {
-              <mat-spinner diameter="16" aria-hidden="true"/> Revoking…
+              <span class="inline-spinner" aria-hidden="true"><mat-spinner diameter="16"></mat-spinner></span> Revoking…
               <span class="visually-hidden">Revoke link in progress</span>
             } @else {
               <ng-container matButtonIcon>
                 <mat-icon aria-hidden="true">link_off</mat-icon>
-                Revoke link
                 <span class="visually-hidden">Revoke link</span>
               </ng-container>
             }

@@ -55,7 +55,6 @@ export class InviteHouseholdComponent {
     { label: '1 hour', value: 60 },
     { label: '24 hours', value: 1440 },
     { label: '7 days', value: 10080 },
-    { label: 'Never expires', value: null },
   ];
 
   readonly form = this.fb.group({
