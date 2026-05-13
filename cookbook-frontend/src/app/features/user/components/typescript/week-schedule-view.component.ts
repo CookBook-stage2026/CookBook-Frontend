@@ -11,6 +11,7 @@ import { DatePipe } from '@angular/common';
 import { ToastService } from '@core/services';
 import { ConfirmDeleteComponent } from '@features/user/components/typescript/confirm-delete-component';
 import { MatDialog } from '@angular/material/dialog';
+import { SuggestRecipeConfirmComponent } from '@features/user/components/typescript/suggest-recipe-confirm.component';
 
 @Component({
   selector: 'app-week-schedule-view',
@@ -32,8 +33,8 @@ export class WeekScheduleViewComponent {
   readonly refreshTrigger = input(0, { transform: (value: number) => value });
   readonly editSchedule = output<WeekScheduleResponse>();
   readonly deleteSchedule = output<void>();
-  readonly router = inject(Router);
 
+  readonly router = inject(Router);
   private readonly toastService = inject(ToastService);
   private readonly scheduleService = inject(WeekScheduleService);
   private readonly dialog = inject(MatDialog);
@@ -43,6 +44,10 @@ export class WeekScheduleViewComponent {
   readonly loadError = signal<string | null>(null);
   readonly noSchedule = signal(false);
   readonly isDeleting = signal(false);
+  readonly suggestingDay = signal<string | null>(null);
+
+  readonly daysOfWeek = DAYS_OF_WEEK;
+  readonly dayLabels = DAY_LABELS;
 
   constructor() {
     effect(() => {
@@ -86,9 +91,74 @@ export class WeekScheduleViewComponent {
   }
 
   getRecipeForDay(day: DayOfWeek) {
-    const s = this.schedule();
-    if (!s) return undefined;
-    return s.days.find(d => d.day === day)?.recipeSummary;
+    return this.schedule()?.days.find(d => d.day === day)?.recipeSummary;
+  }
+
+  getDayIsoDate(day: DayOfWeek): string {
+    const start = new Date(this.weekStartDate());
+    const dayIndex = DAYS_OF_WEEK.indexOf(day);
+    start.setDate(start.getDate() + dayIndex);
+    return this.formatIso(start);
+  }
+
+  onSuggest(day: DayOfWeek): void {
+    const isoDate = this.getDayIsoDate(day);
+
+    this.suggestingDay.set(isoDate);
+
+    this.scheduleService.suggestRecipeForDay(isoDate).subscribe({
+      next: (suggestedSchedule) => {
+        this.suggestingDay.set(null);
+
+        const suggestedRecipe =
+          suggestedSchedule.days.find(d => d.day === day)?.recipeSummary;
+
+        if (!suggestedRecipe) {
+          return;
+        }
+
+        const dialogRef = this.dialog.open(
+          SuggestRecipeConfirmComponent,
+          {
+            data: {
+              recipeName: suggestedRecipe.name,
+              day: this.dayLabels[day]
+            }
+          }
+        );
+
+        dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+          if (!confirmed) {
+            return;
+          }
+
+          this.scheduleService
+            .updateSchedule(
+              suggestedSchedule.id,
+              {
+                days: suggestedSchedule.days.map(d => ({
+                  day: d.day,
+                  recipeId: d.recipeSummary.id
+                }))
+              }
+            )
+            .subscribe({
+              next: () => {
+                this.schedule.set(suggestedSchedule);
+                this.toastService.show('Recipe saved!', 'success');
+              },
+              error: () => {
+                this.toastService.show('Failed to save recipe.', 'error');
+              }
+            });
+        });
+      },
+
+      error: () => {
+        this.suggestingDay.set(null);
+        this.toastService.show('Failed to suggest a recipe.', 'error');
+      }
+    });
   }
 
   onDelete(): void {
@@ -118,9 +188,6 @@ export class WeekScheduleViewComponent {
       });
     });
   }
-
-  readonly daysOfWeek = DAYS_OF_WEEK;
-  readonly dayLabels = DAY_LABELS;
 
   private formatIso(date: Date): string {
     return date.toISOString().split('T')[0];

@@ -27,14 +27,7 @@ export class WeekScheduleService {
   }
 
   updateSchedule(id: string, request: UpdateWeekScheduleRequest) {
-    return this.http.put<void>(`${this.apiUrl}/${id}`, request).pipe(
-      tap(() => this.toastService.show('Schedule updated successfully.', 'success')),
-      catchError(err => {
-        const message = err.error?.detail ?? 'Failed to update the schedule.';
-        this.toastService.show(message, 'error');
-        return throwError(() => err);
-      })
-    );
+    return this.http.put<void>(`${this.apiUrl}/${id}`, request);
   }
 
   getSchedules(from?: string, to?: string) {
@@ -52,5 +45,9 @@ export class WeekScheduleService {
 
   deleteSchedule(id: string) {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  suggestRecipeForDay(date: string) {
+    return this.http.get<WeekScheduleResponse>(`${this.apiUrl}/suggest/${date}`);
   }
 }
