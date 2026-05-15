@@ -49,6 +49,14 @@ body {
   --success-border: #22c55e;
   --success-text: #1f8e49;
   --success-hover: #bbf7d0;
+  /* Revoke/Destructive button */
+  --revoke-bg: #fef2f2;
+  --revoke-border: #fca5a5;
+  --revoke-text: #b91c1c;
+  --revoke-hover-bg: #fee2e2;
+  --revoke-hover-border: #f87171;
+  --revoke-hover-text: #991b1b;
+  --revoke-focus-ring: rgba(185, 28, 28, 0.3);
 
   --mat-sys-primary: var(--element-primary);
   --mat-sys-on-primary: var(--element-primary-contrast);
@@ -79,4 +87,11 @@ body {
   --success-border: #116631;
   --success-text: #1b9648;
   --success-hover: #052e16;
+  --revoke-bg: rgba(239, 68, 68, 0.1);
+  --revoke-border: rgba(239, 68, 68, 0.25);
+  --revoke-text: #f87171;
+  --revoke-hover-bg: rgba(239, 68, 68, 0.2);
+  --revoke-hover-border: rgba(239, 68, 68, 0.45);
+  --revoke-hover-text: #fca5a5;
+  --revoke-focus-ring: rgba(248, 113, 113, 0.4);
 }
