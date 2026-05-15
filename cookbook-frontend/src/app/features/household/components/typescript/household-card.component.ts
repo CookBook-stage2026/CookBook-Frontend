@@ -18,6 +18,7 @@ export class HouseholdCardComponent {
 
   readonly inviteClicked = output<string>();
   readonly opened = output<string>();
+  readonly leaveClicked = output<string>();
 
   private readonly MAX_VISIBLE_MEMBERS = 4;
 
@@ -62,5 +63,9 @@ export class HouseholdCardComponent {
 
   onOpen(): void {
     this.opened.emit(this.household().id);
+  }
+
+  onLeaveClick(): void {
+    this.leaveClicked.emit(this.household().id);
   }
 }

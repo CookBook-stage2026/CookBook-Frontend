@@ -66,5 +66,17 @@
         Invite
       </button>
     }
+
+    @if (!isCreator()) {
+      <button
+        mat-stroked-button
+        color="warn"
+        type="button"
+        (click)="onLeaveClick(); $event.stopPropagation()"
+      >
+        <mat-icon>logout</mat-icon>
+        Leave
+      </button>
+    }
   </div>
 </article>

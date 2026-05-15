@@ -11,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
     <mat-dialog-content>{{ data.message }}</mat-dialog-content>
     <mat-dialog-actions align="end">
       <button mat-stroked-button (click)="ref.close(false)">Cancel</button>
-      <button mat-flat-button color="warn" (click)="ref.close(true)">Delete</button>
+      <button mat-flat-button color="warn" (click)="ref.close(true)">Confirm</button>
     </mat-dialog-actions>
   `
 })

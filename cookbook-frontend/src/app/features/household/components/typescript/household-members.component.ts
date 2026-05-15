@@ -7,6 +7,7 @@ import { MatIconButton } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { filter, switchMap } from 'rxjs';
 import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-component';
+import { ToastService } from '@core/services';
 
 @Component({
   selector: 'app-household-members',
@@ -21,6 +22,7 @@ import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-compon
 export class HouseholdMembersComponent {
   private readonly householdService = inject(HouseholdService);
   private readonly dialog = inject(MatDialog);
+  private readonly toastService = inject(ToastService);
 
   readonly householdId = input.required<string>();
   readonly currentUser = input.required<User>();
@@ -60,8 +62,13 @@ export class HouseholdMembersComponent {
           ),
         ),
       )
-      .subscribe(() => {
-        this.householdResource.reload();
+      .subscribe({
+        next: () => {
+          this.householdResource.reload();
+        },
+        error: () => {
+          this.toastService.show('Failed to remove member from household.', 'error');
+        },
       });
   }
 
@@ -81,8 +88,13 @@ export class HouseholdMembersComponent {
           this.householdService.deleteHousehold(this.householdId()),
         ),
       )
-      .subscribe(() => {
-        this.closeModal.emit();
+      .subscribe({
+        next: () => {
+          this.closeModal.emit();
+        },
+        error: () => {
+          this.toastService.show('Failed to delete household.', 'error');
+        },
       });
   }
 }
