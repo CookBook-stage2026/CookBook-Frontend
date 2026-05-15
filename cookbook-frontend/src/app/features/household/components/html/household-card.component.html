@@ -1,6 +1,8 @@
 <article
   class="household-card"
+  tabindex="0"
   (click)=onOpen()
+  (keydown)=onOpen()
   [attr.aria-label]="'Household: ' + household().name"
 >
   <div class="card-top">

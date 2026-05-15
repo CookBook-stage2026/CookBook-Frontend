@@ -1,5 +1,5 @@
-<div class="modal-backdrop" (click)="closeModal.emit()">
-  <div class="modal" (click)="$event.stopPropagation()">
+<div class="modal-backdrop" (click)="closeModal.emit()" (keydown)="closeModal.emit()">
+  <div class="modal" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
 
     @if (householdResource.value(); as household) {
 
