@@ -35,7 +35,6 @@
           color="warn"
           (click)="onDelete()"
           [disabled]="isDeleting()"
-          aria-label="Delete schedule"
         >
           <mat-icon>delete</mat-icon>
           {{ isDeleting() ? 'Deleting…' : 'Delete Schedule' }}
