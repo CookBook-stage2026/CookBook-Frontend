@@ -15,4 +15,16 @@ export class HouseholdService {
   getHouseholds(): Observable<Household[]> {
     return this.http.get<Household[]>(this.apiUrl);
   }
+
+  getHouseholdById(id: string): Observable<Household> {
+    return this.http.get<Household>(`${this.apiUrl}/${id}`);
+  }
+
+  removeMember(householdId: string, userId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${householdId}/members/${userId}`,);
+  }
+
+  deleteHousehold(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

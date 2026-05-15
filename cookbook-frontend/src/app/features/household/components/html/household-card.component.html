@@ -1,5 +1,6 @@
 <article
   class="household-card"
+  (click)=onOpen()
   [attr.aria-label]="'Household: ' + household().name"
 >
   <div class="card-top">
@@ -58,7 +59,7 @@
         mat-stroked-button
         class="invite-btn"
         type="button"
-        (click)="onInviteClick()"
+        (click)="onInviteClick(); $event.stopPropagation()"
         [attr.aria-label]="'Invite someone to ' + household().name"
       >
         <mat-icon>person_add</mat-icon>

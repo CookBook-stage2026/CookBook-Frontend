@@ -15,7 +15,9 @@ import { User } from '@shared/domain/user';
 export class HouseholdCardComponent {
   readonly household = input.required<Household>();
   readonly currentUser = input.required<User>();
+
   readonly inviteClicked = output<string>();
+  readonly opened = output<string>();
 
   private readonly MAX_VISIBLE_MEMBERS = 4;
 
@@ -56,5 +58,9 @@ export class HouseholdCardComponent {
 
   onInviteClick(): void {
     this.inviteClicked.emit(this.household().id);
+  }
+
+  onOpen(): void {
+    this.opened.emit(this.household().id);
   }
 }

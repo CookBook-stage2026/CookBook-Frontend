@@ -1,0 +1,82 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1100;
+}
+
+.modal {
+  width: min(420px, 90vw);
+  overflow-x: hidden;
+  padding: 1.5rem;
+  border-radius: 12px;
+  background: var(--bg-surface);
+}
+
+.household-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  h2,
+  p {
+    margin: 0;
+  }
+
+  p {
+    margin-top: .25rem;
+    opacity: .7;
+  }
+}
+
+.members-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 20rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.member-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: .75rem 0;
+  min-width: 0;
+}
+
+.empty-state {
+  opacity: .7;
+}
+
+.delete-icon {
+  color: var(--danger-text);
+  margin-left: auto;
+}
+
+.delete-household-btn {
+  color: var(--danger-text, #d32f2f);
+  margin-left: auto;
+}
+
+.remove-member-btn {
+  color: var(--text-secondary, #757575);
+  transition: color 0.2s ease-in-out;
+}
+
+.remove-member-btn:hover,
+.remove-member-btn:focus-visible {
+  color: var(--danger-text, #d32f2f);
+}
+
+.delete-household-btn:focus-visible,
+.remove-member-btn:focus-visible {
+  outline: 2px solid var(--danger-text, #d32f2f);
+  outline-offset: 2px;
+  border-radius: 50%;
+}
