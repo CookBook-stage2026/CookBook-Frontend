@@ -87,21 +87,15 @@ export class RecipeService {
 
   importRecipe(url: string): Observable<RecipeDto> {
     return this.http.post<RecipeDto>(`${this.apiUrl}/import`, { url }).pipe(
-      tap((recipe) => this.toastService.show(`Recipe "${recipe.name}" imported successfully!`, 'success')),
       catchError((error: HttpErrorResponse) => {
         let errorMessage = 'Failed to import recipe.';
-
-        if (error.status === 400) {
-          errorMessage = 'Invalid URL or unable to extract recipe from that page.';
-        } else if (error.status === 422) {
-          errorMessage = 'Could not find a recipe at the provided URL.';
-        } else if (error.status === 502 || error.status === 503) {
-          errorMessage = 'AI processing failed. Please try again later.';
-        }
+        if (error.status === 400) errorMessage = 'Invalid URL or unable to extract recipe from that page.';
+        else if (error.status === 422) errorMessage = 'Could not find a recipe at the provided URL.';
+        else if (error.status === 502 || error.status === 503) errorMessage = 'AI processing failed. Please try again later.';
 
         this.toastService.show(errorMessage, 'error');
         return throwError(() => new Error(errorMessage));
-      })
+      }),
     );
   }
 }

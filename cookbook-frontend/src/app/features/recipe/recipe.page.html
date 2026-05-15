@@ -15,74 +15,29 @@
         [color]="shouldApplyPreferences() ? 'primary' : ''"
         [attr.aria-pressed]="shouldApplyPreferences()">
         <mat-icon>{{ shouldApplyPreferences() ? 'visibility' : 'visibility_off' }}</mat-icon>
-        {{ shouldApplyPreferences() ? 'Using Preferences' : 'Ignoring Preferences' }}
+        {{ shouldApplyPreferences() ? 'Using preferences' : 'Ignoring preferences' }}
       </button>
 
       <button
         mat-stroked-button
         type="button"
-        (click)="toggleImportForm()"
-        [attr.aria-expanded]="showImportForm()">
+        (click)="openImportDialog()">
         <mat-icon>download</mat-icon>
-        @if (showImportForm()) {
-          Cancel Import
-        } @else {
-          Import Recipe
-        }
+        Import recipe
       </button>
 
       <button
         mat-flat-button
         color="primary"
+        type="button"
         (click)="openModal()">
         <mat-icon>add</mat-icon>
-        Add Recipe
+        Add recipe
       </button>
     </div>
   </header>
 
-  @if (showImportForm()) {
-    <section class="import-section" aria-label="Import recipe from URL">
-      <form [formGroup]="importForm" (ngSubmit)="importRecipe()" class="import-form" novalidate>
-        <mat-form-field appearance="outline" class="import-url-field">
-          <mat-label>Recipe URL</mat-label>
-          <input
-            matInput
-            type="url"
-            formControlName="url"
-            placeholder="https://example.com/recipe"
-            aria-describedby="import-url-error"
-            autocomplete="url"
-            required
-          />
-          <mat-icon matPrefix>link</mat-icon>
-          @if (importForm.controls.url.invalid && importForm.controls.url.touched) {
-            <mat-error id="import-url-error">
-              {{ getUrlErrorMessage() }}
-            </mat-error>
-          }
-        </mat-form-field>
-
-        <button
-          mat-flat-button
-          color="primary"
-          type="submit"
-          [disabled]="importForm.invalid || isImporting()"
-          aria-label="Import recipe from URL">
-          @if (isImporting()) {
-            <mat-spinner diameter="20" aria-hidden="true"></mat-spinner>
-          } @else {
-            <mat-icon>cloud_download</mat-icon>
-          }
-          <span>Import</span>
-        </button>
-      </form>
-    </section>
-  }
-
-  <app-recipe-filter
-    (selectedIngredientsChange)="onFilterChange($event)">
-  </app-recipe-filter>
+  <app-recipe-filter (selectedIngredientsChange)="onFilterChange($event)"/>
 
   <app-recipe-list
     [recipes]="recipes()"
@@ -90,12 +45,10 @@
     [pageIndex]="pageIndex()"
     [totalPages]="totalPages()"
     [isLoading]="isLoading()"
-    (pageChange)="onPageChange($event)">
-  </app-recipe-list>
+    (pageChange)="onPageChange($event)"/>
 </div>
 
 <app-recipe-create-modal
   [isOpen]="isCreateModalOpen()"
   (closeModal)="closeModal()"
-  (recipeCreated)="onRecipeCreated()">
-</app-recipe-create-modal>
+  (recipeCreated)="onRecipeCreated()"/>
