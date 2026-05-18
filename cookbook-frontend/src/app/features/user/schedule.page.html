@@ -10,7 +10,8 @@
       <button
         mat-flat-button
         color="primary"
-        (click)="openCreateModal()">
+        (click)="openCreateModal()"
+        [disabled]="schedulesResource.isLoading()">
         <mat-icon>add</mat-icon>
         Create New Schedule
       </button>
@@ -18,11 +19,11 @@
   </header>
 
   <div class="week-navigator">
-    <button mat-icon-button (click)="previousWeek()" aria-label="Previous week">
+    <button mat-icon-button (click)="previousWeek()" aria-label="Previous week" [disabled]="schedulesResource.isLoading()">
       <mat-icon>chevron_left</mat-icon>
     </button>
     <span class="week-range" aria-live="polite">{{ weekRangeLabel() }}</span>
-    <button mat-icon-button (click)="nextWeek()" aria-label="Next week">
+    <button mat-icon-button (click)="nextWeek()" aria-label="Next week" [disabled]="schedulesResource.isLoading()">
       <mat-icon>chevron_right</mat-icon>
     </button>
   </div>

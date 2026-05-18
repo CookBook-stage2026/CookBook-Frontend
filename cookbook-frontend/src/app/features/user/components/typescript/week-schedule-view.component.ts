@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { Router, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { WeekScheduleService } from '@shared/services/week-schedule';
 import { DAY_LABELS, DayOfWeek, DAYS_OF_WEEK, WeekScheduleResponse } from '@shared/domain/week-schedule';
 import { DatePipe } from '@angular/common';
@@ -12,6 +12,7 @@ import { ToastService } from '@core/services';
 import { ConfirmDeleteComponent } from '@features/user/components/typescript/confirm-delete-component';
 import { MatDialog } from '@angular/material/dialog';
 import { SuggestRecipeConfirmComponent } from '@features/user/components/typescript/suggest-recipe-confirm.component';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-week-schedule-view',
@@ -34,53 +35,40 @@ export class WeekScheduleViewComponent {
   readonly editSchedule = output<WeekScheduleResponse>();
   readonly deleteSchedule = output<void>();
 
-  readonly router = inject(Router);
   private readonly toastService = inject(ToastService);
   private readonly scheduleService = inject(WeekScheduleService);
   private readonly dialog = inject(MatDialog);
 
-  readonly schedule = signal<WeekScheduleResponse | undefined>(undefined);
-  readonly isLoading = signal(true);
-  readonly loadError = signal<string | null>(null);
-  readonly noSchedule = signal(false);
   readonly isDeleting = signal(false);
+  readonly isSaving = signal(false);
   readonly suggestingDay = signal<string | null>(null);
+  readonly isSuggesting = computed(() => this.suggestingDay() !== null);
 
   readonly daysOfWeek = DAYS_OF_WEEK;
   readonly dayLabels = DAY_LABELS;
 
-  constructor() {
-    effect(() => {
-      this.weekStartDate();
-      this.refreshTrigger();
-      this.fetchSchedule();
-    });
-  }
+  readonly scheduleResource = rxResource({
+    params: () => ({
+      start: this.formatIso(this.weekStartDate()),
+      end: this.formatIso(this.getEndOfWeek(this.weekStartDate())),
+      refresh: this.refreshTrigger()
+    }),
+    stream: ({ params }) => this.scheduleService.getSchedules(params.start, params.end)
+  });
+
+  readonly schedule = computed(() => {
+    const data = this.scheduleResource.value();
+    return data && data.length > 0 ? data[0] : undefined;
+  });
+
+  readonly isLoading = this.scheduleResource.isLoading;
+
+  readonly loadError = computed(() => {
+    return this.scheduleResource.error() ? 'Could not load your schedule. Please try again.' : null;
+  });
 
   public fetchSchedule(): void {
-    this.isLoading.set(true);
-    this.loadError.set(null);
-    this.noSchedule.set(false);
-
-    const start = this.formatIso(this.weekStartDate());
-    const end = this.formatIso(this.getEndOfWeek(this.weekStartDate()));
-
-    this.scheduleService.getSchedules(start, end).subscribe({
-      next: (data) => {
-        this.isLoading.set(false);
-        const matchingSchedule = data.length > 0 ? data[0] : undefined;
-        if (matchingSchedule === undefined) {
-          this.noSchedule.set(true);
-          this.schedule.set(undefined);
-        } else {
-          this.schedule.set(matchingSchedule);
-        }
-      },
-      error: () => {
-        this.isLoading.set(false);
-        this.loadError.set('Could not load your schedule. Please try again.');
-      }
-    });
+    this.scheduleResource.reload();
   }
 
   onEdit(): void {
@@ -103,57 +91,46 @@ export class WeekScheduleViewComponent {
 
   onSuggest(day: DayOfWeek): void {
     const isoDate = this.getDayIsoDate(day);
-
     this.suggestingDay.set(isoDate);
 
     this.scheduleService.suggestRecipeForDay(isoDate).subscribe({
       next: (suggestedSchedule) => {
         this.suggestingDay.set(null);
 
-        const suggestedRecipe =
-          suggestedSchedule.days.find(d => d.day === day)?.recipeSummary;
+        const suggestedRecipe = suggestedSchedule.days.find(d => d.day === day)?.recipeSummary;
+        if (!suggestedRecipe) return;
 
-        if (!suggestedRecipe) {
-          return;
-        }
-
-        const dialogRef = this.dialog.open(
-          SuggestRecipeConfirmComponent,
-          {
-            data: {
-              recipeName: suggestedRecipe.name,
-              day: this.dayLabels[day]
-            }
+        const dialogRef = this.dialog.open(SuggestRecipeConfirmComponent, {
+          data: {
+            recipeName: suggestedRecipe.name,
+            day: this.dayLabels[day]
           }
-        );
+        });
 
         dialogRef.afterClosed().subscribe((confirmed: boolean) => {
-          if (!confirmed) {
-            return;
-          }
+          if (!confirmed) return;
 
+          this.isSaving.set(true);
           this.scheduleService
-            .updateSchedule(
-              suggestedSchedule.id,
-              {
-                days: suggestedSchedule.days.map(d => ({
-                  day: d.day,
-                  recipeId: d.recipeSummary.id
-                }))
-              }
-            )
+            .updateSchedule(suggestedSchedule.id, {
+              days: suggestedSchedule.days.map(d => ({
+                day: d.day,
+                recipeId: d.recipeSummary.id
+              }))
+            })
             .subscribe({
               next: () => {
-                this.schedule.set(suggestedSchedule);
+                this.isSaving.set(false);
+                this.scheduleResource.reload();
                 this.toastService.show('Recipe saved!', 'success');
               },
               error: () => {
+                this.isSaving.set(false);
                 this.toastService.show('Failed to save recipe.', 'error');
               }
             });
         });
       },
-
       error: () => {
         this.suggestingDay.set(null);
         this.toastService.show('Failed to suggest a recipe.', 'error');
@@ -177,8 +154,7 @@ export class WeekScheduleViewComponent {
         next: () => {
           this.isDeleting.set(false);
           this.toastService.show('Schedule successfully deleted!', 'success');
-          this.schedule.set(undefined);
-          this.noSchedule.set(true);
+          this.scheduleResource.reload();
           this.deleteSchedule.emit();
         },
         error: () => {

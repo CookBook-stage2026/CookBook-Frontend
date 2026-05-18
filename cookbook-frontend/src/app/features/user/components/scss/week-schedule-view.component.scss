@@ -144,12 +144,17 @@
 .day-actions {
   display: flex;
   align-items: center;
-  gap: 0.125rem;
-  margin-left: -0.5rem;
+  height: 40px;
 }
 
 .suggest-icon {
   color: var(--text-on-primary);
+  align-items: center;
+}
+
+.suggest-spinner {
+  color: var(--text-on-primary);
+  --mat-progress-spinner-active-indicator-color: var(--text-on-primary);
 }
 
 .action-btn {
