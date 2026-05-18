@@ -8,6 +8,7 @@ import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { RecipeService } from '@shared/services/recipe';
 import { RecipeDto } from '@shared/domain/recipe';
+import { formatUnit } from '@shared/domain/ingredient';
 
 type ImportStep = 'url-input' | 'loading' | 'preview';
 
@@ -99,4 +100,6 @@ export class RecipeImportDialogComponent {
   dismiss(): void {
     this.dialogRef.close(null);
   }
+
+  protected readonly formatUnit = formatUnit;
 }

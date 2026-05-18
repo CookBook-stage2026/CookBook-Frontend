@@ -74,7 +74,7 @@ export default class RecipePage {
     dialogRef.afterClosed().subscribe((recipe: RecipeDto | null) => {
       this.recipeResource.reload();
       if (recipe) {
-        void this.router.navigate([ '/recipes', recipe.id ]);
+        this.router.navigate([ '/recipes', recipe.id ]);
       }
     });
   }
