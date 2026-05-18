@@ -91,6 +91,7 @@ export default class HouseholdsPageComponent implements OnInit {
 
   closeMembersDialog(): void {
     this.selectedMembersHouseholdId.set(null);
+    this.householdsResource.reload();
   }
 
   onLeaveHousehold(householdId: string): void {

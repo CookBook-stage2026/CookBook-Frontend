@@ -65,18 +65,13 @@
 }
 
 .remove-member-btn {
-  color: var(--text-secondary, #757575);
+  color: var(--danger-text);
   transition: color 0.2s ease-in-out;
-}
-
-.remove-member-btn:hover,
-.remove-member-btn:focus-visible {
-  color: var(--danger-text, #d32f2f);
 }
 
 .delete-household-btn:focus-visible,
 .remove-member-btn:focus-visible {
-  outline: 2px solid var(--danger-text, #d32f2f);
+  outline: 2px solid var(--danger-text);
   outline-offset: 2px;
   border-radius: 50%;
 }
