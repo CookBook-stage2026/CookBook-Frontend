@@ -8,6 +8,7 @@
   gap: 14px;
   transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.15s ease;
   overflow: hidden;
+  cursor: pointer;
 
   &:hover {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);

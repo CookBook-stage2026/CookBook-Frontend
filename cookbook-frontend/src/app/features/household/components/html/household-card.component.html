@@ -1,5 +1,7 @@
 <article
   class="household-card"
+  (click)=onOpen()
+  (keydown)=onOpen()
   [attr.aria-label]="'Household: ' + household().name"
 >
   <div class="card-top">
@@ -58,11 +60,23 @@
         mat-stroked-button
         class="invite-btn"
         type="button"
-        (click)="onInviteClick()"
+        (click)="onInviteClick(); $event.stopPropagation()"
         [attr.aria-label]="'Invite someone to ' + household().name"
       >
         <mat-icon>person_add</mat-icon>
         Invite
+      </button>
+    }
+
+    @if (!isCreator()) {
+      <button
+        mat-stroked-button
+        color="warn"
+        type="button"
+        (click)="onLeaveClick(); $event.stopPropagation()"
+      >
+        <mat-icon>logout</mat-icon>
+        Leave
       </button>
     }
   </div>

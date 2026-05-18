@@ -45,6 +45,8 @@
               [household]="household"
               [currentUser]="currentUser()!"
               (inviteClicked)="openInviteModal($event)"
+              (opened)="openMembersDialog($event)"
+              (leaveClicked)="onLeaveHousehold($event)"
             />
           }
         }
@@ -63,6 +65,14 @@
     <app-invite-household
       [householdId]="selectedHouseholdId()!"
       (closeModal)="closeInviteModal()"
+    />
+  }
+
+  @if (selectedMembersHouseholdId()) {
+    <app-household-members
+      [householdId]="selectedMembersHouseholdId()!"
+      [currentUser]="currentUser()!"
+      (closeModal)="closeMembersDialog()"
     />
   }
 </div>
