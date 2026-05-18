@@ -30,6 +30,7 @@ import {
 } from '@shared/domain/week-schedule';
 import { MatTooltip } from '@angular/material/tooltip';
 import { RecipeSummary } from '@shared/domain/recipe';
+import { ToastService } from '@core/services';
 
 @Component({
   selector: 'app-week-schedule-create',
@@ -56,6 +57,7 @@ export class WeekScheduleCreateComponent {
 
   private readonly fb = inject(FormBuilder).nonNullable;
   private readonly weekScheduleService = inject(WeekScheduleService);
+  private readonly toastService = inject(ToastService);
 
   readonly daysOfWeek = DAYS_OF_WEEK;
   readonly dayLabels = DAY_LABELS;
@@ -180,9 +182,11 @@ export class WeekScheduleCreateComponent {
           this.isSubmitting.set(false);
           this.scheduleCreated.emit();
           this.closeModal.emit();
+          this.toastService.show('Schedule updated successfully.', 'success');
         },
         error: () => {
           this.isSubmitting.set(false);
+          this.toastService.show('Failed to update the schedule.', 'error');
         },
       });
     } else {

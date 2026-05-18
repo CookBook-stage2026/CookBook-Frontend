@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal, computed, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { WeekScheduleCreateComponent } from './components/typescript/week-schedule-create.component';
 import { WeekScheduleViewComponent } from './components/typescript/week-schedule-view.component';
 import { MatButtonModule } from '@angular/material/button';
@@ -8,6 +8,7 @@ import { ToastComponent } from '@shared/components/toast/toast.component';
 import { WeekScheduleResponse } from '@shared/domain/week-schedule';
 import { WeekScheduleService } from '@shared/services/week-schedule';
 import { ActivatedRoute, Router } from '@angular/router';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-schedule-page',
@@ -24,15 +25,22 @@ import { ActivatedRoute, Router } from '@angular/router';
   ]
 })
 export default class SchedulePage {
+  private readonly weekScheduleService = inject(WeekScheduleService);
+  readonly router = inject(Router);
+  readonly route = inject(ActivatedRoute);
+
   readonly isCreateModalOpen = signal(false);
   readonly refreshSignal = signal(0);
   readonly selectedWeekStart = signal<Date>(this.getMonday(new Date()));
   readonly editingSchedule = signal<WeekScheduleResponse | undefined>(undefined);
-  private readonly weekScheduleService = inject(WeekScheduleService);
-  readonly existingSchedules = signal<WeekScheduleResponse[]>([]);
-  readonly router = inject(Router);
-  readonly route = inject(ActivatedRoute);
   readonly modalWeekStart = signal<Date>(this.getMonday(new Date()));
+
+  readonly schedulesResource = rxResource({
+    params: () => ({ refresh: this.refreshSignal() }),
+    stream: () => this.weekScheduleService.getSchedules()
+  });
+
+  readonly existingSchedules = computed(() => this.schedulesResource.value() ?? []);
 
   readonly weekRangeLabel = computed(() => {
     const start = this.selectedWeekStart();
@@ -46,13 +54,6 @@ export default class SchedulePage {
     if (weekParam) {
       this.selectedWeekStart.set(this.getMonday(new Date(weekParam)));
     }
-    this.loadSchedules();
-  }
-
-  private loadSchedules(): void {
-    this.weekScheduleService.getSchedules().subscribe(schedules => {
-      this.existingSchedules.set(schedules);
-    });
   }
 
   openCreateModal(): void {
@@ -74,7 +75,7 @@ export default class SchedulePage {
   onScheduleCreated(): void {
     this.closeCreateModal();
     this.refreshSignal.update(v => v + 1);
-    this.loadSchedules();
+    this.schedulesResource.reload();
   }
 
   previousWeek(): void {
