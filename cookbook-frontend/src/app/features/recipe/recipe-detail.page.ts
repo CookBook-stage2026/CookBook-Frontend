@@ -9,12 +9,13 @@ import { MatDivider } from '@angular/material/list';
 import { RecipeIngredientsComponent } from '@features/recipe/components/typescript/recipe-ingredients-list.component';
 import { RecipePreparationComponent } from '@features/recipe/components/typescript/recipe-preparation-list';
 import { MatDialog } from '@angular/material/dialog';
-import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatButton } from '@angular/material/button';
 import { ToastService } from '@core/services';
 import { RecipeEnhanceModalComponent } from '@features/recipe/components/typescript/recipe-enhance-modal.component';
 import { of } from 'rxjs';
 import { RecipeCookingModeComponent } from '@features/recipe/components/typescript/recipe-cooking-mode.component';
 import { Location } from '@angular/common';
+import { ToastComponent } from '@shared/components/toast/toast.component';
 
 @Component({
   selector: 'app-recipe-detail-page',
@@ -31,7 +32,7 @@ import { Location } from '@angular/common';
     RecipePreparationComponent,
     MatButton,
     RecipeCookingModeComponent,
-    MatIconButton
+    ToastComponent
   ],
   styleUrls: ['./recipe-detail.page.scss']
 })
@@ -43,6 +44,7 @@ export default class RecipeDetailPage {
 
   readonly recipeId = input.required<string>();
   readonly isCookingMode = signal(false);
+  readonly isUpdatingVisibility = signal(false);
 
   readonly enhanceRequest = signal<string | undefined>(undefined);
 
@@ -57,6 +59,26 @@ export default class RecipeDetailPage {
 
   exitCookingMode(): void {
     this.isCookingMode.set(false);
+  }
+
+  toggleVisibility(currentPublicStatus: boolean): void {
+    const id = this.recipeId();
+    if (!id) return;
+
+    const nextStatus = !currentPublicStatus;
+    this.isUpdatingVisibility.set(true);
+
+    this.recipeService.changeVisibility(id, nextStatus).subscribe({
+      next: () => {
+        this.isUpdatingVisibility.set(false);
+        this.toastService.show(`Recipe is now ${nextStatus ? 'Public' : 'Private'}.`, 'success');
+        this.recipe.reload();
+      },
+      error: () => {
+        this.isUpdatingVisibility.set(false);
+        this.toastService.show('Failed to alter recipe visibility configuration.', 'error');
+      }
+    });
   }
 
   readonly enhancedRecipe = rxResource<RecipeDto | undefined, string | undefined>({

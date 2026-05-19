@@ -1,3 +1,46 @@
+.navigation-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.back-text {
+  margin-left: 0.25rem;
+  vertical-align: middle;
+}
+
+.visibility-toggle-btn {
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+
+  &.is-public {
+    background-color: var(--success-hover) !important;
+    color: var(--success-text) !important;
+    border: 1px solid var(--success-border) !important;
+
+    &:hover:not([disabled]) {
+      background-color: var(--success-border) !important;
+      color: var(--text-on-primary) !important;
+    }
+  }
+
+  &.is-private {
+    background-color: var(--revoke-bg) !important;
+    color: var(--revoke-text) !important;
+    border: 1px solid var(--danger-border) !important;
+
+    &:hover:not([disabled]) {
+      background-color: var(--revoke-hover-bg) !important;
+      border-color: var(--revoke-hover-border) !important;
+      color: var(--revoke-hover-text) !important;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--revoke-focus-ring);
+    }
+  }
+}
+
 .recipe-chips {
   margin-top: 0.5rem;
 }

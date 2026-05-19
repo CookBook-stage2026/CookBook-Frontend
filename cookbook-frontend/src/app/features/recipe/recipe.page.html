@@ -11,6 +11,16 @@
       <button
         mat-stroked-button
         type="button"
+        (click)="toggleScope()"
+        [color]="includeAccessibleRecipes() ? 'primary' : ''"
+        [attr.aria-pressed]="includeAccessibleRecipes()">
+        <mat-icon>{{ includeAccessibleRecipes() ? 'groups' : 'person' }}</mat-icon>
+        {{ includeAccessibleRecipes() ? 'All Households' : 'Own Recipes Only' }}
+      </button>
+
+      <button
+        mat-stroked-button
+        type="button"
         (click)="togglePreferences()"
         [color]="shouldApplyPreferences() ? 'primary' : ''"
         [attr.aria-pressed]="shouldApplyPreferences()">

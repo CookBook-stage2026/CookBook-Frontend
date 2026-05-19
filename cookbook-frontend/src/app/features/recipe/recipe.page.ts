@@ -36,6 +36,7 @@ export default class RecipePage {
   readonly pageIndex = signal(0);
   readonly selectedIngredientIds = signal<string[]>([]);
   readonly shouldApplyPreferences = signal(true);
+  readonly includeAccessibleRecipes = signal(true);
 
   readonly recipeResource = rxResource({
     params: () => ({
@@ -43,19 +44,25 @@ export default class RecipePage {
       size: this.pageSize(),
       ingredients: this.selectedIngredientIds(),
       applyPrefs: this.shouldApplyPreferences(),
+      includeAccessible: this.includeAccessibleRecipes()
     }),
-    stream: ({ params }) =>
-      this.recipeService.searchRecipesByFilter(
-        params.ingredients,
-        params.applyPrefs,
-        params.page,
-        params.size,
-      ),
+    stream: ({ params }) => this.recipeService.searchRecipesByFilter(
+      params.ingredients,
+      params.applyPrefs,
+      params.includeAccessible,
+      params.page,
+      params.size
+    )
   });
 
   readonly recipes = computed(() => this.recipeResource.value()?.content ?? []);
   readonly totalPages = computed(() => this.recipeResource.value()?.page.totalPages ?? 0);
   readonly isLoading = this.recipeResource.isLoading;
+
+  toggleScope(): void {
+    this.includeAccessibleRecipes.update(val => !val);
+    this.pageIndex.set(0);
+  }
 
   togglePreferences(): void {
     this.shouldApplyPreferences.update(val => !val);
