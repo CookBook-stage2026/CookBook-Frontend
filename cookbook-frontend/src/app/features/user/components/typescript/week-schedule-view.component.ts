@@ -9,10 +9,10 @@ import { WeekScheduleService } from '@shared/services/week-schedule';
 import { DAY_LABELS, DayOfWeek, DAYS_OF_WEEK, WeekScheduleResponse } from '@shared/domain/week-schedule';
 import { DatePipe } from '@angular/common';
 import { ToastService } from '@core/services';
-import { ConfirmDeleteComponent } from '@features/user/components/typescript/confirm-delete-component';
 import { MatDialog } from '@angular/material/dialog';
 import { SuggestRecipeConfirmComponent } from '@features/user/components/typescript/suggest-recipe-confirm.component';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-component';
 
 @Component({
   selector: 'app-week-schedule-view',
