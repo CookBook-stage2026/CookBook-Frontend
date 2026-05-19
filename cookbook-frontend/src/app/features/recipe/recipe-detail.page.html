@@ -1,3 +1,5 @@
+<app-toast/>
+
 <div class="page-container">
   @if (recipe.isLoading()) {
     <div class="loading-shade">
@@ -12,9 +14,25 @@
         [recipe]="r"
         (exit)="exitCookingMode()"/>
     } @else {
-      <button mat-icon-button (click)="location.back()" aria-label="Back to schedule">
-        <mat-icon>arrow_back</mat-icon>
-      </button>
+      <div class="navigation-bar">
+        <button mat-button (click)="location.back()" aria-label="Back to schedule">
+          <mat-icon>arrow_back</mat-icon>
+          <span class="back-text">Back</span>
+        </button>
+
+        <button
+          mat-flat-button
+          class="visibility-toggle-btn"
+          [class.is-public]="r.isPublic"
+          [class.is-private]="!r.isPublic"
+          [disabled]="isUpdatingVisibility()"
+          (click)="toggleVisibility(r.isPublic)"
+          [ariaLabel]="r.isPublic ? 'Change recipe to private' : 'Change recipe to public'"
+        >
+          <mat-icon aria-hidden="true">{{ r.isPublic ? 'public' : 'lock' }}</mat-icon>
+          <span>{{ r.isPublic ? 'Public' : 'Private' }}</span>
+        </button>
+      </div>
       <header class="page-header">
         <div>
           <h1 class="page-title">{{ r.name }}</h1>

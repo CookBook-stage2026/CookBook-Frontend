@@ -27,12 +27,14 @@ export class RecipeService {
   searchRecipesByFilter(
     ingredientIds: string[] = [],
     shouldApplyPreferences: boolean = true,
+    includeAccessibleRecipes: boolean = true,
     page: number = 0,
     size: number = 20
   ): Observable<PaginatedResponse<RecipeSummary>> {
     const body: RecipeSearchRequest = {
       ingredientIds,
-      shouldApplyPreferences: shouldApplyPreferences,
+      shouldApplyPreferences,
+      includeAccessibleRecipes,
       page,
       size,
     };
@@ -83,6 +85,10 @@ export class RecipeService {
 
   updateRecipe(id: string, dto: UpdateRecipeDto): Observable<void> {
     return this.http.put<void>(`${this.apiUrl}/${id}`, dto);
+  }
+
+  changeVisibility(id: string, isPublic: boolean): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}/visibility`, { isPublic });
   }
 
   importRecipe(url: string): Observable<RecipeDto> {

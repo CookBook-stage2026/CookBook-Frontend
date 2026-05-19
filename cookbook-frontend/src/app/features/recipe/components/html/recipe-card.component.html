@@ -8,7 +8,13 @@
   </mat-card-content>
 
   <mat-card-actions class="recipe-footer">
-    <mat-icon>schedule</mat-icon>
-    <span>{{ recipe().durationInMinutes | duration }}</span>
+    <div class="footer-left">
+      <mat-icon>schedule</mat-icon>
+      <span>{{ recipe().durationInMinutes | duration }}</span>
+    </div>
+
+    <div class="footer-right">
+      {{ recipe().creator }}
+    </div>
   </mat-card-actions>
 </mat-card>
