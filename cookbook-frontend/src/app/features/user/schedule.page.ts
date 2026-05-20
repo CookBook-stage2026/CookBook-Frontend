@@ -3,13 +3,15 @@ import { WeekScheduleCreateComponent } from './components/typescript/week-schedu
 import { WeekScheduleViewComponent } from './components/typescript/week-schedule-view.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ToastComponent } from '@shared/components/toast/toast.component';
 import { DAY_LABELS, DayOfWeek, WeekScheduleResponse } from '@shared/domain/week-schedule';
 import { WeekScheduleService } from '@shared/services/week-schedule';
 import { ActivatedRoute, Router } from '@angular/router';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { RecipeSummary } from '@shared/domain/recipe';
+import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-component';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-schedule-page',
@@ -22,19 +24,23 @@ import { RecipeSummary } from '@shared/domain/recipe';
     MatDialogModule,
     WeekScheduleCreateComponent,
     WeekScheduleViewComponent,
-    ToastComponent
+    ToastComponent,
+    MatProgressSpinner
   ]
 })
 export default class SchedulePage {
   private readonly weekScheduleService = inject(WeekScheduleService);
   readonly router = inject(Router);
   readonly route = inject(ActivatedRoute);
+  readonly dialog = inject(MatDialog);
 
   readonly isCreateModalOpen = signal(false);
   readonly refreshSignal = signal(0);
   readonly selectedWeekStart = signal<Date>(this.getMonday(new Date()));
   readonly editingSchedule = signal<WeekScheduleResponse | undefined>(undefined);
   readonly modalWeekStart = signal<Date>(this.getMonday(new Date()));
+  readonly isSuggestingWeek = signal(false);
+  readonly suggestedSchedule = signal<WeekScheduleResponse | undefined>(undefined);
 
   readonly schedulesResource = rxResource({
     params: () => ({ refresh: this.refreshSignal() }),
@@ -96,10 +102,16 @@ export default class SchedulePage {
   closeCreateModal(): void {
     this.isCreateModalOpen.set(false);
     this.editingSchedule.set(undefined);
+    this.suggestedSchedule.set(undefined);
   }
 
   onScheduleCreated(): void {
     this.closeCreateModal();
+    this.refreshSignal.update(v => v + 1);
+    this.schedulesResource.reload();
+  }
+
+  onScheduleDeleted(): void {
     this.refreshSignal.update(v => v + 1);
     this.schedulesResource.reload();
   }
@@ -135,11 +147,6 @@ export default class SchedulePage {
     this.isCreateModalOpen.set(true);
   }
 
-  onScheduleDeleted(): void {
-    this.refreshSignal.update(v => v + 1);
-    this.schedulesResource.reload();
-  }
-
   onWeekStartDateChanged(date: Date): void {
     this.selectedWeekStart.set(date);
 
@@ -161,6 +168,34 @@ export default class SchedulePage {
       6: 'SATURDAY'
     };
     return mapping[jsDay];
+  }
+
+  openSuggestWeek(): void {
+    const weekStart = this.toLocalDateString(this.selectedWeekStart());
+    const weekLabel = this.weekRangeLabel();
+
+    const dialogRef = this.dialog.open(ConfirmDeleteComponent, {
+      data: {
+        message: `Generate a suggested schedule for ${weekLabel}? You can edit it before saving.`
+      }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (!confirmed) return;
+
+      this.isSuggestingWeek.set(true);
+      this.weekScheduleService.suggestWeekSchedule(weekStart).subscribe({
+        next: (suggested) => {
+          this.isSuggestingWeek.set(false);
+          this.suggestedSchedule.set(suggested);
+          this.modalWeekStart.set(this.selectedWeekStart());
+          this.isCreateModalOpen.set(true);
+        },
+        error: () => {
+          this.isSuggestingWeek.set(false);
+        }
+      });
+    });
   }
 
   private getMonday(date: Date): Date {
