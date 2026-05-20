@@ -9,6 +9,7 @@ export interface CreateRecipeDto {
   durationInMinutes: number;
   steps: string[];
   ingredients: NewRecipeIngredientDto[];
+  isPublic: boolean;
   servings: number;
 }
 
@@ -20,6 +21,8 @@ export interface RecipeDto {
   steps: string[];
   ingredients: RecipeIngredientDto[];
   servings: number;
+  isPublic: boolean;
+  isCreator: boolean;
 }
 
 export interface RecipeIngredientDto {
@@ -34,11 +37,13 @@ export interface RecipeSummary {
   name: string;
   description: string;
   durationInMinutes: number;
+  creator: string;
 }
 
 export interface RecipeSearchRequest {
   ingredientIds: string[];
   shouldApplyPreferences: boolean;
+  includeAccessibleRecipes: boolean;
   page: number;
   size: number;
 }
