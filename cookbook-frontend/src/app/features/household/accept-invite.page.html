@@ -2,7 +2,7 @@
   <div class="invite-card">
     <mat-icon class="brand-icon" aria-hidden="true">home_work</mat-icon>
 
-    @switch (state()) {
+    @switch (displayState()) {
       @case ('idle') {
         <h1 class="invite-title" id="invite-page-title">You've been invited!</h1>
         <p class="invite-description">
