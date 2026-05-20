@@ -504,3 +504,28 @@ dialog {
   align-items: center;
   justify-content: center;
 }
+
+.checkbox-group {
+  margin-top: 1rem;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
+.checkbox-input {
+  margin-top: 0.2rem;
+}
+
+.checkbox-title {
+  font-weight: 600;
+}
+
+.checkbox-description {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
