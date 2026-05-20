@@ -1,9 +1,14 @@
 <div class="array-section">
   <div class="section-header">
     <h3>Ingredients *</h3>
-    <button type="button" class="btn-text" (click)="add()" [disabled]="isSubmitting()">
-      + Add Ingredient
-    </button>
+    <div class="section-header-actions">
+      <button type="button" class="btn-create-ingredient" (click)="openCreateModal()">
+        + Create New Ingredient
+      </button>
+      <button type="button" class="btn-text" (click)="add()" [disabled]="isSubmitting()">
+        + Add Ingredient
+      </button>
+    </div>
   </div>
 
   <div class="array-container">
@@ -97,3 +102,9 @@
     }
   </div>
 </div>
+
+<app-ingredient-create-modal
+  [isOpen]="isCreateModalOpen()"
+  (closeModal)="isCreateModalOpen.set(false)"
+  (ingredientCreated)="onIngredientCreated($event)"
+/>

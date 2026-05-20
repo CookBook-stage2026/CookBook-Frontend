@@ -1,0 +1,115 @@
+@if (isOpen()) {
+  <div class="modal-backdrop" (click)="!isSubmitting() && closeModal.emit()" (keydown.esc)="!isSubmitting() && closeModal.emit()">
+    <div class="modal-dialog modal-dialog--sm" (click)="$event.stopPropagation()">
+
+      <header class="modal-header">
+        <div>
+          <h2>New Ingredient</h2>
+          <p>This ingredient will be saved and added to your recipe.</p>
+        </div>
+        <button
+          class="btn-close"
+          (click)="closeModal.emit()"
+          [disabled]="isSubmitting()"
+          aria-label="Close modal">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+          </svg>
+        </button>
+      </header>
+
+      <div class="modal-body">
+        <form [formGroup]="ingredientForm" class="recipe-form">
+
+          <div class="form-group">
+            <label for="ing-name">Ingredient Name *</label>
+            <div class="input-wrapper">
+              <input
+                type="text"
+                id="ing-name"
+                formControlName="name"
+                placeholder="e.g., Olive Oil"
+                class="form-control"
+                [class.is-invalid]="ingredientForm.get('name')?.invalid && ingredientForm.get('name')?.touched"
+                aria-required="true">
+              @if (ingredientForm.get('name')?.invalid && ingredientForm.get('name')?.touched) {
+                <div class="tooltip-error" role="tooltip">
+                  <span>Name is required</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="ing-unit">Unit *</label>
+            <div class="input-wrapper">
+              <select
+                id="ing-unit"
+                formControlName="unit"
+                class="form-control"
+                [class.is-invalid]="ingredientForm.get('unit')?.invalid && ingredientForm.get('unit')?.touched"
+                aria-required="true">
+                <option value="" disabled>Select a unit...</option>
+                @for (unit of availableUnits(); track unit) {
+                  <option [value]="unit">{{ formatUnit(unit) }}</option>
+                }
+              </select>
+              @if (ingredientForm.get('unit')?.invalid && ingredientForm.get('unit')?.touched) {
+                <div class="tooltip-error" role="tooltip">
+                  <span>Unit is required</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Categories *</label>
+            <div
+              class="category-grid"
+              [class.is-invalid]="ingredientForm.get('categories')?.invalid && ingredientForm.get('categories')?.touched"
+              role="group"
+              aria-label="Ingredient categories">
+              @for (category of availableCategories(); track category) {
+                <button
+                  type="button"
+                  class="category-chip"
+                  [class.selected]="isCategorySelected(category)"
+                  (click)="toggleCategory(category)"
+                  [disabled]="isSubmitting()"
+                  [attr.aria-pressed]="isCategorySelected(category)">
+                  {{ formatCategoryLabel(category) }}
+                </button>
+              }
+            </div>
+            @if (ingredientForm.get('categories')?.invalid && ingredientForm.get('categories')?.touched) {
+              <span class="field-error">Select at least one category</span>
+            }
+          </div>
+
+        </form>
+      </div>
+
+      <footer class="modal-footer">
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="closeModal.emit()"
+          [disabled]="isSubmitting()">
+          Cancel
+        </button>
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="onSubmit()"
+          [disabled]="ingredientForm.invalid || isSubmitting()">
+          @if (isSubmitting()) {
+            <span class="spinner" aria-hidden="true"></span> Creating...
+          } @else {
+            Create Ingredient
+          }
+        </button>
+      </footer>
+
+    </div>
+  </div>
+}
