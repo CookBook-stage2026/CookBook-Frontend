@@ -216,3 +216,9 @@
     }
   }
 }
+
+.state-container.loading {
+  display: flex;
+  gap: 0.50rem;
+  padding: 1rem;
+}

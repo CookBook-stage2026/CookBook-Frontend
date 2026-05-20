@@ -48,6 +48,12 @@ export class WeekScheduleService {
   }
 
   suggestRecipeForDay(date: string) {
-    return this.http.get<WeekScheduleResponse>(`${this.apiUrl}/suggest/${date}`);
+    return this.http.get<WeekScheduleResponse>(`${this.apiUrl}/suggest/day/${date}`);
+  }
+
+  suggestWeekSchedule(weekStartDate: string) {
+    return this.http.get<WeekScheduleResponse>(`${this.apiUrl}/suggest/week`, {
+      params: new HttpParams().set('weekStartDate', weekStartDate)
+    });
   }
 }
