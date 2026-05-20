@@ -15,22 +15,29 @@
         [color]="shouldApplyPreferences() ? 'primary' : ''"
         [attr.aria-pressed]="shouldApplyPreferences()">
         <mat-icon>{{ shouldApplyPreferences() ? 'visibility' : 'visibility_off' }}</mat-icon>
-        {{ shouldApplyPreferences() ? 'Using Preferences' : 'Ignoring Preferences' }}
+        {{ shouldApplyPreferences() ? 'Using preferences' : 'Ignoring preferences' }}
+      </button>
+
+      <button
+        mat-stroked-button
+        type="button"
+        (click)="openImportDialog()">
+        <mat-icon>download</mat-icon>
+        Import recipe
       </button>
 
       <button
         mat-flat-button
         color="primary"
+        type="button"
         (click)="openModal()">
         <mat-icon>add</mat-icon>
-        Add Recipe
+        Add recipe
       </button>
     </div>
   </header>
 
-  <app-recipe-filter
-    (selectedIngredientsChange)="onFilterChange($event)">
-  </app-recipe-filter>
+  <app-recipe-filter (selectedIngredientsChange)="onFilterChange($event)"/>
 
   <app-recipe-list
     [recipes]="recipes()"
@@ -38,12 +45,10 @@
     [pageIndex]="pageIndex()"
     [totalPages]="totalPages()"
     [isLoading]="isLoading()"
-    (pageChange)="onPageChange($event)">
-  </app-recipe-list>
+    (pageChange)="onPageChange($event)"/>
 </div>
 
 <app-recipe-create-modal
   [isOpen]="isCreateModalOpen()"
   (closeModal)="closeModal()"
-  (recipeCreated)="onRecipeCreated()">
-</app-recipe-create-modal>
+  (recipeCreated)="onRecipeCreated()"/>

@@ -1,23 +1,35 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { RecipeCreateModalComponent } from './components/typescript/recipe-create-modal.component';
 import { ToastComponent } from '@shared/components/toast/toast.component';
-import { RecipeListComponent } from './components/typescript/recipe-list.component';
 import { RecipeService } from '@shared/services/recipe';
-import { RecipeFilterComponent } from '@features/recipe/components/typescript/recipe-filter.component';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
+import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { RecipeDto } from '@shared/domain/recipe';
+import { RecipeCreateModalComponent } from '@features/recipe/components/typescript/recipe-create-modal.component';
+import { RecipeListComponent } from '@features/recipe/components/typescript/recipe-list.component';
+import { RecipeFilterComponent } from '@features/recipe/components/typescript/recipe-filter.component';
+import { RecipeImportDialogComponent } from '@features/recipe/components/typescript/recipe-import-dialog.component';
 
 @Component({
   selector: 'app-recipe-list-page',
-  standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RecipeCreateModalComponent, ToastComponent, RecipeListComponent, RecipeFilterComponent, MatButton, MatIcon],
+  imports: [
+    RecipeCreateModalComponent,
+    ToastComponent,
+    RecipeListComponent,
+    RecipeFilterComponent,
+    MatButton,
+    MatIcon,
+  ],
   templateUrl: './recipe.page.html',
-  styleUrl: './recipe.page.scss'
+  styleUrl: './recipe.page.scss',
 })
 export default class RecipePage {
   private readonly recipeService = inject(RecipeService);
+  private readonly router = inject(Router);
+  private readonly dialog = inject(MatDialog);
 
   readonly isCreateModalOpen = signal(false);
   readonly pageSize = signal(20);
@@ -30,14 +42,15 @@ export default class RecipePage {
       page: this.pageIndex(),
       size: this.pageSize(),
       ingredients: this.selectedIngredientIds(),
-      applyPrefs: this.shouldApplyPreferences()
+      applyPrefs: this.shouldApplyPreferences(),
     }),
-    stream: ({ params }) => this.recipeService.searchRecipesByFilter(
-      params.ingredients,
-      params.applyPrefs,
-      params.page,
-      params.size
-    )
+    stream: ({ params }) =>
+      this.recipeService.searchRecipesByFilter(
+        params.ingredients,
+        params.applyPrefs,
+        params.page,
+        params.size,
+      ),
   });
 
   readonly recipes = computed(() => this.recipeResource.value()?.content ?? []);
@@ -47,6 +60,23 @@ export default class RecipePage {
   togglePreferences(): void {
     this.shouldApplyPreferences.update(val => !val);
     this.pageIndex.set(0);
+  }
+
+  openImportDialog(): void {
+    const dialogRef = this.dialog.open(RecipeImportDialogComponent, {
+      width: '580px',
+      maxWidth: '95vw',
+      maxHeight: '88vh',
+      autoFocus: 'input',
+      restoreFocus: true,
+    });
+
+    dialogRef.afterClosed().subscribe((recipe: RecipeDto | null) => {
+      this.recipeResource.reload();
+      if (recipe) {
+        this.router.navigate([ '/recipes', recipe.id ]);
+      }
+    });
   }
 
   onFilterChange(ingredientIds: string[]): void {
