@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '@core/services/auth/auth.service';
 
 @Component({
@@ -33,13 +33,16 @@ import { AuthService } from '@core/services/auth/auth.service';
   `],
 })
 export class CallbackComponent implements OnInit {
-  private readonly route = inject(ActivatedRoute);
   private readonly auth = inject(AuthService);
   private readonly router = inject(Router);
 
   ngOnInit(): void {
     this.auth.handleCallback().subscribe({
-      next: () => this.router.navigate(['/recipes']),
+      next: () => {
+        const returnUrl = sessionStorage.getItem('loginReturnUrl') || '/recipes';
+        sessionStorage.removeItem('loginReturnUrl');
+        this.router.navigateByUrl(returnUrl);
+      },
       error: (err) => {
         console.error('Callback failed: ', err);
         this.router.navigate(['/login']);

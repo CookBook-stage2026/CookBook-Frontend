@@ -1,4 +1,4 @@
-import {RecipeSummary} from '@shared/domain/recipe';
+import { RecipeSummary } from '@shared/domain/recipe';
 
 export type DayOfWeek =
   | 'MONDAY'
@@ -37,6 +37,8 @@ export interface DayScheduleResponse {
 
 export interface WeekScheduleResponse {
   readonly id: string;
+  readonly weekStartDate: string;
+  readonly weekEndDate: string;
   readonly days: DayScheduleResponse[];
 }
 
@@ -46,5 +48,10 @@ export interface CreateDayScheduleRequest {
 }
 
 export interface CreateWeekScheduleRequest {
+  readonly weekStartDate: string;
+  readonly days: CreateDayScheduleRequest[];
+}
+
+export interface UpdateWeekScheduleRequest {
   readonly days: CreateDayScheduleRequest[];
 }

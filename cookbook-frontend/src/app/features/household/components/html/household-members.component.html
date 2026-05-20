@@ -1,0 +1,66 @@
+<div class="modal-backdrop" (click)="closeModal.emit()" (keydown)="closeModal.emit()">
+  <div class="modal" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+
+    @if (householdResource.value(); as household) {
+
+      <header class="household-header">
+        <div>
+          <h2>{{ household.name }}</h2>
+
+          @if (household.description) {
+            <p>{{ household.description }}</p>
+          }
+        </div>
+
+        @if (isCreator()) {
+          <button
+            mat-icon-button
+            class="delete-household-btn"
+            type="button"
+            (click)="deleteHousehold($event)"
+            aria-label="Delete entire household"
+          >
+            <mat-icon>delete_forever</mat-icon>
+          </button>
+        }
+      </header>
+
+      <ul class="members-list">
+
+        <li class="member-row member-row--creator">
+          <div class="member-info">
+            <mat-icon class="creator-icon" aria-hidden="true">workspace_premium</mat-icon>
+            <span>{{ household.creator.displayName }}</span>
+          </div>
+        </li>
+
+        @for (member of household.members; track member.userId) {
+          <li class="member-row">
+
+            <span>
+              {{ member.displayName }}
+            </span>
+
+            @if (isCreator()) {
+              <button
+                mat-icon-button
+                class="remove-member-btn"
+                type="button"
+                (click)="removeMember(member.userId)"
+                [attr.aria-label]="'Remove ' + member.displayName + ' from household'"
+              >
+                <mat-icon>person_remove</mat-icon>
+              </button>
+            }
+          </li>
+        }
+
+        @if (household.members.length === 0) {
+          <li class="empty-state">
+            No members yet.
+          </li>
+        }
+      </ul>
+    }
+  </div>
+</div>

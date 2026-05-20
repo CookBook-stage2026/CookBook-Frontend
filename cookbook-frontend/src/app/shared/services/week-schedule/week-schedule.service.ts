@@ -1,9 +1,13 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { catchError, of, tap, throwError } from 'rxjs';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { catchError, tap, throwError } from 'rxjs';
 import { ToastService } from '@core/services';
 import { environment } from '../../../../environment';
-import { CreateWeekScheduleRequest, WeekScheduleResponse } from '@shared/domain/week-schedule';
+import {
+  CreateWeekScheduleRequest,
+  UpdateWeekScheduleRequest,
+  WeekScheduleResponse
+} from '@shared/domain/week-schedule';
 
 @Injectable({ providedIn: 'root' })
 export class WeekScheduleService {
@@ -22,15 +26,28 @@ export class WeekScheduleService {
     );
   }
 
-  getSchedule() {
-    return this.http.get<WeekScheduleResponse>(`${this.apiUrl}`).pipe(
+  updateSchedule(id: string, request: UpdateWeekScheduleRequest) {
+    return this.http.put<void>(`${this.apiUrl}/${id}`, request);
+  }
+
+  getSchedules(from?: string, to?: string) {
+    let params = new HttpParams();
+    if (from) params = params.set('from', from);
+    if (to) params = params.set('to', to);
+
+    return this.http.get<WeekScheduleResponse[]>(`${this.apiUrl}`, { params }).pipe(
       catchError((err: HttpErrorResponse) => {
-        if (err.status === 404) {
-          return of(undefined);
-        }
-        this.toastService.show('Failed to load your schedule.', 'error');
+        this.toastService.show('Failed to load your schedules.', 'error');
         return throwError(() => err);
       })
     );
+  }
+
+  deleteSchedule(id: string) {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  suggestRecipeForDay(date: string) {
+    return this.http.get<WeekScheduleResponse>(`${this.apiUrl}/suggest/${date}`);
   }
 }

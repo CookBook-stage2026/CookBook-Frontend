@@ -5,8 +5,7 @@ import {
   inject,
   signal,
   DestroyRef,
-  AfterViewInit,
-  viewChild,
+  effect, viewChild, AfterViewInit,
 } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import {
@@ -23,7 +22,6 @@ import {
   distinctUntilChanged,
   switchMap,
   Subject,
-  Subscription,
   catchError,
   of,
 } from 'rxjs';
@@ -65,14 +63,20 @@ export const SKIP_DAY_VALUE = '__SKIP__';
   `,
   styles: [
     `
-      :host { display: block; }
-      .full-width { width: 100%; }
+      :host {
+        display: block;
+      }
+
+      .full-width {
+        width: 100%;
+      }
     `,
   ],
 })
 export class RecipeAutocompleteComponent implements AfterViewInit {
   readonly label = input.required<string>();
-  readonly control = input.required<FormControl<string | null>>();
+  readonly control = input.required<FormControl<string | RecipeSummary | null>>();
+  readonly preselectedRecipe = input<RecipeSummary | undefined>(undefined);
 
   inputControl = new FormControl('');
   selectedDisplayName = signal<string>('');
@@ -83,7 +87,6 @@ export class RecipeAutocompleteComponent implements AfterViewInit {
 
   readonly allRecipes = signal<RecipeSummary[]>([]);
   private readonly searchSubject = new Subject<string>();
-  private controlValueSub?: Subscription;
 
   constructor() {
     this.searchSubject
@@ -95,7 +98,7 @@ export class RecipeAutocompleteComponent implements AfterViewInit {
             catchError(() => of([] as RecipeSummary[]))
           )
         ),
-        takeUntilDestroyed()
+        takeUntilDestroyed(this.destroyRef)
       )
       .subscribe((results) => {
         this.allRecipes.set(results);
@@ -105,34 +108,45 @@ export class RecipeAutocompleteComponent implements AfterViewInit {
           trigger.openPanel();
         }
       });
-  }
 
-  private subscribeToControl() {
-    const ctrl = this.control();
-    if (!ctrl || this.controlValueSub) return;
+    effect(() => {
+      const recipe = this.preselectedRecipe();
+      const ctrl = this.control();
+      if (recipe && ctrl) {
+        ctrl.setValue(recipe.id, { emitEvent: false });
+        this.selectedDisplayName.set(recipe.name);
+        this.inputControl.setValue(recipe.name, { emitEvent: false });
+      }
+    });
 
-    this.controlValueSub = ctrl.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((value) => {
-        if (value === SKIP_DAY_VALUE) {
-          this.selectedDisplayName.set('Skip this day');
-          this.inputControl.setValue('Skip this day', { emitEvent: false });
-        } else if (!value) {
-          this.selectedDisplayName.set('');
-          this.inputControl.setValue('', { emitEvent: false });
-        }
-      });
-  }
+    effect(() => {
+      const ctrl = this.control();
+      if (!ctrl) return;
 
-  ngAfterViewInit() {
-    this.subscribeToControl();
+      ctrl.valueChanges
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe((value) => {
+          if (value === SKIP_DAY_VALUE) {
+            this.selectedDisplayName.set('Skip this day');
+            this.inputControl.setValue('Skip this day', { emitEvent: false });
+            this.inputControl.disable();
+          } else if (!value) {
+            this.selectedDisplayName.set('');
+            this.inputControl.setValue('', { emitEvent: false });
+            this.inputControl.enable();
+          }
+        });
+    });
   }
 
   onInput(event: Event): void {
+    if (this.inputControl.disabled) return;
+
     const inputValue = (event.target as HTMLInputElement).value;
     if (this.control().value === SKIP_DAY_VALUE) {
       this.control().setValue('');
       this.selectedDisplayName.set('');
+      this.inputControl.enable();
     }
     this.searchSubject.next(inputValue);
   }
@@ -153,5 +167,20 @@ export class RecipeAutocompleteComponent implements AfterViewInit {
     this.control().setValue(selected.id);
     this.selectedDisplayName.set(selected.name);
     this.inputControl.setValue(selected.name, { emitEvent: false });
+  }
+
+  ngAfterViewInit(): void {
+    const ctrl = this.control();
+    if (!ctrl) return;
+
+    const initialValue = ctrl.value;
+    if (initialValue === SKIP_DAY_VALUE) {
+      this.selectedDisplayName.set('Skip this day');
+      this.inputControl.setValue('Skip this day', { emitEvent: false });
+      this.inputControl.disable();
+    } else if (initialValue && typeof initialValue !== 'string') {
+      this.selectedDisplayName.set(initialValue.name);
+      this.inputControl.setValue(initialValue.name, { emitEvent: false });
+    }
   }
 }

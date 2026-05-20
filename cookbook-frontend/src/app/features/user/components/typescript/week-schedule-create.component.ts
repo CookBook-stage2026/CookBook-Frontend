@@ -4,11 +4,16 @@ import {
   inject,
   signal,
   output,
+  input,
+  effect,
 } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { WeekScheduleService } from '@shared/services/week-schedule';
 import {
   RecipeAutocompleteComponent,
@@ -20,8 +25,12 @@ import {
   DAY_LABELS,
   DayOfWeek,
   DAYS_OF_WEEK,
+  WeekScheduleResponse,
+  UpdateWeekScheduleRequest,
 } from '@shared/domain/week-schedule';
 import { MatTooltip } from '@angular/material/tooltip';
+import { RecipeSummary } from '@shared/domain/recipe';
+import { ToastService } from '@core/services';
 
 @Component({
   selector: 'app-week-schedule-create',
@@ -35,18 +44,26 @@ import { MatTooltip } from '@angular/material/tooltip';
     MatProgressSpinnerModule,
     RecipeAutocompleteComponent,
     MatTooltip,
+    MatDatepickerModule,
+    MatInputModule,
+    MatFormFieldModule,
   ],
 })
 export class WeekScheduleCreateComponent {
+  readonly existingSchedule = input<WeekScheduleResponse | undefined>(undefined);
+  readonly weekStartDate = input.required<Date>();
   readonly scheduleCreated = output<void>();
   readonly closeModal = output<void>();
 
   private readonly fb = inject(FormBuilder).nonNullable;
   private readonly weekScheduleService = inject(WeekScheduleService);
+  private readonly toastService = inject(ToastService);
 
   readonly daysOfWeek = DAYS_OF_WEEK;
   readonly dayLabels = DAY_LABELS;
   readonly isSubmitting = signal(false);
+  readonly isEditMode = signal(false);
+  readonly existingSchedules = input<WeekScheduleResponse[]>([]);
 
   readonly skippedDays = signal<ReadonlySet<DayOfWeek>>(new Set());
 
@@ -61,22 +78,67 @@ export class WeekScheduleCreateComponent {
   };
 
   readonly form = this.fb.group({
-    MONDAY: ['', Validators.required],
-    TUESDAY: ['', Validators.required],
-    WEDNESDAY: ['', Validators.required],
-    THURSDAY: ['', Validators.required],
-    FRIDAY: ['', Validators.required],
-    SATURDAY: ['', Validators.required],
-    SUNDAY: ['', Validators.required],
+    weekStartDate: [new Date(), Validators.required],
+    MONDAY: ['' as string | RecipeSummary, Validators.required],
+    TUESDAY: ['' as string | RecipeSummary, Validators.required],
+    WEDNESDAY: ['' as string | RecipeSummary, Validators.required],
+    THURSDAY: ['' as string | RecipeSummary, Validators.required],
+    FRIDAY: ['' as string | RecipeSummary, Validators.required],
+    SATURDAY: ['' as string | RecipeSummary, Validators.required],
+    SUNDAY: ['' as string | RecipeSummary, Validators.required],
   });
 
-  getDailyControl(day: DayOfWeek): FormControl<string> {
-    return this.form.get(day) as FormControl<string>;
+  constructor() {
+    effect(() => {
+      const existing = this.existingSchedule();
+      if (existing) {
+        this.isEditMode.set(true);
+        this.form.patchValue({
+          weekStartDate: new Date(existing.weekStartDate),
+        });
+
+        const skipped = new Set<DayOfWeek>();
+        for (const day of this.daysOfWeek) {
+          const dayData = existing.days.find(d => d.day === day);
+          if (!dayData) {
+            skipped.add(day);
+            this.form.get(day)?.setValue(SKIP_DAY_VALUE, { emitEvent: false });
+          }
+        }
+        this.skippedDays.set(skipped);
+      } else {
+        this.isEditMode.set(false);
+        this.form.patchValue({
+          weekStartDate: this.weekStartDate(),
+        });
+        for (const day of this.daysOfWeek) {
+          this.form.get(day)?.setValue('', { emitEvent: false });
+        }
+        this.skippedDays.set(new Set());
+      }
+    });
+  }
+
+  getDailyControl(day: DayOfWeek): FormControl<string | RecipeSummary> {
+    return this.form.get(day) as FormControl<string | RecipeSummary>;
   }
 
   isSkipped(day: DayOfWeek): boolean {
     return this.skippedDays().has(day);
   }
+
+  myDateFilter = (date: Date | null): boolean => {
+    if (!date) return false;
+
+    if (date.getDay() !== 1) return false;
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const dateString = `${year}-${month}-${day}`;
+
+    return !this.existingSchedules().some(s => s.weekStartDate === dateString);
+  };
 
   toggleSkip(day: DayOfWeek): void {
     const control = this.getDailyControl(day);
@@ -103,27 +165,63 @@ export class WeekScheduleCreateComponent {
 
     const days: CreateDayScheduleRequest[] = [];
     for (const day of this.daysOfWeek) {
-      const recipeId = formValue[day];
-      if (recipeId && recipeId !== SKIP_DAY_VALUE) {
+      const recipeValue = formValue[day];
+      if (recipeValue && recipeValue !== SKIP_DAY_VALUE) {
+        const recipeId = typeof recipeValue === 'string' ? recipeValue : recipeValue.id;
         days.push({ recipeId, day });
       }
     }
 
-    const request: CreateWeekScheduleRequest = { days };
+    if (this.isEditMode()) {
+      const existing = this.existingSchedule();
+      if (!existing) return;
 
-    this.weekScheduleService.createSchedule(request).subscribe({
-      next: () => {
-        this.isSubmitting.set(false);
-        this.scheduleCreated.emit();
-        this.closeModal.emit();
-      },
-      error: () => {
-        this.isSubmitting.set(false);
-      },
-    });
+      const request: UpdateWeekScheduleRequest = { days };
+      this.weekScheduleService.updateSchedule(existing.id, request).subscribe({
+        next: () => {
+          this.isSubmitting.set(false);
+          this.scheduleCreated.emit();
+          this.closeModal.emit();
+          this.toastService.show('Schedule updated successfully.', 'success');
+        },
+        error: () => {
+          this.isSubmitting.set(false);
+          this.toastService.show('Failed to update the schedule.', 'error');
+        },
+      });
+    } else {
+      const request: CreateWeekScheduleRequest = {
+        weekStartDate: this.formatDateToString(formValue.weekStartDate),
+        days,
+      };
+
+      this.weekScheduleService.createSchedule(request).subscribe({
+        next: () => {
+          this.isSubmitting.set(false);
+          this.scheduleCreated.emit();
+          this.closeModal.emit();
+        },
+        error: () => {
+          this.isSubmitting.set(false);
+        },
+      });
+    }
+  }
+
+  getPreselectedRecipe(day: DayOfWeek): RecipeSummary | undefined {
+    const existing = this.existingSchedule();
+    if (!existing) return undefined;
+    return existing.days.find(d => d.day === day)?.recipeSummary;
   }
 
   onClose(): void {
     this.closeModal.emit();
+  }
+
+  private formatDateToString(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }

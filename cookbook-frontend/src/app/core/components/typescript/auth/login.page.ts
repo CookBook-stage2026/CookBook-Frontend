@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '@core/services/auth/auth.service';
 
 @Component({
@@ -9,8 +10,11 @@ import { AuthService } from '@core/services/auth/auth.service';
 })
 export default class LoginPage {
   private readonly auth = inject(AuthService);
+  private readonly route = inject(ActivatedRoute);
 
   loginWith(provider: 'google' | 'github' | 'microsoft'): void {
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/recipes';
+    sessionStorage.setItem('loginReturnUrl', returnUrl);
     this.auth.loginWith(provider);
   }
 }

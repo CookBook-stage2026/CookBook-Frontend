@@ -1,0 +1,67 @@
+<div class="cooking-overlay">
+  <header class="cooking-header">
+    <div class="header-info">
+      <h2>{{ recipe().name }}</h2>
+      <span class="progress-badge" aria-live="polite">{{ progressText() }}</span>
+    </div>
+    <button mat-icon-button (click)="exit.emit()" aria-label="Exit cooking mode">
+      <mat-icon>close</mat-icon>
+    </button>
+  </header>
+
+  <div class="cooking-layout">
+    <main class="step-container" aria-live="polite" aria-atomic="true">
+      <p class="step-text">{{ currentStepText() }}</p>
+    </main>
+
+    <aside class="ingredients-sidebar" [class.mobile-open]="isMobileIngredientsOpen()">
+      <div class="sidebar-header">
+        <h3>Ingredients</h3>
+        <button
+          class="mobile-close-btn"
+          mat-icon-button
+          (click)="toggleIngredients()"
+          aria-label="Close ingredients list">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+      <mat-divider></mat-divider>
+      <ul class="ingredient-list">
+        @for (ing of recipe().ingredients; track ing.ingredientId) {
+          <li>
+            <span class="qty">{{ ing.baseQuantity }} {{ formatUnit(ing.unit, ing.baseQuantity) || '' }}</span>
+            <span class="name">{{ ing.name }}</span>
+          </li>
+        }
+      </ul>
+    </aside>
+  </div>
+
+  <nav class="cooking-controls" aria-label="Step navigation">
+    <button
+      mat-stroked-button
+      (click)="prevStep()"
+      [disabled]="isFirstStep()">
+      <mat-icon>arrow_back</mat-icon> Previous
+    </button>
+
+    <button
+      class="ingredients-toggle-btn"
+      mat-stroked-button
+      (click)="toggleIngredients()"
+      [attr.aria-expanded]="isMobileIngredientsOpen()">
+      <mat-icon>kitchen</mat-icon>
+      <span class="sr-only">Toggle Ingredients</span>
+    </button>
+
+    @if (isLastStep()) {
+      <button mat-flat-button color="primary" (click)="nextStep()">
+        Done <mat-icon iconPositionEnd>check</mat-icon>
+      </button>
+    } @else {
+      <button mat-flat-button color="primary" (click)="nextStep()">
+        Next <mat-icon iconPositionEnd>arrow_forward</mat-icon>
+      </button>
+    }
+  </nav>
+</div>

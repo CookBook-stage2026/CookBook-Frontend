@@ -9,3 +9,9 @@ export interface UserPreferencesDto {
   excludedCategories: string[];
   excludedIngredients: Ingredient[];
 }
+
+export interface User {
+  userId: string;
+  email: string;
+  displayName: string;
+}

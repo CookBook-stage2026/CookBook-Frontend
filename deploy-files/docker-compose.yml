@@ -1,0 +1,24 @@
+services:
+  backend:
+    image: 819109475556.dkr.ecr.eu-north-1.amazonaws.com/cookbook/backend
+    env_file:
+      - .env
+    expose:
+      - "8080"
+    mem_limit: 1024m
+
+  frontend:
+    image: 819109475556.dkr.ecr.eu-north-1.amazonaws.com/cookbook/frontend
+    expose:
+      - "3000"
+    mem_limit: 516m
+   
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf

@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { Router } from '@angular/router';
+import { AuthService } from '@core/services/auth/auth.service';
 
 @Component({
   selector: 'app-session-expired-dialog',
@@ -42,8 +43,10 @@ import { Router } from '@angular/router';
 export class SessionExpiredDialogComponent {
   private readonly router = inject(Router);
   private readonly dialogRef = inject(MatDialogRef<SessionExpiredDialogComponent>);
+  private readonly authService = inject(AuthService);
 
   redirectToLogin(): void {
+    this.authService.clearAuth();
     this.dialogRef.close();
     this.router.navigate(['/login']);
   }

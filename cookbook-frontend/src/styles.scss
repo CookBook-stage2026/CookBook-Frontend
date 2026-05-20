@@ -1,4 +1,5 @@
 @use '@angular/material' as mat;
+@use 'layout';
 
 html {
   height: 100%;
@@ -31,6 +32,7 @@ body {
   --border-color: #e2e8f0;
   --hover-color: #f1f5f9;
   /* Text */
+  --text-on-primary: #ffffff;
   --text-main: #0f172a;
   --text-muted: #475569;
   /* special element*/
@@ -38,11 +40,23 @@ body {
   --element-primary-contrast: #ffffff;
   --spacing-unit: 4px;
   --radius-md: 6px;
+  --disabled: #e6e6e6;
   /* Excluded/danger state */
   --danger-border: #ef4444;
-  --danger-text: #991b1b;
-  --danger-hover: #fca5a5;
-  --danger-icon: #dc2626;
+  --danger-text: #ef4444;
+  --danger-hover: #fdb7b7;
+  /* Included/success state */
+  --success-border: #22c55e;
+  --success-text: #1f8e49;
+  --success-hover: #bbf7d0;
+  /* Revoke/Destructive button */
+  --revoke-bg: #fef2f2;
+  --revoke-border: #fca5a5;
+  --revoke-text: #b91c1c;
+  --revoke-hover-bg: #fee2e2;
+  --revoke-hover-border: #f87171;
+  --revoke-hover-text: #991b1b;
+  --revoke-focus-ring: rgba(185, 28, 28, 0.3);
 
   --mat-sys-primary: var(--element-primary);
   --mat-sys-on-primary: var(--element-primary-contrast);
@@ -57,19 +71,27 @@ body {
   --mat-sys-on-surface-variant: var(--text-muted);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg-main: #020617;
-    --bg-surface: #0f172a;
-    --border-color: #1e293b;
-    --text-main: #f8fafc;
-    --text-muted: #94a3b8;
-    --element-primary: #60a5fa;
-    --element-primary-contrast: #020617;
-    --hover-color: #1e293b;
-    --danger-border: #f87171;
-    --danger-text: #fca5a5;
-    --danger-hover: #7f1d1d;
-    --danger-icon: #f87171;
-  }
+:root[data-theme="dark"] {
+  --bg-main: #020617;
+  --bg-surface: #0f172a;
+  --border-color: #1e293b;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --disabled: #1b294b;
+  --element-primary: #60a5fa;
+  --element-primary-contrast: #020617;
+  --hover-color: #1e293b;
+  --danger-border: #ef4444;
+  --danger-text: #ef4444;
+  --danger-hover: #330c0c;
+  --success-border: #116631;
+  --success-text: #1b9648;
+  --success-hover: #052e16;
+  --revoke-bg: rgba(239, 68, 68, 0.1);
+  --revoke-border: rgba(239, 68, 68, 0.25);
+  --revoke-text: #f87171;
+  --revoke-hover-bg: rgba(239, 68, 68, 0.2);
+  --revoke-hover-border: rgba(239, 68, 68, 0.45);
+  --revoke-hover-text: #fca5a5;
+  --revoke-focus-ring: rgba(248, 113, 113, 0.4);
 }

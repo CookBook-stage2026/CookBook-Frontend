@@ -1,0 +1,83 @@
+<article
+  class="household-card"
+  (click)=onOpen()
+  (keydown)=onOpen()
+  [attr.aria-label]="'Household: ' + household().name"
+>
+  <div class="card-top">
+    <div class="card-identity">
+      <div class="card-icon-wrap" aria-hidden="true">
+        <mat-icon class="card-icon">home_work</mat-icon>
+      </div>
+      <div>
+        <h2 class="card-name">{{ household().name }}</h2>
+        <p class="card-creator">
+          <mat-icon class="meta-icon" aria-hidden="true">person_outline</mat-icon>
+          <span class="creator-name">{{ household().creator.displayName }}</span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  @if (household().description) {
+    <p class="card-description">{{ household().description }}</p>
+  } @else {
+    <p class="card-description card-description--empty">No description provided.</p>
+  }
+
+  <div class="card-footer">
+    <div class="members-wrap">
+      <ul
+        class="member-avatars"
+        [attr.aria-label]="memberLabel()"
+      >
+        @for (member of visibleMembers(); track member.userId) {
+          <li
+            class="member-avatar"
+            [style.background-color]="getAvatarColor(member)"
+            [matTooltip]="member.displayName"
+            [attr.aria-label]="member.displayName"
+          >
+            {{ getInitials(member) }}
+          </li>
+        }
+
+        @if (extraMembersCount() > 0) {
+          <li
+            class="member-avatar member-avatar--overflow"
+            [attr.aria-label]="extraMembersCount() + ' more members'"
+          >
+            +{{ extraMembersCount() }}
+          </li>
+        }
+      </ul>
+
+      <span class="member-count" aria-hidden="true">{{ memberLabel() }}</span>
+    </div>
+
+    @if (isCreator()) {
+      <button
+        mat-stroked-button
+        class="invite-btn"
+        type="button"
+        (click)="onInviteClick(); $event.stopPropagation()"
+        [attr.aria-label]="'Invite someone to ' + household().name"
+      >
+        <mat-icon>person_add</mat-icon>
+        Invite
+      </button>
+    }
+
+    @if (!isCreator()) {
+      <button
+        mat-stroked-button
+        color="warn"
+        type="button"
+        (click)="onLeaveClick(); $event.stopPropagation()"
+      >
+        <mat-icon>logout</mat-icon>
+        Leave
+      </button>
+    }
+  </div>
+</article>

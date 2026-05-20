@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { MatList, MatListItem, MatListItemTitle, MatListItemMeta } from '@angular/material/list';
 import { RecipeIngredientDto } from '@shared/domain/recipe';
+import { formatUnitAbbreviation } from '@shared/domain/ingredient';
 
 @Component({
   selector: 'app-recipe-ingredients-list',
@@ -37,26 +38,8 @@ export class RecipeIngredientsComponent {
   formatQuantity(item: RecipeIngredientDto): string {
     const { baseQuantity, unit } = item;
 
-    if (!unit || unit === 'NONE') return '';
+    if (!unit) return '';
 
-    const fixedLabels: Record<string, string> = {
-      GRAM: 'g',
-      KILOGRAM: 'kg',
-      MILLILITER: 'ml',
-      LITER: 'L',
-      TEASPOON: 'tsp',
-      TABLESPOON: 'tbsp',
-      PINCH: 'pinch',
-    };
-
-    if (unit === 'CUP') {
-      return `${baseQuantity} ${baseQuantity === 1 ? 'cup' : 'cups'}`;
-    }
-
-    if (unit === 'PIECE') {
-      return `${baseQuantity} ${baseQuantity === 1 ? 'piece' : 'pieces'}`;
-    }
-
-    return `${baseQuantity} ${fixedLabels[unit] ?? ''}`;
+    return `${baseQuantity} ${formatUnitAbbreviation(unit)}`;
   }
 }

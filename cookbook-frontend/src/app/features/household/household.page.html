@@ -1,0 +1,78 @@
+<app-toast/>
+
+<div class="page-container">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Households</h1>
+      <p class="page-subtitle">Manage your shared spaces, recipes, and family members.</p>
+    </div>
+    <button mat-flat-button color="primary" (click)="openCreateModal()">
+      <mat-icon>add</mat-icon>
+      Create Household
+    </button>
+  </header>
+
+  <main class="page-content" [class.page-content--centered]="isCentered()">
+    @if (householdsResource.isLoading()) {
+      <output class="loading-state" aria-live="polite" aria-label="Loading households">
+        <mat-spinner diameter="40" />
+        <p>Loading your households…</p>
+      </output>
+
+    } @else if (householdsResource.error()) {
+      <div class="feedback-state" role="alert">
+        <mat-icon class="feedback-icon feedback-icon--error">cloud_off</mat-icon>
+        <h2>Something went wrong</h2>
+        <p>We couldn't load your households. Please try again.</p>
+        <button mat-stroked-button (click)="householdsResource.reload()">
+          <mat-icon>refresh</mat-icon>
+          Retry
+        </button>
+      </div>
+
+    } @else if (!hasHouseholds()) {
+      <div class="feedback-state">
+        <mat-icon class="feedback-icon" aria-hidden="true">home_work</mat-icon>
+        <h2>No Households Yet</h2>
+        <p>You aren't part of any households. Create one to get started!</p>
+      </div>
+
+    } @else {
+      <div class="cards-grid">
+        @for (household of householdsResource.value()!; track household.id) {
+          @if (currentUser()) {
+            <app-household-card
+              [household]="household"
+              [currentUser]="currentUser()!"
+              (inviteClicked)="openInviteModal($event)"
+              (opened)="openMembersDialog($event)"
+              (leaveClicked)="onLeaveHousehold($event)"
+            />
+          }
+        }
+      </div>
+    }
+  </main>
+
+  @if (isCreateModalOpen()) {
+    <app-create-household
+      (closeModal)="closeCreateModal()"
+      (householdCreated)="onHouseholdCreated()"
+    />
+  }
+
+  @if (isInviteModalOpen()) {
+    <app-invite-household
+      [householdId]="selectedHouseholdId()!"
+      (closeModal)="closeInviteModal()"
+    />
+  }
+
+  @if (selectedMembersHouseholdId()) {
+    <app-household-members
+      [householdId]="selectedMembersHouseholdId()!"
+      [currentUser]="currentUser()!"
+      (closeModal)="closeMembersDialog()"
+    />
+  }
+</div>

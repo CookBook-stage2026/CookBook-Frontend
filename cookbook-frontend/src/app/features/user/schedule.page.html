@@ -1,41 +1,69 @@
-<app-toast></app-toast>
+<app-toast/>
 
-<div class="page-header">
-  <div class="header-content">
-    <h1>Your Week Schedule</h1>
-    <p class="subtitle">Plan your meals for the week ahead</p>
+<div class="page-container">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Your Week Schedule</h1>
+      <p class="page-subtitle">Plan your meals for the week ahead.</p>
+    </div>
+    <div class="header-actions">
+      <button
+        mat-flat-button
+        color="primary"
+        (click)="openCreateModal()"
+        [disabled]="schedulesResource.isLoading()">
+        <mat-icon>add</mat-icon>
+        Create New Schedule
+      </button>
+    </div>
+  </header>
+
+  <div class="week-navigator">
+    <button mat-icon-button (click)="previousWeek()" aria-label="Previous week" [disabled]="schedulesResource.isLoading()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <span class="week-range" aria-live="polite">{{ weekRangeLabel() }}</span>
+    <button mat-icon-button (click)="nextWeek()" aria-label="Next week" [disabled]="schedulesResource.isLoading()">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
   </div>
-  <button
-    mat-flat-button
-    color="primary"
-    class="create-btn"
-    (click)="openCreateModal()"
-  >
-    <mat-icon>add</mat-icon>
-    Create New Schedule
-  </button>
-</div>
 
-<div class="schedule-container">
   <app-week-schedule-view
+    [weekStartDate]="selectedWeekStart()"
     [refreshTrigger]="refreshSignal()"
+    (editSchedule)="openEditModal($event)"
   />
 </div>
 
 @if (isCreateModalOpen()) {
-  <div class="modal-overlay" (click)="closeCreateModal()" (keydown.esc)="closeCreateModal()">
-    <div class="modal-container" (click)="$event.stopPropagation()" (keydown.esc)="$event.stopPropagation()">
+  <div
+    class="modal-overlay"
+    (click)="closeCreateModal()"
+    (keydown.escape)="closeCreateModal()"
+  >
+    <div
+      class="modal-wrapper"
+      (click)="$event.stopPropagation()"
+      (keydown.escape)="$event.stopPropagation()"
+    >
       <div class="modal-header">
-        <h3>Create Schedule</h3>
-        <button mat-icon-button (click)="closeCreateModal()" class="close-btn">
+        <h3>{{ editingSchedule() ? 'Edit Schedule' : 'Create Schedule' }}</h3>
+        <button
+          mat-icon-button
+          (click)="closeCreateModal()"
+          class="close-btn"
+          [attr.aria-label]="'Close modal'"
+        >
           <mat-icon>close</mat-icon>
         </button>
       </div>
       <app-week-schedule-create
+        [existingSchedule]="editingSchedule()"
+        [weekStartDate]="modalWeekStart()"
+        [existingSchedules]="existingSchedules()"
         (closeModal)="closeCreateModal()"
         (scheduleCreated)="onScheduleCreated()"
       />
     </div>
   </div>
 }
-

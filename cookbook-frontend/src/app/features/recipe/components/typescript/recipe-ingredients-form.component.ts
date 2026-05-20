@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, input, output, signal } fro
 import { AbstractControl, FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, of, Subject, switchMap } from 'rxjs';
 import { IngredientService } from '@shared/services/ingredient';
-import { Ingredient } from '@shared/domain/ingredient';
+import { formatUnit, Ingredient } from '@shared/domain/ingredient';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
@@ -117,39 +117,6 @@ export class RecipeIngredientsFormComponent {
 
     if (!unitEnum) return '';
 
-    return getLocalizedUnit(unitEnum, quantity);
-  }
-}
-
-function getLocalizedUnit(unitEnum: string, quantity: number): string {
-  const isPlural = quantity !== 1;
-
-  switch (unitEnum.toUpperCase()) {
-    case 'GRAM': return $localize`:@@unit.gram:Gram`;
-    case 'KILOGRAM': return $localize`:@@unit.kilogram:Kilogram`;
-    case 'MILLILITER': return $localize`:@@unit.milliliter:Milliliter`;
-    case 'LITER': return $localize`:@@unit.liter:Liter`;
-    case 'TEASPOON':
-      return isPlural
-        ? $localize`:@@unit.teaspoon.plural:Teaspoons`
-        : $localize`:@@unit.teaspoon:Teaspoon`;
-    case 'TABLESPOON':
-      return isPlural
-        ? $localize`:@@unit.tablespoon.plural:Tablespoons`
-        : $localize`:@@unit.tablespoon:Tablespoon`;
-    case 'CUP':
-      return isPlural
-        ? $localize`:@@unit.cup.plural:Cups`
-        : $localize`:@@unit.cup:Cup`;
-    case 'PIECE':
-      return isPlural
-        ? $localize`:@@unit.piece.plural:Pieces`
-        : $localize`:@@unit.piece:Piece`;
-    case 'PINCH':
-      return isPlural
-        ? $localize`:@@unit.pinch.plural:Pinches`
-        : $localize`:@@unit.pinch:Pinch`;
-    default:
-      return unitEnum;
+    return formatUnit(unitEnum, quantity);
   }
 }

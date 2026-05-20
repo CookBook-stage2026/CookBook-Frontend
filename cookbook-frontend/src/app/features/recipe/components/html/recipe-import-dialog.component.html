@@ -1,0 +1,123 @@
+<h2 mat-dialog-title class="import-dialog-title">
+  <span
+    class="title-icon-wrap"
+    [class.title-icon-wrap--success]="isPreviewStep()"
+    aria-hidden="true">
+    <mat-icon>{{ titleIconName() }}</mat-icon>
+  </span>
+  {{ dialogTitle() }}
+</h2>
+
+<mat-dialog-content class="import-dialog-content">
+  @if (isUrlStep()) {
+    <div class="url-step">
+      @if (errorMessage()) {
+        <div class="error-banner" role="alert" aria-live="assertive">
+          <mat-icon aria-hidden="true">error_outline</mat-icon>
+          <span>{{ errorMessage() }}</span>
+        </div>
+      }
+
+      <p class="step-hint">
+        Works with most recipe websites — AllRecipes, BBC Good Food, Serious Eats and more.
+      </p>
+
+      <form [formGroup]="urlForm" (ngSubmit)="importRecipe()" id="import-url-form" novalidate>
+        <mat-form-field appearance="outline" class="url-field">
+          <mat-label>Recipe URL</mat-label>
+          <mat-icon matPrefix aria-hidden="true">link</mat-icon>
+          <input
+            matInput
+            type="url"
+            formControlName="url"
+            placeholder="https://www.allrecipes.com/recipe/..."
+            autocomplete="url"
+            aria-required="true"
+          />
+          @if (urlForm.controls.url.invalid && urlForm.controls.url.touched) {
+            <mat-error>{{ getUrlErrorMessage() }}</mat-error>
+          }
+        </mat-form-field>
+      </form>
+    </div>
+  }
+
+  @if (isLoadingStep()) {
+    <output class="loading-step" aria-live="polite" aria-label="Importing recipe, please wait">
+      <mat-spinner diameter="52" aria-hidden="true"></mat-spinner>
+      <p class="loading-title">Analyzing the page</p>
+      <p class="loading-sub">Our AI is reading and extracting the recipe. This may take up to a few minutes.</p>
+    </output>
+  }
+
+  @if (isPreviewStep()) {
+    @let recipe = importedRecipe();
+    @if (recipe) {
+      <div class="preview-step">
+        <h3 class="recipe-name">{{ recipe.name }}</h3>
+        <p class="recipe-description">{{ recipe.description }}</p>
+
+        <ul class="meta-chips" aria-label="Recipe summary">
+          <li class="meta-chip">
+            <mat-icon aria-hidden="true">schedule</mat-icon>
+            <span>{{ recipe.durationInMinutes }} min</span>
+          </li>
+          <li class="meta-chip">
+            <mat-icon aria-hidden="true">people</mat-icon>
+            <span>{{ recipe.servings }} servings</span>
+          </li>
+        </ul>
+
+        <section class="preview-section" aria-labelledby="ing-heading">
+          <h4 id="ing-heading" class="section-heading">Ingredients</h4>
+          <ul class="ingredient-list">
+            @for (ingredient of recipe.ingredients; track ingredient.ingredientId) {
+              <li class="ingredient-item">
+                <span class="ingredient-quantity">
+                  {{ ingredient.baseQuantity }}&nbsp;{{ formatUnit(ingredient.unit) }}
+                </span>
+                <span class="ingredient-name">{{ ingredient.name }}</span>
+              </li>
+            }
+          </ul>
+        </section>
+
+        <section class="preview-section" aria-labelledby="steps-heading">
+          <h4 id="steps-heading" class="section-heading">Steps</h4>
+          <ol class="steps-list">
+            @for (step of recipe.steps; track $index) {
+              <li class="step-item">{{ step }}</li>
+            }
+          </ol>
+        </section>
+      </div>
+    }
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  @if (isUrlStep()) {
+    <button mat-button type="button" (click)="dismiss()">Cancel</button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="submit"
+      form="import-url-form"
+      [disabled]="urlForm.invalid"
+      aria-label="Import recipe from the provided URL">
+      <mat-icon aria-hidden="true">cloud_download</mat-icon>
+      Import
+    </button>
+  }
+  @if (isPreviewStep()) {
+    <button mat-button type="button" (click)="dismiss()">Close</button>
+    <button
+      mat-flat-button
+      color="primary"
+      type="button"
+      (click)="confirmAndView()">
+      <mat-icon aria-hidden="true">open_in_new</mat-icon>
+      View
+    </button>
+  }
+</mat-dialog-actions>

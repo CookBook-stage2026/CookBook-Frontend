@@ -1,6 +1,6 @@
-import { Routes } from '@angular/router';
-import { authGuard } from '@core/services/auth/auth.guard';
 import { MainLayoutComponent } from '@core/components/typescript/main-layout.component';
+import { authGuard } from '@core/services/auth/auth.guard';
+import { Routes } from '@angular/router';
 
 export const routes: Routes = [
   {
@@ -12,7 +12,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('@core/components/typescript/auth/callback.component').then((m) => m.CallbackComponent),
   },
-
+  {
+    path: 'invite/:token',
+    loadComponent: () =>
+      import('@features/household/accept-invite.page'),
+  },
   {
     path: '',
     component: MainLayoutComponent,
@@ -27,8 +31,12 @@ export const routes: Routes = [
         loadComponent: () => import('@features/user/preferences.page'),
       },
       {
-        path: 'schedule',
+        path: 'schedules',
         loadComponent: () => import('@features/user/schedule.page'),
+      },
+      {
+        path: 'households',
+        loadComponent: () => import('@features/household/household.page'),
       },
       {
         path: '',
@@ -38,7 +46,7 @@ export const routes: Routes = [
       {
         path: 'recipes/:recipeId',
         loadComponent: () => import('@features/recipe/recipe-detail.page')
-      }
+      },
     ]
   },
   {

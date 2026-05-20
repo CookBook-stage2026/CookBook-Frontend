@@ -1,0 +1,57 @@
+<div
+  class="modal-backdrop"
+  (click)="onClose()"
+  (keydown.escape)="onClose()"
+  tabindex="-1"
+>
+  <dialog class="modal-container" open (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title" id="dialog-title">Create Household</h2>
+      <button mat-icon-button (click)="onClose()" aria-label="Close dialog">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="modal-form" aria-labelledby="dialog-title">
+      <div class="modal-body">
+        <p class="modal-description">Set up a new household to start sharing recipes and planning meals together.</p>
+
+        @if (errorMessage()) {
+          <div class="error-banner" role="alert" aria-live="assertive">
+            {{ errorMessage() }}
+          </div>
+        }
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Household Name</mat-label>
+          <input matInput formControlName="name" placeholder="e.g. The Smith Family" autocomplete="off" />
+          @if (form.controls.name.hasError('required')) {
+            <mat-error>Name is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Description</mat-label>
+          <textarea
+            matInput
+            formControlName="description"
+            placeholder="A short description of your household..."
+            rows="3">
+          </textarea>
+          @if (form.controls.description.hasError('required')) {
+            <mat-error>Description is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+
+      <div class="modal-actions">
+        <button mat-stroked-button type="button" (click)="onClose()" [disabled]="isSubmitting()">
+          Cancel
+        </button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || isSubmitting()">
+          {{ isSubmitting() ? 'Creating...' : 'Create Household' }}
+        </button>
+      </div>
+    </form>
+  </dialog>
+</div>
