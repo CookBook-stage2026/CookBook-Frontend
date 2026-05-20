@@ -9,6 +9,7 @@ export interface CreateRecipeDto {
   durationInMinutes: number;
   steps: string[];
   ingredients: NewRecipeIngredientDto[];
+  isPublic: boolean;
   servings: number;
 }
 
@@ -21,7 +22,7 @@ export interface RecipeDto {
   ingredients: RecipeIngredientDto[];
   servings: number;
   isPublic: boolean;
-  creator: string;
+  isCreator: boolean;
 }
 
 export interface RecipeIngredientDto {

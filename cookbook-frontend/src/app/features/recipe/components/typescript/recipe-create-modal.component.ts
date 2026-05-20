@@ -26,6 +26,7 @@ export class RecipeCreateModalComponent {
     description: ['', Validators.required],
     durationInMinutes: [null, [Validators.required, Validators.min(1)]],
     servings: [null, [Validators.required, Validators.min(1)]],
+    isPublic: [false],
     steps: this.fb.array([this.fb.control('', Validators.required)]),
     ingredients: this.fb.array([])
   });
@@ -55,6 +56,7 @@ export class RecipeCreateModalComponent {
         durationInMinutes: rawFormValue.durationInMinutes,
         steps: rawFormValue.steps,
         ingredients: mappedIngredients,
+        isPublic: rawFormValue.isPublic,
         servings: Number(rawFormValue.servings)
       };
 
