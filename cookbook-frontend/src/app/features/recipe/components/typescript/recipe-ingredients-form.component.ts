@@ -5,11 +5,14 @@ import { IngredientService } from '@shared/services/ingredient';
 import { formatUnit, Ingredient } from '@shared/domain/ingredient';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import {
+  IngredientCreateModalComponent
+} from '@features/recipe/components/typescript/ingredient-create-modal.component';
 
 @Component({
   selector: 'app-recipe-ingredients',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, MatAutocompleteModule],
+  imports: [ReactiveFormsModule, MatAutocompleteModule, IngredientCreateModalComponent],
   templateUrl: '../html/recipe-ingredients-form.component.html',
   styleUrl: '../scss/recipe-create-modal.component.scss'
 })
@@ -22,6 +25,8 @@ export class RecipeIngredientsFormComponent {
   readonly removeIngredient = output<number>();
 
   readonly allIngredients = signal<Ingredient[]>([]);
+  readonly isCreateModalOpen = signal(false);
+  readonly pendingCreateCtrl = signal<AbstractControl | null>(null);
 
   private readonly searchSubject = new Subject<string>();
 
@@ -55,6 +60,37 @@ export class RecipeIngredientsFormComponent {
 
   remove(index: number): void {
     this.removeIngredient.emit(index);
+  }
+
+  openCreateModal(): void {
+    this.isCreateModalOpen.set(true);
+  }
+
+  onIngredientCreated(ingredient: Ingredient): void {
+    let ctrl = this.pendingCreateCtrl();
+
+    if (!ctrl) {
+      this.addIngredient.emit();
+
+      ctrl = this.ingredients().at(this.ingredients().length - 1);
+    }
+
+    ctrl.patchValue({
+      id: ingredient.id,
+      name: ingredient.name,
+      unit: ingredient.unit
+    });
+
+    this.allIngredients.update(existing => {
+      const alreadyExists = existing.some(i => i.id === ingredient.id);
+
+      return alreadyExists
+        ? existing
+        : [...existing, ingredient];
+    });
+
+    this.pendingCreateCtrl.set(null);
+    this.isCreateModalOpen.set(false);
   }
 
   onNameChange(event: Event, ctrl: AbstractControl): void {
