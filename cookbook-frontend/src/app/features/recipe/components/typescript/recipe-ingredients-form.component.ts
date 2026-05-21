@@ -76,7 +76,7 @@ export class RecipeIngredientsFormComponent {
           this.currentSearchTerm().trim().toLowerCase()
       );
 
-      this.pendingRowIndex.set(matchingIndex !== -1 ? matchingIndex : null);
+      this.pendingRowIndex.set(matchingIndex === -1 ? null : matchingIndex);
     } else {
       this.pendingRowIndex.set(index);
     }
