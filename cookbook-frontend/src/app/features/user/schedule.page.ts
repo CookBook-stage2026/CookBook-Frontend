@@ -12,6 +12,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { RecipeSummary } from '@shared/domain/recipe';
 import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { ToastService } from '@core/services';
 
 @Component({
   selector: 'app-schedule-page',
@@ -30,6 +31,7 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 })
 export default class SchedulePage {
   private readonly weekScheduleService = inject(WeekScheduleService);
+  private readonly toastService = inject(ToastService);
   readonly router = inject(Router);
   readonly route = inject(ActivatedRoute);
   readonly dialog = inject(MatDialog);
@@ -191,8 +193,14 @@ export default class SchedulePage {
           this.modalWeekStart.set(this.selectedWeekStart());
           this.isCreateModalOpen.set(true);
         },
-        error: () => {
+        error: (err) => {
           this.isSuggestingWeek.set(false);
+          let message = 'Failed to import recipe.';
+          if (err.status === 502 || err.status === 503) {
+            message = 'AI processing failed. Please try again later.';
+            this.toastService.show(message, 'error');
+          }
+          this.toastService.show(message, 'error');
         }
       });
     });

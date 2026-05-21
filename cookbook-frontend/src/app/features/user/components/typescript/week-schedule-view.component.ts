@@ -127,7 +127,7 @@ export class WeekScheduleViewComponent {
               },
               error: () => {
                 this.isSaving.set(false);
-                this.toastService.show('Failed to save recipe.', 'error');
+                this.toastService.show('Failed to save recipe. Please try again.', 'error');
               }
             });
         });
