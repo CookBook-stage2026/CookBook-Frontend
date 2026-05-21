@@ -1,5 +1,3 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
-import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -20,6 +18,8 @@ import {
 import { MatTooltip } from '@angular/material/tooltip';
 import { RecipeSummary } from '@shared/domain/recipe';
 import { ToastService } from '@core/services';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
 
 @Component({
   selector: 'app-week-schedule-create',
@@ -40,6 +40,7 @@ import { ToastService } from '@core/services';
 })
 export class WeekScheduleCreateComponent {
   readonly existingSchedule = input<WeekScheduleResponse | undefined>(undefined);
+  readonly suggestedSchedule = input<WeekScheduleResponse | undefined>(undefined);
   readonly weekStartDate = input.required<Date>();
   readonly todayIsoDate = input<string>('');
   readonly scheduleCreated = output<void>();
@@ -80,7 +81,6 @@ export class WeekScheduleCreateComponent {
   });
 
   constructor() {
-    // Watch for datepicker changes
     this.form.get('weekStartDate')?.valueChanges.subscribe(date => {
       if (date instanceof Date) {
         this.weekStartDateChanged.emit(date);
@@ -89,21 +89,14 @@ export class WeekScheduleCreateComponent {
 
     effect(() => {
       const existing = this.existingSchedule();
+      const suggested = this.suggestedSchedule();
+
       if (existing) {
         this.isEditMode.set(true);
-        this.form.patchValue({
-          weekStartDate: new Date(existing.weekStartDate),
-        });
-
-        const skipped = new Set<DayOfWeek>();
-        for (const day of this.daysOfWeek) {
-          const dayData = existing.days.find(d => d.day === day);
-          if (!dayData) {
-            skipped.add(day);
-            this.form.get(day)?.setValue(SKIP_DAY_VALUE, { emitEvent: false });
-          }
-        }
-        this.skippedDays.set(skipped);
+        this.patchSchedule(existing);
+      } else if (suggested) {
+        this.isEditMode.set(false);
+        this.patchSchedule(suggested);
       } else {
         this.isEditMode.set(false);
         this.form.patchValue({
@@ -115,6 +108,24 @@ export class WeekScheduleCreateComponent {
         this.skippedDays.set(new Set());
       }
     });
+  }
+
+  private patchSchedule(schedule: WeekScheduleResponse): void {
+    this.form.patchValue({
+      weekStartDate: new Date(schedule.weekStartDate),
+    });
+
+    const skipped = new Set<DayOfWeek>();
+    for (const day of this.daysOfWeek) {
+      const dayData = schedule.days.find(d => d.day === day);
+      if (dayData) {
+        this.form.get(day)?.setValue(dayData.recipeSummary, { emitEvent: false });
+      } else {
+        skipped.add(day);
+        this.form.get(day)?.setValue(SKIP_DAY_VALUE, { emitEvent: false });
+      }
+    }
+    this.skippedDays.set(skipped);
   }
 
   getDailyControl(day: DayOfWeek): FormControl<string | RecipeSummary> {
@@ -145,13 +156,15 @@ export class WeekScheduleCreateComponent {
 
   myDateFilter = (date: Date | null): boolean => {
     if (!date) return false;
-
     if (date.getDay() !== 1) return false;
 
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const dateString = `${year}-${month}-${day}`;
+    const dateString = this.formatDateToString(date);
+
+    const existing = this.existingSchedule();
+    const suggested = this.suggestedSchedule();
+    const currentWeek = existing?.weekStartDate ?? suggested?.weekStartDate;
+
+    if (dateString === currentWeek) return true;
 
     return !this.existingSchedules().some(s => s.weekStartDate === dateString);
   };
@@ -226,8 +239,14 @@ export class WeekScheduleCreateComponent {
 
   getPreselectedRecipe(day: DayOfWeek): RecipeSummary | undefined {
     const existing = this.existingSchedule();
-    if (!existing) return undefined;
-    return existing.days.find(d => d.day === day)?.recipeSummary;
+    if (existing) {
+      return existing.days.find(d => d.day === day)?.recipeSummary;
+    }
+    const suggested = this.suggestedSchedule();
+    if (suggested) {
+      return suggested.days.find(d => d.day === day)?.recipeSummary;
+    }
+    return undefined;
   }
 
   onClose(): void {

@@ -8,6 +8,20 @@
     </div>
     <div class="header-actions">
       <button
+        mat-stroked-button
+        color="accent"
+        (click)="openSuggestWeek()"
+        [disabled]="schedulesResource.isLoading() || isSuggestingWeek()"
+        class="suggest-btn">
+        @if (isSuggestingWeek()) {
+          <mat-spinner diameter="20" strokeWidth="2"></mat-spinner>
+        } @else {
+          <mat-icon>auto_awesome</mat-icon>
+        }
+        <span>Suggest Week</span>
+      </button>
+
+      <button
         mat-flat-button
         color="primary"
         (click)="openCreateModal()"
@@ -115,6 +129,7 @@
       </div>
       <app-week-schedule-create
         [existingSchedule]="editingSchedule()"
+        [suggestedSchedule]="suggestedSchedule()"
         [weekStartDate]="modalWeekStart()"
         [existingSchedules]="existingSchedules()"
         [todayIsoDate]="todayIsoDate()"
