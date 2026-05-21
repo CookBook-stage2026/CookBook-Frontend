@@ -3,7 +3,7 @@
     <h3>Ingredients *</h3>
     <div class="section-header-actions">
       <button type="button" class="btn-create-ingredient" (click)="openCreateModal()">
-        + Create New Ingredient
+        + {{ createButtonText() }}
       </button>
       <button type="button" class="btn-text" (click)="add()" [disabled]="isSubmitting()">
         + Add Ingredient
@@ -18,11 +18,6 @@
         <div class="form-group flex-2">
           <label for="ingredient-name-{{ $index }}">Ingredient Name *</label>
           <div class="input-wrapper">
-            @if (ingredientCtrl.get('id')?.invalid && ingredientCtrl.get('name')?.touched) {
-              <div [id]="'name-error-' + $index" class="tooltip-error tooltip-above" role="tooltip">
-                <span>Please select a valid ingredient from the list</span>
-              </div>
-            }
             <input
               type="text"
               formControlName="name"
@@ -32,7 +27,6 @@
               autocomplete="off"
               aria-required="true"
               [matAutocomplete]="auto"
-              [attr.aria-describedby]="ingredientCtrl.get('id')?.invalid && ingredientCtrl.get('name')?.touched ? 'name-error-' + $index : null"
               [class.is-invalid]="ingredientCtrl.get('id')?.invalid && ingredientCtrl.get('name')?.touched"
               (input)="onNameChange($event, ingredientCtrl)">
 
@@ -105,6 +99,7 @@
 
 <app-ingredient-create-modal
   [isOpen]="isCreateModalOpen()"
+  [initialName]="currentSearchTerm()"
   (closeModal)="isCreateModalOpen.set(false)"
   (ingredientCreated)="onIngredientCreated($event)"
 />
