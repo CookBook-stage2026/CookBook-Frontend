@@ -1,7 +1,3 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
-import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal, } from '@angular/core';
-import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -22,6 +18,8 @@ import {
 import { MatTooltip } from '@angular/material/tooltip';
 import { RecipeSummary } from '@shared/domain/recipe';
 import { ToastService } from '@core/services';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
 
 @Component({
   selector: 'app-week-schedule-create',
@@ -83,7 +81,6 @@ export class WeekScheduleCreateComponent {
   });
 
   constructor() {
-    // Watch for datepicker changes
     this.form.get('weekStartDate')?.valueChanges.subscribe(date => {
       if (date instanceof Date) {
         this.weekStartDateChanged.emit(date);
