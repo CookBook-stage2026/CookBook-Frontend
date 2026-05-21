@@ -18,6 +18,61 @@
     </div>
   </header>
 
+  <section
+    class="today-recipe-card"
+    aria-label="Today's recipe"
+    [class.has-recipe]="hasTodayRecipe()"
+    [class.empty]="!hasTodayRecipe()">
+
+    @if (hasTodayRecipe()) {
+      <div class="today-recipe-content">
+        <div class="today-recipe-visual">
+          <div class="recipe-icon-circle">
+            <mat-icon>restaurant</mat-icon>
+          </div>
+        </div>
+        <div class="today-recipe-info">
+          <span class="today-badge">Today</span>
+          <h2 class="today-recipe-name">{{ todayRecipe()?.name }}</h2>
+          <div class="today-recipe-meta">
+            <span class="meta-item">
+              <mat-icon>schedule</mat-icon>
+              {{ todayRecipe()?.durationInMinutes }} min
+            </span>
+          </div>
+        </div>
+        <div class="today-recipe-action">
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="startCookingToday()"
+            class="cooking-btn">
+            <mat-icon>restaurant</mat-icon>
+            Start Cooking
+          </button>
+        </div>
+      </div>
+    } @else {
+      <div class="today-recipe-empty">
+        <div class="empty-icon">
+          <mat-icon>event_busy</mat-icon>
+        </div>
+        <div class="empty-info">
+          <h2 class="empty-title">No recipe planned for today.</h2>
+          <p class="empty-text">Add a recipe to your schedule to get started.</p>
+        </div>
+        <button
+          mat-stroked-button
+          color="primary"
+          (click)="planToday()"
+          class="plan-btn">
+          <mat-icon>add</mat-icon>
+          Plan Today
+        </button>
+      </div>
+    }
+  </section>
+
   <div class="week-navigator">
     <button mat-icon-button (click)="previousWeek()" aria-label="Previous week" [disabled]="schedulesResource.isLoading()">
       <mat-icon>chevron_left</mat-icon>
@@ -31,29 +86,30 @@
   <app-week-schedule-view
     [weekStartDate]="selectedWeekStart()"
     [refreshTrigger]="refreshSignal()"
+    [todayIsoDate]="todayIsoDate()"
     (editSchedule)="openEditModal($event)"
+    (deleteSchedule)="onScheduleDeleted()"
   />
 </div>
 
 @if (isCreateModalOpen()) {
-  <div
+  <dialog
     class="modal-overlay"
+    (keydown.esc)="closeCreateModal()"
     (click)="closeCreateModal()"
-    (keydown.escape)="closeCreateModal()"
-  >
+    aria-modal="true"
+    [attr.aria-label]="editingSchedule() ? 'Edit schedule' : 'Create schedule'">
     <div
       class="modal-wrapper"
-      (click)="$event.stopPropagation()"
-      (keydown.escape)="$event.stopPropagation()"
-    >
+      (keydown.esc)="$event.stopPropagation()"
+      (click)="$event.stopPropagation()">
       <div class="modal-header">
         <h3>{{ editingSchedule() ? 'Edit Schedule' : 'Create Schedule' }}</h3>
         <button
           mat-icon-button
           (click)="closeCreateModal()"
           class="close-btn"
-          [attr.aria-label]="'Close modal'"
-        >
+          aria-label="Close modal">
           <mat-icon>close</mat-icon>
         </button>
       </div>
@@ -61,9 +117,11 @@
         [existingSchedule]="editingSchedule()"
         [weekStartDate]="modalWeekStart()"
         [existingSchedules]="existingSchedules()"
+        [todayIsoDate]="todayIsoDate()"
         (closeModal)="closeCreateModal()"
         (scheduleCreated)="onScheduleCreated()"
+        (weekStartDateChanged)="onWeekStartDateChanged($event)"
       />
     </div>
-  </div>
+  </dialog>
 }

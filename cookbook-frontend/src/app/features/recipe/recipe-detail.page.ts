@@ -15,6 +15,7 @@ import { RecipeEnhanceModalComponent } from '@features/recipe/components/typescr
 import { of } from 'rxjs';
 import { RecipeCookingModeComponent } from '@features/recipe/components/typescript/recipe-cooking-mode.component';
 import { Location } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { ToastComponent } from '@shared/components/toast/toast.component';
 
 @Component({
@@ -41,6 +42,7 @@ export default class RecipeDetailPage {
   readonly dialog = inject(MatDialog);
   readonly toastService = inject(ToastService);
   readonly location = inject(Location);
+  readonly route = inject(ActivatedRoute);
 
   readonly recipeId = input.required<string>();
   readonly isCookingMode = signal(false);
@@ -52,14 +54,6 @@ export default class RecipeDetailPage {
     params: () => this.recipeId(),
     stream: ({ params }) => this.recipeService.getRecipeById(params)
   });
-
-  enterCookingMode(): void {
-    this.isCookingMode.set(true);
-  }
-
-  exitCookingMode(): void {
-    this.isCookingMode.set(false);
-  }
 
   toggleVisibility(currentPublicStatus: boolean): void {
     const id = this.recipeId();
@@ -81,15 +75,12 @@ export default class RecipeDetailPage {
     });
   }
 
-  readonly enhancedRecipe = rxResource<RecipeDto | undefined, string | undefined>({
-    params: () => this.enhanceRequest(),
-    stream: ({ params }) => {
-      if (!params) return of(undefined);
-      return this.recipeService.enhanceRecipe(params);
-    }
-  });
-
   constructor() {
+    const mode = this.route.snapshot.queryParamMap.get('mode');
+    if (mode === 'cooking') {
+      this.isCookingMode.set(true);
+    }
+
     effect(() => {
       const isRequestActive = this.enhanceRequest();
 
@@ -123,6 +114,27 @@ export default class RecipeDetailPage {
       }
     });
   }
+
+  enterCookingMode(): void {
+    this.isCookingMode.set(true);
+  }
+
+  exitCookingMode(): void {
+    this.isCookingMode.set(false);
+    if (this.route.snapshot.queryParamMap.has('mode')) {
+      const url = new URL(globalThis.location.href);
+      url.searchParams.delete('mode');
+      globalThis.history.replaceState({}, '', url);
+    }
+  }
+
+  readonly enhancedRecipe = rxResource<RecipeDto | undefined, string | undefined>({
+    params: () => this.enhanceRequest(),
+    stream: ({ params }) => {
+      if (!params) return of(undefined);
+      return this.recipeService.enhanceRecipe(params);
+    }
+  });
 
   enhanceRecipe(): void {
     const id = this.recipeId();

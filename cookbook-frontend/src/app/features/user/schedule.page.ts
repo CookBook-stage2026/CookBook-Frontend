@@ -5,10 +5,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ToastComponent } from '@shared/components/toast/toast.component';
-import { WeekScheduleResponse } from '@shared/domain/week-schedule';
+import { DAY_LABELS, DayOfWeek, WeekScheduleResponse } from '@shared/domain/week-schedule';
 import { WeekScheduleService } from '@shared/services/week-schedule';
 import { ActivatedRoute, Router } from '@angular/router';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { RecipeSummary } from '@shared/domain/recipe';
 
 @Component({
   selector: 'app-schedule-page',
@@ -48,6 +49,31 @@ export default class SchedulePage {
     end.setDate(end.getDate() + 6);
     return `${this.formatDate(start)} – ${this.formatDate(end)}`;
   });
+
+  readonly todayIsoDate = computed(() => {
+    return this.toLocalDateString(new Date());
+  });
+
+  readonly todayDayOfWeek = signal<DayOfWeek>(this.getCurrentDayOfWeek());
+  readonly todayWeekStartIso = computed(() => this.toLocalDateString(this.getMonday(new Date())));
+  readonly todayLabel = computed(() => DAY_LABELS[this.todayDayOfWeek()]);
+
+  readonly currentWeekSchedule = computed(() => {
+    const schedules = this.existingSchedules();
+    return schedules.find(s => s.weekStartDate === this.todayWeekStartIso());
+  });
+
+  readonly todayDaySchedule = computed(() => {
+    const schedule = this.currentWeekSchedule();
+    if (!schedule) return undefined;
+    return schedule.days.find(d => d.day === this.todayDayOfWeek());
+  });
+
+  readonly todayRecipe = computed<RecipeSummary | undefined>(() => {
+    return this.todayDaySchedule()?.recipeSummary;
+  });
+
+  readonly hasTodayRecipe = computed(() => !!this.todayRecipe());
 
   constructor() {
     const weekParam = this.route.snapshot.queryParamMap.get('week');
@@ -94,6 +120,47 @@ export default class SchedulePage {
       this.updateRouteParam(d);
       return d;
     });
+  }
+
+  startCookingToday(): void {
+    const recipe = this.todayRecipe();
+    if (!recipe) return;
+    this.router.navigate([ '/recipes', recipe.id ], {
+      queryParams: { mode: 'cooking' }
+    });
+  }
+
+  planToday(): void {
+    this.modalWeekStart.set(this.getMonday(new Date()));
+    this.isCreateModalOpen.set(true);
+  }
+
+  onScheduleDeleted(): void {
+    this.refreshSignal.update(v => v + 1);
+    this.schedulesResource.reload();
+  }
+
+  onWeekStartDateChanged(date: Date): void {
+    this.selectedWeekStart.set(date);
+
+    this.refreshSignal.update(v => v + 1);
+    this.schedulesResource.reload();
+
+    this.updateRouteParam(date);
+  }
+
+  private getCurrentDayOfWeek(): DayOfWeek {
+    const jsDay = new Date().getDay();
+    const mapping: Record<number, DayOfWeek> = {
+      0: 'SUNDAY',
+      1: 'MONDAY',
+      2: 'TUESDAY',
+      3: 'WEDNESDAY',
+      4: 'THURSDAY',
+      5: 'FRIDAY',
+      6: 'SATURDAY'
+    };
+    return mapping[jsDay];
   }
 
   private getMonday(date: Date): Date {
