@@ -1,4 +1,4 @@
-name: Dependabot Auto-Merge
+name: Dependabot Auto-Merge with Compatibility Score
 
 on:
   pull_request_target:
@@ -15,15 +15,24 @@ jobs:
     steps:
       - name: Fetch Dependabot metadata
         id: metadata
-        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # 3.1.0
+        uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
         with:
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          github-token: "${{ secrets.DEPENDABOT_PAT }}"
+          compat-lookup: true
 
-      - name: Auto-approve and enable auto-merge for patch/minor
+      - name: Check compatibility score and auto-merge
         if: steps.metadata.outputs.update-type != 'version-update:semver-major'
         run: |
-          gh pr review --approve "$PR_URL"
-          gh pr merge --auto --squash "$PR_URL"
+          SCORE=${{ steps.metadata.outputs.compatibility-score }}
+          echo "Compatibility score is: $SCORE"
+          if [ "$SCORE" -gt 80 ]; then
+            echo "Score > 80. Approving and enabling auto-merge."
+            gh pr review --approve "$PR_URL"
+            gh pr merge --auto --squash "$PR_URL"
+          else
+            echo "Score <= 80. Closing PR and deleting branch."
+            gh pr close "$PR_URL" --delete-branch
+          fi
         env:
           PR_URL: ${{ github.event.pull_request.html_url }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.DEPENDABOT_PAT }}
