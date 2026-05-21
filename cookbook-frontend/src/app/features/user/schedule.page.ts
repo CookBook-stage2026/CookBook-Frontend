@@ -50,6 +50,10 @@ export default class SchedulePage {
     return `${this.formatDate(start)} – ${this.formatDate(end)}`;
   });
 
+  readonly todayIsoDate = computed(() => {
+    return this.toLocalDateString(new Date());
+  });
+
   readonly todayDayOfWeek = signal<DayOfWeek>(this.getCurrentDayOfWeek());
   readonly todayWeekStartIso = computed(() => this.toLocalDateString(this.getMonday(new Date())));
   readonly todayLabel = computed(() => DAY_LABELS[this.todayDayOfWeek()]);
@@ -134,6 +138,15 @@ export default class SchedulePage {
   onScheduleDeleted(): void {
     this.refreshSignal.update(v => v + 1);
     this.schedulesResource.reload();
+  }
+
+  onWeekStartDateChanged(date: Date): void {
+    this.selectedWeekStart.set(date);
+
+    this.refreshSignal.update(v => v + 1);
+    this.schedulesResource.reload();
+
+    this.updateRouteParam(date);
   }
 
   private getCurrentDayOfWeek(): DayOfWeek {

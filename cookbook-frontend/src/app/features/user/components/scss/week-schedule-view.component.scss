@@ -112,6 +112,16 @@
   border-color: var(--element-primary, #3b82f6);
 }
 
+.day-card.today {
+  border: 2px solid var(--mat-sys-tertiary, #3b82f6);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.day-card.today:hover {
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
+  border-color: var(--element-primary, #3b82f6);
+}
+
 .day-header {
   display: flex;
   flex-direction: column;
@@ -204,7 +214,7 @@
 }
 
 .meta-item {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 0.25rem;
   font-size: 0.8rem;

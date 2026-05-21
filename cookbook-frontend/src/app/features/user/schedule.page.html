@@ -32,7 +32,7 @@
           </div>
         </div>
         <div class="today-recipe-info">
-          <span class="today-badge">{{ todayLabel() }}</span>
+          <span class="today-badge">Today</span>
           <h2 class="today-recipe-name">{{ todayRecipe()?.name }}</h2>
           <div class="today-recipe-meta">
             <span class="meta-item">
@@ -58,7 +58,7 @@
           <mat-icon>event_busy</mat-icon>
         </div>
         <div class="empty-info">
-          <h2 class="empty-title">No recipe planned for {{ todayLabel() }}</h2>
+          <h2 class="empty-title">No recipe planned for today.</h2>
           <p class="empty-text">Add a recipe to your schedule to get started.</p>
         </div>
         <button
@@ -67,7 +67,7 @@
           (click)="planToday()"
           class="plan-btn">
           <mat-icon>add</mat-icon>
-          Plan {{ todayLabel() }}
+          Plan Today
         </button>
       </div>
     }
@@ -86,6 +86,7 @@
   <app-week-schedule-view
     [weekStartDate]="selectedWeekStart()"
     [refreshTrigger]="refreshSignal()"
+    [todayIsoDate]="todayIsoDate()"
     (editSchedule)="openEditModal($event)"
     (deleteSchedule)="onScheduleDeleted()"
   />
@@ -116,8 +117,10 @@
         [existingSchedule]="editingSchedule()"
         [weekStartDate]="modalWeekStart()"
         [existingSchedules]="existingSchedules()"
+        [todayIsoDate]="todayIsoDate()"
         (closeModal)="closeCreateModal()"
         (scheduleCreated)="onScheduleCreated()"
+        (weekStartDateChanged)="onWeekStartDateChanged($event)"
       />
     </div>
   </dialog>

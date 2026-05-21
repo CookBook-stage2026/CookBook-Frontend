@@ -32,6 +32,7 @@ import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-compon
 export class WeekScheduleViewComponent {
   readonly weekStartDate = input.required<Date>();
   readonly refreshTrigger = input(0, { transform: (value: number) => value });
+  readonly todayIsoDate = input<string>('');
   readonly editSchedule = output<WeekScheduleResponse>();
   readonly deleteSchedule = output<void>();
 

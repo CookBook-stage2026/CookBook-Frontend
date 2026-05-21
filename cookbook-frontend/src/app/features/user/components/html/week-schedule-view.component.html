@@ -49,7 +49,9 @@
       @let isoDate = getDayIsoDate(day);
       @let isSelectedSuggesting = suggestingDay() == isoDate;
 
-      <div class="day-card" [class.has-recipe]="!!getRecipeForDay(day)">
+      <div class="day-card"
+           [class.has-recipe]="!!getRecipeForDay(day)"
+           [class.today]="isoDate === todayIsoDate()">
         <div class="day-header">
           <div class="header-main">
             <div class="day-badge">{{ dayLabels[day] }}</div>

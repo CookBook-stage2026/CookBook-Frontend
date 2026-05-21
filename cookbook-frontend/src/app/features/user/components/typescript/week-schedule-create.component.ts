@@ -1,13 +1,5 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  inject,
-  signal,
-  output,
-  input,
-  effect,
-} from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators, FormControl } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -15,18 +7,15 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { WeekScheduleService } from '@shared/services/week-schedule';
-import {
-  RecipeAutocompleteComponent,
-  SKIP_DAY_VALUE,
-} from './recipe-autocomplete.component';
+import { RecipeAutocompleteComponent, SKIP_DAY_VALUE } from './recipe-autocomplete.component';
 import {
   CreateDayScheduleRequest,
   CreateWeekScheduleRequest,
   DAY_LABELS,
   DayOfWeek,
   DAYS_OF_WEEK,
-  WeekScheduleResponse,
   UpdateWeekScheduleRequest,
+  WeekScheduleResponse,
 } from '@shared/domain/week-schedule';
 import { MatTooltip } from '@angular/material/tooltip';
 import { RecipeSummary } from '@shared/domain/recipe';
@@ -52,8 +41,10 @@ import { ToastService } from '@core/services';
 export class WeekScheduleCreateComponent {
   readonly existingSchedule = input<WeekScheduleResponse | undefined>(undefined);
   readonly weekStartDate = input.required<Date>();
+  readonly todayIsoDate = input<string>('');
   readonly scheduleCreated = output<void>();
   readonly closeModal = output<void>();
+  readonly weekStartDateChanged = output<Date>();
 
   private readonly fb = inject(FormBuilder).nonNullable;
   private readonly weekScheduleService = inject(WeekScheduleService);
@@ -89,6 +80,13 @@ export class WeekScheduleCreateComponent {
   });
 
   constructor() {
+    // Watch for datepicker changes
+    this.form.get('weekStartDate')?.valueChanges.subscribe(date => {
+      if (date instanceof Date) {
+        this.weekStartDateChanged.emit(date);
+      }
+    });
+
     effect(() => {
       const existing = this.existingSchedule();
       if (existing) {
@@ -125,6 +123,24 @@ export class WeekScheduleCreateComponent {
 
   isSkipped(day: DayOfWeek): boolean {
     return this.skippedDays().has(day);
+  }
+
+  isToday(day: DayOfWeek): boolean {
+    const todayIso = this.todayIsoDate();
+    if (!todayIso) return false;
+
+    const formDate = this.form.get('weekStartDate')?.value;
+    const start = formDate instanceof Date ? new Date(formDate) : new Date(this.weekStartDate());
+
+    const dayIndex = this.daysOfWeek.indexOf(day);
+    start.setDate(start.getDate() + dayIndex);
+
+    const year = start.getFullYear();
+    const month = String(start.getMonth() + 1).padStart(2, '0');
+    const dayOfMonth = String(start.getDate()).padStart(2, '0');
+    const dayIso = `${year}-${month}-${dayOfMonth}`;
+
+    return dayIso === todayIso;
   }
 
   myDateFilter = (date: Date | null): boolean => {
