@@ -74,7 +74,7 @@
                       mat-icon-button
                       (click)="onSuggest(day)"
                       [disabled]="isSuggesting() || isSaving() || isDeleting()"
-                      [matTooltip]="schedule() ? 'Suggest a recipe' : 'Create a schedule first'"
+                      [matTooltip]="'Suggest a recipe'"
                       [attr.aria-label]="'Suggest recipe for ' + dayLabels[day]"
               >
                 <mat-icon>auto_awesome</mat-icon>
