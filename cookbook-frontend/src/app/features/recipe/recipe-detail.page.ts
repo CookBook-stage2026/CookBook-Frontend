@@ -55,14 +55,6 @@ export default class RecipeDetailPage {
     stream: ({ params }) => this.recipeService.getRecipeById(params)
   });
 
-  enterCookingMode(): void {
-    this.isCookingMode.set(true);
-  }
-
-  exitCookingMode(): void {
-    this.isCookingMode.set(false);
-  }
-
   toggleVisibility(currentPublicStatus: boolean): void {
     const id = this.recipeId();
     if (!id) return;
@@ -82,14 +74,6 @@ export default class RecipeDetailPage {
       }
     });
   }
-
-  readonly enhancedRecipe = rxResource<RecipeDto | undefined, string | undefined>({
-    params: () => this.enhanceRequest(),
-    stream: ({ params }) => {
-      if (!params) return of(undefined);
-      return this.recipeService.enhanceRecipe(params);
-    }
-  });
 
   constructor() {
     const mode = this.route.snapshot.queryParamMap.get('mode');

@@ -20,7 +20,9 @@
 
     <div class="timeline-vertical">
       @for (day of daysOfWeek; track day) {
-        <div class="day-step" [class.active]="getDailyControl(day).value !== ''">
+        <div class="day-step"
+             [class.active]="getDailyControl(day).value !== ''"
+             [class.today]="isToday(day)">
           <div class="step-marker">
             <span class="day-label">{{ dayShortLabels[day] }}</span>
           </div>
