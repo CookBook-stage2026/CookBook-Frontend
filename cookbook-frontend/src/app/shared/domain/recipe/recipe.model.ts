@@ -55,4 +55,5 @@ export interface UpdateRecipeDto {
   steps: string[];
   ingredients: NewRecipeIngredientDto[];
   servings: number;
+  isPublic: boolean;
 }

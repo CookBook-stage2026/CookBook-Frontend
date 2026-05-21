@@ -104,4 +104,8 @@ export class RecipeService {
       }),
     );
   }
+
+  deleteRecipe(id: string) {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

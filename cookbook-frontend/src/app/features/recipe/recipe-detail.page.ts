@@ -17,6 +17,7 @@ import { RecipeCookingModeComponent } from '@features/recipe/components/typescri
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ToastComponent } from '@shared/components/toast/toast.component';
+import { RecipeEditModalComponent } from '@features/recipe/components/typescript/recipe-edit-modal.component';
 
 @Component({
   selector: 'app-recipe-detail-page',
@@ -47,6 +48,7 @@ export default class RecipeDetailPage {
   readonly recipeId = input.required<string>();
   readonly isCookingMode = signal(false);
   readonly isUpdatingVisibility = signal(false);
+  readonly isSubmittingEdit = signal(false);
 
   readonly enhanceRequest = signal<string | undefined>(undefined);
 
@@ -54,6 +56,21 @@ export default class RecipeDetailPage {
     params: () => this.recipeId(),
     stream: ({ params }) => this.recipeService.getRecipeById(params)
   });
+
+  openEditModal(recipe: RecipeDto): void {
+    const dialogRef = this.dialog.open(RecipeEditModalComponent, {
+      data: recipe,
+      width: '800px',
+      maxWidth: '90vw',
+      autoFocus: 'dialog'
+    });
+
+    dialogRef.afterClosed().subscribe((didUpdate: boolean) => {
+      if (didUpdate) {
+        this.recipe.reload();
+      }
+    });
+  }
 
   toggleVisibility(currentPublicStatus: boolean): void {
     const id = this.recipeId();
