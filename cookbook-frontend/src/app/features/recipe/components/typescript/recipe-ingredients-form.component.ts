@@ -66,17 +66,21 @@ export class RecipeIngredientsFormComponent {
   }
 
   openCreateModal(index: number | null = null): void {
-    if (index !== null) {
-      this.pendingRowIndex.set(index);
-    } else {
+    if (index === null) {
       const controls = this.ingredients().controls;
-      const matchingIndex = controls.findIndex(ctrl =>
-        !ctrl.get('id')?.value &&
-        ctrl.get('name')?.value?.trim().toLowerCase() === this.currentSearchTerm().trim().toLowerCase()
+
+      const matchingIndex = controls.findIndex(
+        ctrl =>
+          !ctrl.get('id')?.value &&
+          ctrl.get('name')?.value?.trim().toLowerCase() ===
+          this.currentSearchTerm().trim().toLowerCase()
       );
 
       this.pendingRowIndex.set(matchingIndex !== -1 ? matchingIndex : null);
+    } else {
+      this.pendingRowIndex.set(index);
     }
+
     this.isCreateModalOpen.set(true);
   }
 
