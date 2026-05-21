@@ -54,6 +54,17 @@
             <button
               mat-flat-button
               color="accent"
+              (click)="openEditModal(r)"
+              [disabled]="isSubmittingEdit() || isUpdatingVisibility()"
+              aria-label="Edit recipe details"
+            >
+              <mat-icon aria-hidden="true">edit</mat-icon>
+              <span>Edit Recipe</span>
+            </button>
+
+            <button
+              mat-flat-button
+              color="accent"
               (click)="enhanceRecipe()"
               [disabled]="enhancedRecipe.isLoading()"
             >
