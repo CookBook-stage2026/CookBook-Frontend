@@ -1,4 +1,14 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, OnInit, output, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+  input,
+  OnInit,
+  output,
+  signal
+} from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IngredientService } from '@shared/services/ingredient';
 import { CreateIngredientDto, formatCategoryLabel, formatUnit, Ingredient } from '@shared/domain/ingredient';
@@ -20,8 +30,19 @@ export class IngredientCreateModalComponent implements OnInit {
   readonly ingredientCreated = output<Ingredient>();
 
   readonly isSubmitting = signal(false);
-  readonly availableUnits = signal<string[]>([]);
-  readonly availableCategories = signal<string[]>([]);
+
+  private readonly availableUnits = signal<string[]>([]);
+  private readonly availableCategories = signal<string[]>([]);
+
+  readonly formattedUnits = computed(() =>
+    this.availableUnits().map(u => ({ value: u, label: formatUnit(u) }))
+  );
+  readonly formattedCategories = computed(() =>
+    this.availableCategories().map(c => ({ value: c, label: formatCategoryLabel(c) }))
+  );
+
+  readonly selectedCategories = signal<string[]>([]);
+  readonly selectedCategorySet = computed(() => new Set(this.selectedCategories()));
 
   readonly ingredientForm: FormGroup = this.fb.group({
     name: ['', Validators.required],
@@ -29,18 +50,14 @@ export class IngredientCreateModalComponent implements OnInit {
     categories: [[] as string[], Validators.required]
   });
 
-  readonly formatCategoryLabel = formatCategoryLabel;
-  readonly formatUnit = formatUnit;
-
   constructor() {
     effect(() => {
       if (this.isOpen()) {
-        const prefill = this.initialName();
-        this.ingredientForm.patchValue({
-          name: prefill
-        });
+        this.ingredientForm.patchValue({ name: this.initialName() });
+        this.selectedCategories.set([]);
       } else {
         this.ingredientForm.reset({ name: '', unit: '', categories: [] });
+        this.selectedCategories.set([]);
       }
     });
   }
@@ -50,19 +67,17 @@ export class IngredientCreateModalComponent implements OnInit {
     this.ingredientService.getCategories().subscribe(cats => this.availableCategories.set(cats));
   }
 
-  isCategorySelected(category: string): boolean {
-    const current: string[] = this.ingredientForm.get('categories')?.value ?? [];
-    return current.includes(category);
-  }
-
   toggleCategory(category: string): void {
-    const control = this.ingredientForm.get('categories')!;
-    const current: string[] = control.value ?? [];
-    const updated = current.includes(category)
-      ? current.filter(c => c !== category)
-      : [...current, category];
-    control.setValue(updated);
-    control.markAsTouched();
+    const control = this.ingredientForm.get('categories');
+    if (control !== null) {
+      const current = this.selectedCategories();
+      const updated = current.includes(category)
+        ? current.filter(c => c !== category)
+        : [ ...current, category ];
+      this.selectedCategories.set(updated);
+      control.setValue(updated);
+      control.markAsTouched();
+    }
   }
 
   onSubmit(): void {

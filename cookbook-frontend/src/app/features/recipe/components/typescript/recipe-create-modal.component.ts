@@ -1,16 +1,20 @@
-import { Component, ChangeDetectionStrategy, inject, output, signal, input } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray, FormControl } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, effect, inject, input, output, signal } from '@angular/core';
+import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RecipeService } from '@shared/services/recipe/recipe.service';
 import { CreateRecipeDto, NewRecipeIngredientDto } from '@shared/domain/recipe';
 import { RecipeIngredientsFormComponent } from './recipe-ingredients-form.component';
 import { RecipeStepsComponent } from './recipe-steps.component';
+import { CdkScrollable } from '@angular/cdk/scrolling';
 
 @Component({
   selector: 'app-recipe-create-modal',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RecipeStepsComponent, RecipeIngredientsFormComponent],
+  imports: [ ReactiveFormsModule, RecipeStepsComponent, RecipeIngredientsFormComponent, CdkScrollable ],
   templateUrl: '../html/recipe-create-modal.component.html',
-  styleUrl: '../scss/recipe-create-modal.component.scss'
+  styleUrl: '../scss/recipe-create-modal.component.scss',
+  host: {
+    '[attr.aria-hidden]': '!isOpen()'
+  }
 })
 export class RecipeCreateModalComponent {
   private readonly fb = inject(FormBuilder);
@@ -37,6 +41,41 @@ export class RecipeCreateModalComponent {
 
   get ingredients(): FormArray<FormGroup> {
     return this.recipeForm.get('ingredients') as FormArray<FormGroup>;
+  }
+
+  constructor() {
+    effect(() => {
+      if (this.isOpen()) {
+        this.resetForm();
+      }
+    });
+  }
+
+  private resetForm(): void {
+    this.recipeForm.reset({
+      name: '',
+      description: '',
+      durationInMinutes: null,
+      servings: null,
+      isPublic: false,
+      steps: [ '' ],
+      ingredients: []
+    });
+
+    while (this.steps.length > 1) {
+      this.steps.removeAt(this.steps.length - 1);
+    }
+    if (this.steps.length === 0) {
+      this.steps.push(this.fb.control('', Validators.required));
+    } else {
+      this.steps.at(0).setValue('');
+    }
+
+    while (this.ingredients.length > 0) {
+      this.ingredients.removeAt(0);
+    }
+
+    this.isSubmitting.set(false);
   }
 
   onSubmit(): void {
