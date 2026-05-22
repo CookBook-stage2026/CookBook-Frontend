@@ -2,12 +2,16 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environment';
-import { Ingredient, IngredientSearchRequest } from '@shared/domain/ingredient';
+import { CreateIngredientDto, Ingredient, IngredientSearchRequest } from '@shared/domain/ingredient';
 
 @Injectable({ providedIn: 'root' })
 export class IngredientService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/ingredients`;
+
+  createIngredient(recipe: CreateIngredientDto): Observable<Ingredient> {
+    return this.http.post<Ingredient>(this.apiUrl, recipe);
+  }
 
   searchIngredients(
     query?: string,

@@ -50,3 +50,9 @@ export interface IngredientSearchRequest {
   page?: number;
   size?: number;
 }
+
+export interface CreateIngredientDto {
+  name: string;
+  unit: string;
+  categories: string[];
+}
