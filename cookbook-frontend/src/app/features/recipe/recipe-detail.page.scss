@@ -55,3 +55,12 @@ mat-chip.static-chip {
   --mdc-chip-disabled-label-text-color: var(--mat-sys-on-surface);
   --mdc-chip-disabled-container-color: var(--mat-sys-surface-container-high);
 }
+
+.recipe-description {
+  margin: 0.75rem 0 1rem;
+  font-style: italic;
+  color: var(--mat-sys-on-surface-variant);
+  line-height: 1.6;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}

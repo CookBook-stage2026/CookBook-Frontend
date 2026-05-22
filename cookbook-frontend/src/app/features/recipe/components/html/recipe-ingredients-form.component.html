@@ -2,16 +2,18 @@
   <div class="section-header">
     <h3>Ingredients *</h3>
     <div class="section-header-actions">
-      <button type="button" class="btn-create-ingredient" (click)="openCreateModal()">
-        + {{ createButtonText() }}
-      </button>
+      @if (hasUnselectedRow()) {
+        <button type="button" class="btn-create-ingredient" (click)="openCreateModal()">
+          + {{ createButtonText() }}
+        </button>
+      }
       <button type="button" class="btn-text" (click)="add()" [disabled]="isSubmitting()">
         + Add Ingredient
       </button>
     </div>
   </div>
 
-  <div class="array-container">
+  <div class="array-container" cdkScrollable>
     @for (ingredientCtrl of ingredients().controls; track $index) {
       <div [formGroup]="ingredientCtrl" class="ingredient-row">
 
@@ -28,10 +30,11 @@
               aria-required="true"
               [matAutocomplete]="auto"
               [class.is-invalid]="ingredientCtrl.get('id')?.invalid && ingredientCtrl.get('name')?.touched"
-              (input)="onNameChange($event, ingredientCtrl)">
+              (input)="onNameChange($event, ingredientCtrl, $index)">
 
-            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event, ingredientCtrl)">
-              @for (ingredient of allIngredients(); track ingredient.id) {
+            <mat-autocomplete #auto="matAutocomplete"
+                              (optionSelected)="onOptionSelected($event, ingredientCtrl, $index)">
+              @for (ingredient of (ingredientsByRow().get($index) ?? []); track ingredient.id) {
                 <mat-option [value]="ingredient.name">{{ ingredient.name }}</mat-option>
               }
             </mat-autocomplete>

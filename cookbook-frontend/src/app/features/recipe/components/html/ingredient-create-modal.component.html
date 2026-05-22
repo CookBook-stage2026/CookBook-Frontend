@@ -1,5 +1,6 @@
 @if (isOpen()) {
-  <div class="modal-backdrop" (click)="!isSubmitting() && closeModal.emit()" (keydown.esc)="!isSubmitting() && closeModal.emit()">
+  <div class="modal-backdrop modal-backdrop--inner" (click)="!isSubmitting() && closeModal.emit()"
+       (keydown.esc)="!isSubmitting() && closeModal.emit()">
     <div class="modal-dialog modal-dialog--sm" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()">
 
       <header class="modal-header">
@@ -50,8 +51,8 @@
                 [class.is-invalid]="ingredientForm.get('unit')?.invalid && ingredientForm.get('unit')?.touched"
                 aria-required="true">
                 <option value="" disabled>Select a unit...</option>
-                @for (unit of availableUnits(); track unit) {
-                  <option [value]="unit">{{ formatUnit(unit) }}</option>
+                @for (unit of formattedUnits(); track unit.value) {
+                  <option [value]="unit.value">{{ unit.label }}</option>
                 }
               </select>
               @if (ingredientForm.get('unit')?.invalid && ingredientForm.get('unit')?.touched) {
@@ -68,15 +69,15 @@
               <div
                 class="category-grid"
                 [class.is-invalid]="ingredientForm.get('categories')?.invalid && ingredientForm.get('categories')?.touched">
-                @for (category of availableCategories(); track category) {
+                @for (category of formattedCategories(); track category.value) {
                   <button
                     type="button"
                     class="category-chip"
-                    [class.selected]="isCategorySelected(category)"
-                    (click)="toggleCategory(category)"
+                    [class.selected]="selectedCategorySet().has(category.value)"
+                    (click)="toggleCategory(category.value)"
                     [disabled]="isSubmitting()"
-                    [attr.aria-pressed]="isCategorySelected(category)">
-                    {{ formatCategoryLabel(category) }}
+                    [attr.aria-pressed]="selectedCategorySet().has(category.value)">
+                    {{ category.label }}
                   </button>
                 }
               </div>

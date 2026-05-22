@@ -28,7 +28,6 @@
             [class.is-private]="!r.isPublic"
             [disabled]="isUpdatingVisibility()"
             (click)="toggleVisibility(r.isPublic)"
-            [ariaLabel]="r.isPublic ? 'Change recipe to private' : 'Change recipe to public'"
           >
             <mat-icon aria-hidden="true">{{ r.isPublic ? 'public' : 'lock' }}</mat-icon>
             <span>{{ r.isPublic ? 'Public' : 'Private' }}</span>
@@ -86,6 +85,12 @@
           </button>
         </div>
       </header>
+
+      @if (r.description) {
+        <p class="recipe-description">{{ r.description }}</p>
+      }
+
+      <mat-divider/>
 
       <mat-divider/>
 
