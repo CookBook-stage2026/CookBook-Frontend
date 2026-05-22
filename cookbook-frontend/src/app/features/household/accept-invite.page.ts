@@ -1,17 +1,11 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  inject,
-  OnInit,
-  signal,
-} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit, signal, } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { HouseholdInviteService } from '@shared/services/household-invite/household-invite.service';
 import { AuthService } from '@core/services/auth/auth.service';
-import { take } from 'rxjs';
+import { rxResource } from '@angular/core/rxjs-interop';
 
 type AcceptState = 'idle' | 'loading' | 'success' | 'error';
 
@@ -28,37 +22,77 @@ export default class AcceptInvitePageComponent implements OnInit {
   private readonly inviteService = inject(HouseholdInviteService);
   private readonly auth = inject(AuthService);
 
-  readonly state = signal<AcceptState>('idle');
+  readonly acceptState = signal<AcceptState>('idle');
 
-  private get token(): string {
-    return this.route.snapshot.paramMap.get('token') ?? '';
-  }
+  private readonly token = signal<string>(
+    this.route.snapshot.paramMap.get('token') ?? '',
+  );
 
-  ngOnInit(): void {
-    if (!this.token) {
-      this.state.set('error');
-      return;
+  private readonly autoAccept = signal<boolean>(
+    this.route.snapshot.queryParamMap.get('autoAccept') === 'true',
+  );
+
+  readonly inviteResource = rxResource({
+    stream: () => this.inviteService.getInvite(this.token()),
+  });
+
+  readonly displayState = computed(() => {
+    if (this.inviteResource.isLoading()) {
+      return 'loading' as const;
     }
+    if (this.inviteResource.error() || this.inviteResource.value()?.revoked) {
+      return 'error' as const;
+    }
+    return this.acceptState();
+  });
 
-    this.auth.isLoggedIn().pipe(take(1)).subscribe((loggedIn) => {
-      if (!loggedIn) {
-        const returnUrl = `/invite/${this.token}`;
-        this.router.navigate(['/login'], { queryParams: { returnUrl } });
+  constructor() {
+    effect(() => {
+      if (
+        !this.autoAccept() ||
+        this.inviteResource.isLoading() ||
+        this.inviteResource.error() ||
+        this.inviteResource.value()?.revoked ||
+        this.acceptState() !== 'idle'
+      ) {
+        return;
       }
+      this.performAccept();
     });
   }
 
-  acceptInvite(): void {
-    if (!this.token || this.state() === 'loading') return;
-    this.state.set('loading');
+  ngOnInit(): void {
+    if (!this.token()) {
+      this.inviteResource.reload();
+    }
+  }
 
-    this.inviteService.acceptInvite(this.token).subscribe({
-      next: () => this.state.set('success'),
-      error: () => this.state.set('error'),
+  acceptInvite(): void {
+    if (!this.token() || this.acceptState() === 'loading') return;
+
+    this.auth.isLoggedIn().pipe().subscribe((loggedIn) => {
+      if (!loggedIn) {
+        const returnUrl = `/invite/${this.token()}?autoAccept=true`;
+        this.router.navigate(['/login'], { queryParams: { returnUrl } });
+        return;
+      }
+      this.performAccept();
+    });
+  }
+
+  private performAccept(): void {
+    this.acceptState.set('loading');
+    this.inviteService.acceptInvite(this.token()).subscribe({
+      next: () => this.goToHouseholds(),
+      error: () => this.acceptState.set('error'),
     });
   }
 
   goToHouseholds(): void {
     this.router.navigate(['/households']);
+  }
+
+  goToRecipes(): void {
+    this.router.navigate([ '/recipes' ]);
   }
 }
