@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { MatList, MatListItem, MatListItemTitle, MatListItemMeta } from '@angular/material/list';
+import { MatList, MatListItem, MatListItemMeta, MatListItemTitle } from '@angular/material/list';
 import { RecipeIngredientDto } from '@shared/domain/recipe';
 import { formatUnitAbbreviation } from '@shared/domain/ingredient';
 
@@ -36,10 +36,10 @@ export class RecipeIngredientsComponent {
   ingredients = input.required<RecipeIngredientDto[]>();
 
   formatQuantity(item: RecipeIngredientDto): string {
-    const { baseQuantity, unit } = item;
+    const { quantity, unit } = item;
 
     if (!unit) return '';
 
-    return `${baseQuantity} ${formatUnitAbbreviation(unit)}`;
+    return `${quantity} ${formatUnitAbbreviation(unit)}`;
   }
 }

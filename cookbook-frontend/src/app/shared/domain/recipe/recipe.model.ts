@@ -3,6 +3,11 @@ export interface NewRecipeIngredientDto {
   baseQuantity: number;
 }
 
+export interface MacroDto {
+  type: string;
+  value: number;
+}
+
 export interface CreateRecipeDto {
   name: string;
   description: string;
@@ -22,13 +27,14 @@ export interface RecipeDto {
   ingredients: RecipeIngredientDto[];
   servings: number;
   isPublic: boolean;
-  isCreator: boolean;
+  isOwner: boolean;
+  totalMacros: MacroDto[];
 }
 
 export interface RecipeIngredientDto {
   ingredientId: string;
   name: string;
-  baseQuantity: number;
+  quantity: number;
   unit: string;
 }
 

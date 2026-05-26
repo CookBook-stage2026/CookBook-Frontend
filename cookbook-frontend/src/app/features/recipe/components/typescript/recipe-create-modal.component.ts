@@ -5,11 +5,12 @@ import { CreateRecipeDto, NewRecipeIngredientDto } from '@shared/domain/recipe';
 import { RecipeIngredientsFormComponent } from './recipe-ingredients-form.component';
 import { RecipeStepsComponent } from './recipe-steps.component';
 import { CdkScrollable } from '@angular/cdk/scrolling';
+import { CalculatingPopupComponent } from '@features/recipe/components/typescript/calculating-popup.component';
 
 @Component({
   selector: 'app-recipe-create-modal',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ ReactiveFormsModule, RecipeStepsComponent, RecipeIngredientsFormComponent, CdkScrollable ],
+  imports: [ ReactiveFormsModule, RecipeStepsComponent, RecipeIngredientsFormComponent, CdkScrollable, CalculatingPopupComponent ],
   templateUrl: '../html/recipe-create-modal.component.html',
   styleUrl: '../scss/recipe-create-modal.component.scss',
   host: {
