@@ -114,4 +114,8 @@ export class RecipeService {
   deleteRecipe(id: string) {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  getMacroTypes(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/macro-types`);
+  }
 }

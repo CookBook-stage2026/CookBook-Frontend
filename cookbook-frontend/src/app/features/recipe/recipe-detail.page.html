@@ -20,7 +20,7 @@
           <span class="back-text">Back</span>
         </button>
 
-        @if (r.isCreator) {
+        @if (r.isOwner) {
           <button
             mat-flat-button
             class="visibility-toggle-btn"
@@ -34,6 +34,7 @@
           </button>
         }
       </div>
+
       <header class="page-header">
         <div>
           <h1 class="page-title">{{ r.name }}</h1>
@@ -49,7 +50,7 @@
           </mat-chip-set>
         </div>
         <div class="header-actions">
-          @if (r.isCreator) {
+          @if (r.isOwner) {
             <button
               mat-flat-button
               color="accent"
@@ -72,7 +73,6 @@
               } @else {
                 <mat-icon aria-hidden="true">auto_awesome</mat-icon>
               }
-
               @if (!enhancedRecipe.isLoading()) {
                 <span>Enhance Recipe</span>
               }
@@ -90,15 +90,20 @@
         <p class="recipe-description">{{ r.description }}</p>
       }
 
-      <mat-divider/>
+      <div class="content-layout">
+        <div class="main-content">
+          <mat-divider/>
+          <app-recipe-ingredients-list [ingredients]="r.ingredients"/>
+          <mat-divider/>
+          <app-recipe-preparation-list [steps]="r.steps"/>
+        </div>
 
-      <mat-divider/>
-
-      <app-recipe-ingredients-list [ingredients]="r.ingredients"/>
-
-      <mat-divider/>
-
-      <app-recipe-preparation-list [steps]="r.steps"/>
+        @if (r.totalMacros && r.totalMacros.length > 0) {
+          <aside class="macros-sidebar">
+            <app-recipe-macros [macros]="r.totalMacros"/>
+          </aside>
+        }
+      </div>
     }
   }
 </div>

@@ -18,6 +18,7 @@ import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { ToastComponent } from '@shared/components/toast/toast.component';
 import { RecipeEditModalComponent } from '@features/recipe/components/typescript/recipe-edit-modal.component';
+import { RecipeMacrosComponent } from '@features/recipe/components/typescript/recipe-macros.component';
 
 @Component({
   selector: 'app-recipe-detail-page',
@@ -34,7 +35,8 @@ import { RecipeEditModalComponent } from '@features/recipe/components/typescript
     RecipePreparationComponent,
     MatButton,
     RecipeCookingModeComponent,
-    ToastComponent
+    ToastComponent,
+    RecipeMacrosComponent
   ],
   styleUrls: ['./recipe-detail.page.scss']
 })

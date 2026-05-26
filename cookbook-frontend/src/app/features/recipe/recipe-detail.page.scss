@@ -64,3 +64,21 @@ mat-chip.static-chip {
   overflow-wrap: break-word;
   word-break: break-word;
 }
+
+.content-layout {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  margin-top: 1rem;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.macros-sidebar {
+  flex: 0 0 260px;
+  position: sticky;
+  top: 1rem;
+}
