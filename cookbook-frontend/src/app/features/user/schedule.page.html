@@ -133,7 +133,7 @@
       (keydown.esc)="$event.stopPropagation()"
       (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>{{ editingSchedule() ? 'Edit Schedule' : 'Create Schedule' }}</h3>
+        <h3>{{ editingSchedule() ? 'Edit ' + selectedContext().label : 'Create ' + selectedContext().label }}</h3>
         <button
           mat-icon-button
           (click)="closeCreateModal()"
