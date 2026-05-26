@@ -19,7 +19,7 @@
         </button>
       </header>
 
-      <div class="modal-body">
+      <div class="modal-body" cdkScrollable>
         <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()" class="recipe-form">
           <div class="form-group">
             <label for="name">Recipe Name *</label>
@@ -146,8 +146,6 @@
           type="button"
           class="btn-secondary"
           (click)="closeModal.emit()"
-          (keydown.enter)="closeModal.emit()"
-          (keydown.space)="closeModal.emit()"
           [disabled]="isSubmitting()">
           Cancel
         </button>
@@ -155,8 +153,6 @@
           type="button"
           class="btn-primary"
           (click)="onSubmit()"
-          (keydown.enter)="onSubmit()"
-          (keydown.space)="onSubmit()"
           [disabled]="recipeForm.invalid || isSubmitting()">
           @if (isSubmitting()) {
             <span class="spinner" aria-hidden="true"></span> Creating...

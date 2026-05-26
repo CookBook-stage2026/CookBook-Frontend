@@ -1,20 +1,33 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
 import { AbstractControl, FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, of, Subject, switchMap } from 'rxjs';
+import { debounceTime, filter, fromEvent, map, of, Subject, switchMap } from 'rxjs';
 import { IngredientService } from '@shared/services/ingredient';
 import { formatUnit, Ingredient } from '@shared/domain/ingredient';
-import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
+import {
+  MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+  MatAutocompleteModule,
+  MatAutocompleteSelectedEvent
+} from '@angular/material/autocomplete';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { CdkScrollable } from '@angular/cdk/scrolling';
 import {
   IngredientCreateModalComponent
 } from '@features/recipe/components/typescript/ingredient-create-modal.component';
+import { Overlay } from '@angular/cdk/overlay';
 
 @Component({
   selector: 'app-recipe-ingredients',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, MatAutocompleteModule, IngredientCreateModalComponent],
+  imports: [ ReactiveFormsModule, MatAutocompleteModule, IngredientCreateModalComponent, CdkScrollable ],
   templateUrl: '../html/recipe-ingredients-form.component.html',
-  styleUrl: '../scss/recipe-create-modal.component.scss'
+  styleUrl: '../scss/recipe-create-modal.component.scss',
+  providers: [
+    {
+      provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
+      useFactory: (overlay: Overlay) => () => overlay.scrollStrategies.reposition({ autoClose: true }),
+      deps: [ Overlay ]
+    }
+  ]
 })
 export class RecipeIngredientsFormComponent {
   private readonly ingredientService = inject(IngredientService);
@@ -24,58 +37,94 @@ export class RecipeIngredientsFormComponent {
   readonly addIngredient = output<void>();
   readonly removeIngredient = output<number>();
 
-  readonly allIngredients = signal<Ingredient[]>([]);
   readonly isCreateModalOpen = signal(false);
-
   readonly pendingRowIndex = signal<number | null>(null);
   readonly currentSearchTerm = signal<string>('');
+
+  readonly ingredientsByRow = signal<Map<number, Ingredient[]>>(new Map());
+
+  private readonly _tick = signal(0);
+
+  readonly hasUnselectedRow = computed(() => {
+    this._tick();
+    return this.ingredients().controls.some(ctrl => !ctrl.get('id')?.value);
+  });
 
   readonly createButtonText = computed<string>(() => {
     const query = this.currentSearchTerm().trim();
     return query ? `Create "${query}"` : 'Create New Ingredient';
   });
 
-  private readonly searchSubject = new Subject<string>();
+  private readonly searchSubject = new Subject<{ query: string; rowIndex: number }>();
 
   constructor() {
     this.searchSubject.pipe(
       debounceTime(100),
-      switchMap(query => {
-        if (!query.trim()) return of([]);
-        return this.ingredientService.searchIngredients(query);
+      switchMap(({ query, rowIndex }) => {
+        if (!query.trim()) return of({ results: [] as Ingredient[], rowIndex });
+        return this.ingredientService.searchIngredients(query).pipe(
+          map(results => ({ results, rowIndex }))
+        );
       }),
       takeUntilDestroyed()
-    ).subscribe(results => {
+    ).subscribe(({ results, rowIndex }) => {
       const selectedIds = new Set(
         this.ingredients().controls
           .map(ctrl => ctrl.get('id')?.value)
           .filter(id => id !== null)
       );
 
-      this.allIngredients.set(results.filter(ing => !selectedIds.has(ing.id)));
+      this.ingredientsByRow.update(current =>
+        new Map(current).set(rowIndex, results.filter(ing => !selectedIds.has(ing.id)))
+      );
+    });
+
+    fromEvent(document, 'click').pipe(
+      filter(() => this.ingredientsByRow().size > 0),
+      filter(event => {
+        const target = event.target as HTMLElement;
+        return !target.closest('.ingredient-row') &&
+          !target.closest('.mat-mdc-autocomplete-panel');
+      }),
+      takeUntilDestroyed()
+    ).subscribe(() => {
+      this.clearAllRowResults();
+      this.bump();
     });
   }
 
+  private bump(): void {
+    this._tick.update(n => n + 1);
+  }
+
+  private clearAllRowResults(): void {
+    this.ingredientsByRow.set(new Map());
+  }
+
   add(): void {
-    this.allIngredients.set([]);
+    this.clearAllRowResults();
+    this.currentSearchTerm.set('');
     this.addIngredient.emit();
+    this.bump();
   }
 
   remove(index: number): void {
+    this.clearAllRowResults();
     this.removeIngredient.emit(index);
+    this.bump();
   }
 
   openCreateModal(index: number | null = null): void {
+    this.clearAllRowResults();
+
     if (index === null) {
       const controls = this.ingredients().controls;
-
       const matchingIndex = controls.findIndex(
         ctrl =>
           !ctrl.get('id')?.value &&
           ctrl.get('name')?.value?.trim().toLowerCase() ===
           this.currentSearchTerm().trim().toLowerCase()
       );
-
       this.pendingRowIndex.set(matchingIndex === -1 ? null : matchingIndex);
     } else {
       this.pendingRowIndex.set(index);
@@ -102,22 +151,29 @@ export class RecipeIngredientsFormComponent {
       unit: ingredient.unit
     });
 
-    this.allIngredients.update(existing => {
-      const alreadyExists = existing.some(i => i.id === ingredient.id);
-      return alreadyExists ? existing : [...existing, ingredient];
-    });
-
+    this.clearAllRowResults();
     this.currentSearchTerm.set('');
     this.pendingRowIndex.set(null);
     this.isCreateModalOpen.set(false);
+    this.bump();
   }
 
-  onNameChange(event: Event, ctrl: AbstractControl): void {
+  onNameChange(event: Event, ctrl: AbstractControl, rowIndex: number): void {
     const inputName = (event.target as HTMLInputElement).value;
     this.currentSearchTerm.set(inputName);
-    this.searchSubject.next(inputName);
 
-    const matched = this.allIngredients().find(
+    this.ingredientsByRow.update(current => {
+      const next = new Map();
+      if (current.has(rowIndex)) {
+        next.set(rowIndex, current.get(rowIndex));
+      }
+      return next;
+    });
+
+    this.searchSubject.next({ query: inputName, rowIndex });
+
+    const rowResults = this.ingredientsByRow().get(rowIndex) ?? [];
+    const matched = rowResults.find(
       i => i.name.toLowerCase() === inputName.trim().toLowerCase()
     );
 
@@ -126,19 +182,26 @@ export class RecipeIngredientsFormComponent {
     } else {
       ctrl.patchValue({ id: null, unit: '' });
     }
+    this.bump();
   }
 
-  onOptionSelected(event: MatAutocompleteSelectedEvent, ctrl: AbstractControl): void {
+  onOptionSelected(event: MatAutocompleteSelectedEvent, ctrl: AbstractControl, rowIndex: number): void {
     const selectedName = event.option.value;
     this.currentSearchTerm.set(selectedName);
 
-    const matched = this.allIngredients().find(i => i.name === selectedName);
+    const rowResults = this.ingredientsByRow().get(rowIndex) ?? [];
+    const matched = rowResults.find(i => i.name === selectedName);
     if (matched) {
-      ctrl.patchValue({
-        id: matched.id,
-        unit: matched.unit ?? ''
-      });
+      ctrl.patchValue({ id: matched.id, unit: matched.unit ?? '' });
     }
+
+    this.ingredientsByRow.update(current => {
+      const next = new Map(current);
+      next.delete(rowIndex);
+      return next;
+    });
+
+    this.bump();
   }
 
   onQuantityInput(event: Event, control: AbstractControl): void {
@@ -165,9 +228,7 @@ export class RecipeIngredientsFormComponent {
   getDisplayUnit(ctrl: AbstractControl): string {
     const unitEnum = ctrl.get('unit')?.value;
     const quantity = ctrl.get('quantity')?.value || 0;
-
     if (!unitEnum) return '';
-
     return formatUnit(unitEnum, quantity);
   }
 }
