@@ -3,19 +3,17 @@
     <p class="modal-description">Plan your meals. Select a recipe or skip each day.</p>
 
     @if (!isEditMode()) {
-      @if (!isEditMode()) {
-        <mat-form-field appearance="outline" class="full-width">
-          <mat-label>Week Start Date</mat-label>
-          <input
-            matInput
-            [matDatepicker]="picker"
-            [matDatepickerFilter]="myDateFilter"
-            formControlName="weekStartDate"
-          />
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-datepicker #picker></mat-datepicker>
-        </mat-form-field>
-      }
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Week Start Date</mat-label>
+        <input
+          matInput
+          [matDatepicker]="picker"
+          [matDatepickerFilter]="myDateFilter"
+          formControlName="weekStartDate"
+        />
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
     }
 
     <div class="timeline-vertical">
@@ -30,6 +28,7 @@
           <div class="step-body">
             <div class="step-input-group">
               <app-recipe-autocomplete
+                [context]="context()"
                 [label]="'Recipe for ' + dayLabels[day]"
                 [control]="getDailyControl(day)"
                 [preselectedRecipe]="getPreselectedRecipe(day)"

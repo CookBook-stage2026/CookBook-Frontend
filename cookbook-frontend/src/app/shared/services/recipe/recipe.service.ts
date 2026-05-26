@@ -5,6 +5,7 @@ import { CreateRecipeDto, RecipeDto, RecipeSearchRequest, RecipeSummary, UpdateR
 import { ToastService } from '@core/services';
 import { environment } from '../../../../environment';
 import { PaginatedResponse } from '@shared/domain/paginated-response';
+import { ScheduleContext } from '@shared/domain/week-schedule';
 
 @Injectable({
   providedIn: 'root'
@@ -47,10 +48,15 @@ export class RecipeService {
   }
 
   searchRecipesByName(
+    context: ScheduleContext,
     query: string | null,
     page = 0,
     size = 10
   ): Observable<RecipeSummary[]> {
+    const endpoint = context.type === 'personal'
+      ? `${this.apiUrl}/search/personal`
+      : `${this.apiUrl}/search/households/${context.householdId}`;
+
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
@@ -59,7 +65,7 @@ export class RecipeService {
       params = params.set('query', query.trim());
     }
 
-    return this.http.get<RecipeSummary[]>(`${this.apiUrl}/search`, { params }).pipe(
+    return this.http.get<RecipeSummary[]>(endpoint, { params }).pipe(
       catchError(err => {
         console.error('Search failed:', err);
         return throwError(() => err);
