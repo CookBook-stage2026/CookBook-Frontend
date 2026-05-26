@@ -11,7 +11,7 @@ import {
   CreateWeekScheduleRequest,
   DAY_LABELS,
   DayOfWeek,
-  DAYS_OF_WEEK,
+  DAYS_OF_WEEK, ScheduleContext,
   UpdateWeekScheduleRequest,
   WeekScheduleResponse,
 } from '@shared/domain/week-schedule';
@@ -39,6 +39,7 @@ import { ChangeDetectionStrategy, Component, effect, inject, input, output, sign
   ],
 })
 export class WeekScheduleCreateComponent {
+  readonly context = input.required<ScheduleContext>();
   readonly existingSchedule = input<WeekScheduleResponse | undefined>(undefined);
   readonly suggestedSchedule = input<WeekScheduleResponse | undefined>(undefined);
   readonly weekStartDate = input.required<Date>();
@@ -56,7 +57,6 @@ export class WeekScheduleCreateComponent {
   readonly isSubmitting = signal(false);
   readonly isEditMode = signal(false);
   readonly existingSchedules = input<WeekScheduleResponse[]>([]);
-
   readonly skippedDays = signal<ReadonlySet<DayOfWeek>>(new Set());
 
   readonly dayShortLabels: Record<DayOfWeek, string> = {
@@ -224,7 +224,7 @@ export class WeekScheduleCreateComponent {
         days,
       };
 
-      this.weekScheduleService.createSchedule(request).subscribe({
+      this.weekScheduleService.createSchedule(this.context(), request).subscribe({
         next: () => {
           this.isSubmitting.set(false);
           this.scheduleCreated.emit();

@@ -6,7 +6,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { WeekScheduleService } from '@shared/services/week-schedule';
-import { DAY_LABELS, DayOfWeek, DAYS_OF_WEEK, WeekScheduleResponse } from '@shared/domain/week-schedule';
+import {
+  DAY_LABELS,
+  DayOfWeek,
+  DAYS_OF_WEEK,
+  ScheduleContext,
+  WeekScheduleResponse
+} from '@shared/domain/week-schedule';
 import { DatePipe } from '@angular/common';
 import { ToastService } from '@core/services';
 import { MatDialog } from '@angular/material/dialog';
@@ -30,6 +36,7 @@ import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-compon
   ]
 })
 export class WeekScheduleViewComponent {
+  readonly context = input.required<ScheduleContext>();
   readonly weekStartDate = input.required<Date>();
   readonly refreshTrigger = input(0, { transform: (value: number) => value });
   readonly todayIsoDate = input<string>('');
@@ -50,11 +57,12 @@ export class WeekScheduleViewComponent {
 
   readonly scheduleResource = rxResource({
     params: () => ({
+      context: this.context(),
       start: this.formatIso(this.weekStartDate()),
       end: this.formatIso(this.getEndOfWeek(this.weekStartDate())),
       refresh: this.refreshTrigger()
     }),
-    stream: ({ params }) => this.scheduleService.getSchedules(params.start, params.end)
+    stream: ({ params }) => this.scheduleService.getSchedules(params.context, params.start, params.end)
   });
 
   readonly schedule = computed(() => {
@@ -94,7 +102,7 @@ export class WeekScheduleViewComponent {
     const isoDate = this.getDayIsoDate(day);
     this.suggestingDay.set(isoDate);
 
-    this.scheduleService.suggestRecipeForDay(isoDate).subscribe({
+    this.scheduleService.suggestRecipeForDay(this.context(), isoDate).subscribe({
       next: (suggestedSchedule) => {
         this.suggestingDay.set(null);
 

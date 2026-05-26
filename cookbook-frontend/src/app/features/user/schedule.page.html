@@ -6,6 +6,7 @@
       <h1 class="page-title">Your Week Schedule</h1>
       <p class="page-subtitle">Plan your meals for the week ahead.</p>
     </div>
+
     <div class="header-actions">
       <button
         mat-stroked-button
@@ -31,6 +32,19 @@
       </button>
     </div>
   </header>
+
+  <div class="context-selector">
+    <select
+      id="schedule-context-select"
+      class="native-dropdown"
+      (change)="onContextChange($event)">
+      @for (ctx of contexts(); track ctx.type + (ctx.householdId ?? '')) {
+        <option [value]="ctx.householdId ?? 'personal'">
+          {{ ctx.label }}
+        </option>
+      }
+    </select>
+  </div>
 
   <section
     class="today-recipe-card"
@@ -98,6 +112,7 @@
   </div>
 
   <app-week-schedule-view
+    [context]="selectedContext()"
     [weekStartDate]="selectedWeekStart()"
     [refreshTrigger]="refreshSignal()"
     [todayIsoDate]="todayIsoDate()"
@@ -128,6 +143,7 @@
         </button>
       </div>
       <app-week-schedule-create
+        [context]="selectedContext()"
         [existingSchedule]="editingSchedule()"
         [suggestedSchedule]="suggestedSchedule()"
         [weekStartDate]="modalWeekStart()"

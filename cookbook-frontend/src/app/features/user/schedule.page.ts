@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ToastComponent } from '@shared/components/toast/toast.component';
-import { DAY_LABELS, DayOfWeek, WeekScheduleResponse } from '@shared/domain/week-schedule';
+import { DAY_LABELS, DayOfWeek, ScheduleContext, WeekScheduleResponse } from '@shared/domain/week-schedule';
 import { WeekScheduleService } from '@shared/services/week-schedule';
 import { ActivatedRoute, Router } from '@angular/router';
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -13,6 +13,7 @@ import { RecipeSummary } from '@shared/domain/recipe';
 import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ToastService } from '@core/services';
+import { HouseholdService } from '@shared/services/household';
 
 @Component({
   selector: 'app-schedule-page',
@@ -31,6 +32,7 @@ import { ToastService } from '@core/services';
 })
 export default class SchedulePage {
   private readonly weekScheduleService = inject(WeekScheduleService);
+  private readonly householdService = inject(HouseholdService);
   private readonly toastService = inject(ToastService);
   readonly router = inject(Router);
   readonly route = inject(ActivatedRoute);
@@ -44,9 +46,30 @@ export default class SchedulePage {
   readonly isSuggestingWeek = signal(false);
   readonly suggestedSchedule = signal<WeekScheduleResponse | undefined>(undefined);
 
+  readonly selectedContext = signal<ScheduleContext>({ type: 'personal', label: 'Personal Schedule' });
+
+  readonly householdsResource = rxResource({
+    stream: () => this.householdService.getHouseholds()
+  });
+
+  readonly contexts = computed<ScheduleContext[]>(() => {
+    const personal: ScheduleContext = { type: 'personal', label: 'Personal Schedule' };
+    const households = this.householdsResource.value() ?? [];
+    const householdContexts = households.map(h => ({
+      type: 'household' as const,
+      householdId: h.id,
+      label: `${h.name}'s Schedule`
+    }));
+    return [personal, ...householdContexts];
+  });
+
   readonly schedulesResource = rxResource({
-    params: () => ({ refresh: this.refreshSignal() }),
-    stream: () => this.weekScheduleService.getSchedules()
+    params: () => ({
+      refresh: this.refreshSignal(),
+      context: this.selectedContext()
+    }),
+    stream: ({ params }) =>
+      this.weekScheduleService.getSchedules(params.context)
   });
 
   readonly existingSchedules = computed(() => this.schedulesResource.value() ?? []);
@@ -58,10 +81,7 @@ export default class SchedulePage {
     return `${this.formatDate(start)} – ${this.formatDate(end)}`;
   });
 
-  readonly todayIsoDate = computed(() => {
-    return this.toLocalDateString(new Date());
-  });
-
+  readonly todayIsoDate = computed(() => this.toLocalDateString(new Date()));
   readonly todayDayOfWeek = signal<DayOfWeek>(this.getCurrentDayOfWeek());
   readonly todayWeekStartIso = computed(() => this.toLocalDateString(this.getMonday(new Date())));
   readonly todayLabel = computed(() => DAY_LABELS[this.todayDayOfWeek()]);
@@ -87,6 +107,19 @@ export default class SchedulePage {
     const weekParam = this.route.snapshot.queryParamMap.get('week');
     if (weekParam) {
       this.selectedWeekStart.set(this.getMonday(new Date(weekParam)));
+    }
+  }
+
+  onContextChange(event: Event): void {
+    const target = event.target as HTMLSelectElement;
+    const value = target.value;
+    if (value === 'personal') {
+      this.selectedContext.set({ type: 'personal', label: 'Personal Schedule' });
+    } else {
+      const contextObj = this.contexts().find(c => c.householdId === value);
+      if (contextObj) {
+        this.selectedContext.set(contextObj);
+      }
     }
   }
 
@@ -139,7 +172,7 @@ export default class SchedulePage {
   startCookingToday(): void {
     const recipe = this.todayRecipe();
     if (!recipe) return;
-    this.router.navigate([ '/recipes', recipe.id ], {
+    this.router.navigate(['/recipes', recipe.id], {
       queryParams: { mode: 'cooking' }
     });
   }
@@ -177,16 +210,14 @@ export default class SchedulePage {
     const weekLabel = this.weekRangeLabel();
 
     const dialogRef = this.dialog.open(ConfirmDeleteComponent, {
-      data: {
-        message: `Generate a suggested schedule for ${weekLabel}? You can edit it before saving.`
-      }
+      data: { message: `Generate a suggested schedule for ${weekLabel}? You can edit it before saving.` }
     });
 
     dialogRef.afterClosed().subscribe((confirmed: boolean) => {
       if (!confirmed) return;
 
       this.isSuggestingWeek.set(true);
-      this.weekScheduleService.suggestWeekSchedule(weekStart).subscribe({
+      this.weekScheduleService.suggestWeekSchedule(this.selectedContext(), weekStart).subscribe({
         next: (suggested) => {
           this.isSuggestingWeek.set(false);
           this.suggestedSchedule.set(suggested);
@@ -195,10 +226,9 @@ export default class SchedulePage {
         },
         error: (err) => {
           this.isSuggestingWeek.set(false);
-          let message = 'Failed to import recipe.';
+          let message = 'Failed to generate suggested schedule.';
           if (err.status === 502 || err.status === 503) {
             message = 'AI processing failed. Please try again later.';
-            this.toastService.show(message, 'error');
           }
           this.toastService.show(message, 'error');
         }
