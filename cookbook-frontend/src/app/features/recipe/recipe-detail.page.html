@@ -1,3 +1,4 @@
+<
 <app-toast/>
 
 <div class="page-container">
@@ -76,6 +77,17 @@
               @if (!enhancedRecipe.isLoading()) {
                 <span>Enhance Recipe</span>
               }
+            </button>
+          }
+
+          @if (!r.isOwner) {
+            <button
+              mat-flat-button
+              color="accent"
+              (click)="openCreateFromHouseholdModal(r)"
+              aria-label="Create your own recipe from this household recipe">
+              <mat-icon aria-hidden="true">content_copy</mat-icon>
+              <span>Create Copy</span>
             </button>
           }
 
