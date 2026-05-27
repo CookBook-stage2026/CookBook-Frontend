@@ -5,15 +5,16 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ToastComponent } from '@shared/components/toast/toast.component';
-import { DAY_LABELS, DayOfWeek, ScheduleContext, WeekScheduleResponse } from '@shared/domain/week-schedule';
+import { DayOfWeek, ScheduleContext, WeekScheduleResponse } from '@shared/domain/week-schedule';
 import { WeekScheduleService } from '@shared/services/week-schedule';
 import { ActivatedRoute, Router } from '@angular/router';
-import { rxResource } from '@angular/core/rxjs-interop';
+import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RecipeSummary } from '@shared/domain/recipe';
 import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-component';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ToastService } from '@core/services';
 import { HouseholdService } from '@shared/services/household';
+import { MatFormField, MatOption, MatSelect } from '@angular/material/select';
 
 @Component({
   selector: 'app-schedule-page',
@@ -27,7 +28,10 @@ import { HouseholdService } from '@shared/services/household';
     WeekScheduleCreateComponent,
     WeekScheduleViewComponent,
     ToastComponent,
-    MatProgressSpinner
+    MatProgressSpinner,
+    MatSelect,
+    MatOption,
+    MatFormField
   ]
 })
 export default class SchedulePage {
@@ -46,7 +50,20 @@ export default class SchedulePage {
   readonly isSuggestingWeek = signal(false);
   readonly suggestedSchedule = signal<WeekScheduleResponse | undefined>(undefined);
 
-  readonly selectedContext = signal<ScheduleContext>({ type: 'personal', label: 'Personal Schedule' });
+  readonly contextId = signal<string>('personal');
+  readonly selectedContextId = computed(() => this.contextId());
+  readonly selectedContext = computed<ScheduleContext>(() => {
+    const id = this.contextId();
+    if (id === 'personal') {
+      return { type: 'personal', label: 'Personal Schedule' };
+    }
+    const match = this.householdsResource.value()?.find(h => h.id === id);
+    return {
+      type: 'household',
+      householdId: id,
+      label: match ? `${match.name}'s Schedule` : 'Household Schedule'
+    };
+  });
 
   readonly householdsResource = rxResource({
     stream: () => this.householdService.getHouseholds()
@@ -84,7 +101,6 @@ export default class SchedulePage {
   readonly todayIsoDate = computed(() => this.toLocalDateString(new Date()));
   readonly todayDayOfWeek = signal<DayOfWeek>(this.getCurrentDayOfWeek());
   readonly todayWeekStartIso = computed(() => this.toLocalDateString(this.getMonday(new Date())));
-  readonly todayLabel = computed(() => DAY_LABELS[this.todayDayOfWeek()]);
 
   readonly currentWeekSchedule = computed(() => {
     const schedules = this.existingSchedules();
@@ -104,23 +120,25 @@ export default class SchedulePage {
   readonly hasTodayRecipe = computed(() => !!this.todayRecipe());
 
   constructor() {
-    const weekParam = this.route.snapshot.queryParamMap.get('week');
-    if (weekParam) {
-      this.selectedWeekStart.set(this.getMonday(new Date(weekParam)));
-    }
+    this.route.queryParams.pipe(takeUntilDestroyed()).subscribe(params => {
+      const weekParam = params['week'];
+      if (weekParam) {
+        const parsedDate = new Date(weekParam);
+        if (!Number.isNaN(parsedDate.getTime())) {
+          this.selectedWeekStart.set(this.getMonday(parsedDate));
+        }
+      }
+
+      const contextParam = params['context'];
+      if (contextParam) {
+        this.contextId.set(contextParam);
+      }
+    });
   }
 
-  onContextChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    const value = target.value;
-    if (value === 'personal') {
-      this.selectedContext.set({ type: 'personal', label: 'Personal Schedule' });
-    } else {
-      const contextObj = this.contexts().find(c => c.householdId === value);
-      if (contextObj) {
-        this.selectedContext.set(contextObj);
-      }
-    }
+  onContextChange(value: string): void {
+    this.contextId.set(value);
+    this.updateRouteParams(this.selectedWeekStart(), value);
   }
 
   openCreateModal(): void {
@@ -155,7 +173,7 @@ export default class SchedulePage {
     this.selectedWeekStart.update(date => {
       const d = new Date(date);
       d.setDate(d.getDate() - 7);
-      this.updateRouteParam(d);
+      this.updateRouteParams(d, this.contextId());
       return d;
     });
   }
@@ -164,7 +182,7 @@ export default class SchedulePage {
     this.selectedWeekStart.update(date => {
       const d = new Date(date);
       d.setDate(d.getDate() + 7);
-      this.updateRouteParam(d);
+      this.updateRouteParams(d, this.contextId());
       return d;
     });
   }
@@ -184,11 +202,9 @@ export default class SchedulePage {
 
   onWeekStartDateChanged(date: Date): void {
     this.selectedWeekStart.set(date);
-
     this.refreshSignal.update(v => v + 1);
     this.schedulesResource.reload();
-
-    this.updateRouteParam(date);
+    this.updateRouteParams(date, this.contextId());
   }
 
   private getCurrentDayOfWeek(): DayOfWeek {
@@ -254,9 +270,12 @@ export default class SchedulePage {
     return `${year}-${month}-${day}`;
   }
 
-  private updateRouteParam(date: Date): void {
+  private updateRouteParams(date: Date, contextId: string): void {
     this.router.navigate([], {
-      queryParams: { week: this.toLocalDateString(date) },
+      queryParams: {
+        week: this.toLocalDateString(date),
+        context: contextId
+      },
       replaceUrl: true
     });
   }
