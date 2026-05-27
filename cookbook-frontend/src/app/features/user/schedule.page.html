@@ -34,17 +34,19 @@
   </header>
 
   <div class="context-selector">
-    <select
-      id="schedule-context-select"
-      class="native-dropdown"
-      [value]="contextId()"
-      (change)="onContextChange($event)">
-      @for (ctx of contexts(); track ctx.type + (ctx.householdId ?? '')) {
-        <option [value]="ctx.householdId ?? 'personal'">
-          {{ ctx.label }}
-        </option>
-      }
-    </select>
+    <mat-form-field appearance="outline" class="context-select">
+      <mat-select
+        [value]="selectedContextId()"
+        (selectionChange)="onContextChange($event.value)">
+
+        @for (ctx of contexts(); track ctx.type + (ctx.householdId ?? '')) {
+          <mat-option [value]="ctx.householdId ?? 'personal'">
+            {{ ctx.label }}
+          </mat-option>
+        }
+
+      </mat-select>
+    </mat-form-field>
   </div>
 
   <section

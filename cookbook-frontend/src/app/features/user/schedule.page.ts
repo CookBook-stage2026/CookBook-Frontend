@@ -14,6 +14,7 @@ import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-compon
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ToastService } from '@core/services';
 import { HouseholdService } from '@shared/services/household';
+import { MatFormField, MatOption, MatSelect } from '@angular/material/select';
 
 @Component({
   selector: 'app-schedule-page',
@@ -27,7 +28,10 @@ import { HouseholdService } from '@shared/services/household';
     WeekScheduleCreateComponent,
     WeekScheduleViewComponent,
     ToastComponent,
-    MatProgressSpinner
+    MatProgressSpinner,
+    MatSelect,
+    MatOption,
+    MatFormField
   ]
 })
 export default class SchedulePage {
@@ -47,6 +51,7 @@ export default class SchedulePage {
   readonly suggestedSchedule = signal<WeekScheduleResponse | undefined>(undefined);
 
   readonly contextId = signal<string>('personal');
+  readonly selectedContextId = computed(() => this.contextId());
   readonly selectedContext = computed<ScheduleContext>(() => {
     const id = this.contextId();
     if (id === 'personal') {
@@ -127,15 +132,11 @@ export default class SchedulePage {
       const contextParam = params['context'];
       if (contextParam) {
         this.contextId.set(contextParam);
-      } else {
-        this.contextId.set('personal');
       }
     });
   }
 
-  onContextChange(event: Event): void {
-    const target = event.target as HTMLSelectElement;
-    const value = target.value;
+  onContextChange(value: string): void {
     this.contextId.set(value);
     this.updateRouteParams(this.selectedWeekStart(), value);
   }
