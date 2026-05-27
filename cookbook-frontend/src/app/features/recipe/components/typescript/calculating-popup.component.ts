@@ -9,7 +9,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core';
       <div class="popup-content">
         <div class="spinner"></div>
         <h3>Calculating Macros</h3>
-        <p>Please wait while we analyze your recipe...</p>
+        <p>Analyzing your recipe...</p>
       </div>
     </div>
   `,

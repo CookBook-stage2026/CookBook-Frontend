@@ -10,7 +10,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
   template: `
     @if (macros(); as macroList) {
       <div class="macros-section">
-        <h3 class="macros-title">Nutritional Information</h3>
+        <h3 class="macros-title">Nutritional Information per serving</h3>
         <div class="macros-list">
           @for (macro of macroList; track macro.type) {
             <div class="macro-row">
