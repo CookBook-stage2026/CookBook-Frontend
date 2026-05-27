@@ -37,6 +37,7 @@
     <select
       id="schedule-context-select"
       class="native-dropdown"
+      [value]="contextId()"
       (change)="onContextChange($event)">
       @for (ctx of contexts(); track ctx.type + (ctx.householdId ?? '')) {
         <option [value]="ctx.householdId ?? 'personal'">
