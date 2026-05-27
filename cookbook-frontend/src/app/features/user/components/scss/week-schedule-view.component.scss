@@ -2,26 +2,44 @@
   display: block;
 }
 
-.action-buttons {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-}
-
 .schedule-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
   gap: 1rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+}
+
+.schedule-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  min-width: 0;
 }
 
 .schedule-title {
   margin: 0;
   font-size: 1.25rem;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-main, #1e293b);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.schedule-subtitle {
+  font-size: 0.875rem;
+  color: var(--text-muted, #64748b);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
 }
 
 .state-container {
