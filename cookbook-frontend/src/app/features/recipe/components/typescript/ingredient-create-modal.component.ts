@@ -91,7 +91,7 @@ export class IngredientCreateModalComponent implements OnInit {
 
     const dto: CreateIngredientDto = {
       name: raw.name,
-      unit: raw.unit,
+      defaultUnit: raw.unit,
       categories: raw.categories
     };
 

@@ -157,10 +157,11 @@ export class RecipeEditModalComponent {
       steps: rawFormValues.steps,
       isPublic: rawFormValues.isPublic,
       ingredients: rawFormValues.ingredients.map((ing: unknown) => {
-        const item = ing as { id: string; quantity: number };
+        const item = ing as { id: string; quantity: number, unit: string };
         return {
           ingredientId: item.id,
-          baseQuantity: item.quantity
+          baseQuantity: item.quantity,
+          unit: item.unit
         };
       })
     };

@@ -8,7 +8,7 @@ import {
   MatAutocompleteModule,
   MatAutocompleteSelectedEvent
 } from '@angular/material/autocomplete';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import {
   IngredientCreateModalComponent
@@ -42,6 +42,10 @@ export class RecipeIngredientsFormComponent {
   readonly currentSearchTerm = signal<string>('');
 
   readonly ingredientsByRow = signal<Map<number, Ingredient[]>>(new Map());
+
+  readonly unitsResource = rxResource({
+    stream: () => this.ingredientService.getUnits()
+  });
 
   private readonly _tick = signal(0);
 
@@ -148,7 +152,7 @@ export class RecipeIngredientsFormComponent {
     freshCtrl.patchValue({
       id: ingredient.id,
       name: ingredient.name,
-      unit: ingredient.unit
+      unit: ingredient.defaultUnit
     });
 
     this.clearAllRowResults();
@@ -178,7 +182,7 @@ export class RecipeIngredientsFormComponent {
     );
 
     if (matched) {
-      ctrl.patchValue({ id: matched.id, unit: matched.unit ?? '' });
+      ctrl.patchValue({ id: matched.id, unit: matched.defaultUnit ?? '' });
     } else {
       ctrl.patchValue({ id: null, unit: '' });
     }
@@ -192,7 +196,7 @@ export class RecipeIngredientsFormComponent {
     const rowResults = this.ingredientsByRow().get(rowIndex) ?? [];
     const matched = rowResults.find(i => i.name === selectedName);
     if (matched) {
-      ctrl.patchValue({ id: matched.id, unit: matched.unit ?? '' });
+      ctrl.patchValue({ id: matched.id, unit: matched.defaultUnit ?? '' });
     }
 
     this.ingredientsByRow.update(current => {
@@ -225,10 +229,7 @@ export class RecipeIngredientsFormComponent {
     }
   }
 
-  getDisplayUnit(ctrl: AbstractControl): string {
-    const unitEnum = ctrl.get('unit')?.value;
-    const quantity = ctrl.get('quantity')?.value || 0;
-    if (!unitEnum) return '';
-    return formatUnit(unitEnum, quantity);
+  displayUnitLabel(unitCode: string, count: number): string {
+    return formatUnit(unitCode, count);
   }
 }
