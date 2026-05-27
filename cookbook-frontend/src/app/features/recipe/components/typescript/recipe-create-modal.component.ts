@@ -85,10 +85,14 @@ export class RecipeCreateModalComponent {
 
       const rawFormValue = this.recipeForm.value;
 
-      const mappedIngredients: NewRecipeIngredientDto[] = rawFormValue.ingredients.map((ing: Record<string, unknown>) => ({
-        ingredientId: ing['id'],
-        baseQuantity: Number(ing['quantity'])
-      }));
+      const mappedIngredients: NewRecipeIngredientDto[] = rawFormValue.ingredients.map((ing: unknown) => {
+        const item = ing as { id: string; quantity: number, unit: string };
+        return {
+          ingredientId: item.id,
+          baseQuantity: item.quantity,
+          unit: item.unit
+        };
+      })
 
       const dto: CreateRecipeDto = {
         name: rawFormValue.name,

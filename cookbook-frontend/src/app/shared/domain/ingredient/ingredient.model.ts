@@ -40,7 +40,7 @@ export function formatUnitAbbreviation(unit: string): string {
 export interface Ingredient {
   id?: string;
   name: string;
-  unit?: string;
+  defaultUnit?: string;
   category?: string;
 }
 
@@ -53,6 +53,6 @@ export interface IngredientSearchRequest {
 
 export interface CreateIngredientDto {
   name: string;
-  unit: string;
+  defaultUnit: string;
   categories: string[];
 }

@@ -64,15 +64,19 @@
         </div>
 
         <div class="form-group flex-1">
-          <label for="unit-{{ $index }}">Unit</label>
+          <label for="unit-{{ $index }}">Unit *</label>
           <div class="input-wrapper">
-            <input
-              type="text"
-              [value]="getDisplayUnit(ingredientCtrl)"
+            <select
+              formControlName="unit"
               id="unit-{{ $index }}"
-              class="form-control read-only-unit"
-              readonly
-              tabindex="-1">
+              class="form-control"
+              aria-required="true">
+              @for (unitCode of unitsResource.value() ?? []; track unitCode) {
+                <option [value]="unitCode">
+                  {{ displayUnitLabel(unitCode, ingredientCtrl.get('quantity')?.value ?? 0) }}
+                </option>
+              }
+            </select>
           </div>
         </div>
 
