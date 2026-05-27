@@ -1,13 +1,26 @@
-<div class="modal-dialog">
+<div class="modal-dialog" aria-labelledby="modal-title" aria-describedby="modal-description">
   <header class="modal-header">
     <div>
-      <h2 id="modal-title">Edit Recipe</h2>
-      <p id="modal-description">Modify the details below to update your recipe.</p>
+      <h2 id="modal-title">
+        @if (isEditMode) {
+          Edit Recipe
+        } @else {
+          Create Copy
+        }
+      </h2>
+      <p id="modal-description">
+        @if (isEditMode) {
+          Modify details below to update your recipe or duplicate it as a new template.
+        } @else {
+          Use this household recipe as a starting point for your own recipe.
+        }
+      </p>
     </div>
     <button
+      type="button"
       class="btn-close"
       (click)="closeModal()"
-      [disabled]="isSubmitting()"
+      [disabled]="isSavingChanges() || isSavingAsNew() || isDeleting()"
       aria-label="Close modal">
       <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
@@ -16,13 +29,14 @@
   </header>
 
   <div class="modal-body">
-    <form [formGroup]="recipeForm" (ngSubmit)="onSubmit()" class="recipe-form">
+    <form [formGroup]="recipeForm" class="recipe-form">
+
       <div class="form-group">
-        <label for="name">Recipe Name *</label>
+        <label for="edit-name">Recipe Name *</label>
         <div class="input-wrapper">
           <input
             type="text"
-            id="name"
+            id="edit-name"
             formControlName="name"
             placeholder="e.g., Homemade Pizza"
             class="form-control"
@@ -37,10 +51,10 @@
       </div>
 
       <div class="form-group">
-        <label for="description">Short Description *</label>
+        <label for="edit-description">Short Description *</label>
         <div class="input-wrapper">
           <textarea
-            id="description"
+            id="edit-description"
             formControlName="description"
             rows="3"
             placeholder="Describe the dish briefly..."
@@ -57,11 +71,11 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label for="durationInMinutes">Total Duration (minutes) *</label>
+          <label for="edit-duration">Total Duration (minutes) *</label>
           <div class="input-wrapper">
             <input
               type="number"
-              id="durationInMinutes"
+              id="edit-duration"
               formControlName="durationInMinutes"
               placeholder="15"
               class="form-control"
@@ -79,11 +93,11 @@
         </div>
 
         <div class="form-group">
-          <label for="servings">Servings *</label>
+          <label for="edit-servings">Servings *</label>
           <div class="input-wrapper">
             <input
               type="number"
-              id="servings"
+              id="edit-servings"
               formControlName="servings"
               placeholder="4"
               class="form-control"
@@ -101,20 +115,30 @@
         </div>
       </div>
 
-      <hr class="divider">
+      <div class="checkbox-group">
+        <label class="checkbox-label">
+          <input type="checkbox" formControlName="isPublic" class="checkbox-input">
+          <div>
+            <span class="checkbox-title">Make recipe public</span>
+            <p class="checkbox-description">Allow other users to search for and view this recipe layout.</p>
+          </div>
+        </label>
+      </div>
+
+      <hr class="divider" aria-hidden="true">
 
       <app-recipe-ingredients
         [ingredients]="ingredientsArray"
-        [isSubmitting]="isSubmitting()"
+        [isSubmitting]="isSavingChanges() || isSavingAsNew()"
         (addIngredient)="addIngredient()"
         (removeIngredient)="removeIngredient($event)"
       />
 
-      <hr class="divider">
+      <hr class="divider" aria-hidden="true">
 
       <app-recipe-steps
         [steps]="stepsArray"
-        [isSubmitting]="isSubmitting()"
+        [isSubmitting]="isSavingChanges() || isSavingAsNew()"
         (addStep)="addStep()"
         (removeStep)="removeStep($event)"
       />
@@ -122,38 +146,69 @@
   </div>
 
   <footer class="modal-footer">
-    <button
-      type="button"
-      class="btn-icon danger"
-      (click)="onDeleteRecipe()"
-      [disabled]="isSubmitting()">
-      <span class="material-icons">delete_forever</span>
-      Delete Recipe
-    </button>
+    @if (isEditMode) {
+      <button
+        type="button"
+        class="btn-icon danger"
+        (click)="onDeleteRecipe()"
+        [disabled]="isSavingChanges() || isSavingAsNew() || isDeleting()"
+        aria-label="Delete recipe">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M3 6h18"/>
+          <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+          <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+        </svg>
+      </button>
+    }
 
-    <div class="flex-grow"></div>
+    <div class="flex-grow" aria-hidden="true"></div>
 
     <button
       type="button"
       class="btn-secondary"
       (click)="closeModal()"
-      [disabled]="isSubmitting()">
+      [disabled]="isSavingChanges() || isSavingAsNew() || isDeleting()">
       Cancel
     </button>
 
     <button
       type="button"
-      class="btn-primary"
-      (click)="onSubmit()"
-      [disabled]="recipeForm.invalid || isSubmitting()">
-      @if (isSubmitting()) {
-        <span class="spinner" aria-hidden="true"></span> Updating...
+      class="btn-secondary"
+      (click)="onSaveAsNew()"
+      [disabled]="recipeForm.invalid || isSavingChanges() || isSavingAsNew() || isDeleting()">
+      @if (isSavingAsNew()) {
+        <span class="spinner" aria-hidden="true"></span>
+        @if (isEditMode) {
+          Saving Copy...
+        } @else {
+          Creating...
+        }
       } @else {
-        Save Changes
+        @if (isEditMode) {
+          Save as New
+        } @else {
+          Create Recipe
+        }
       }
     </button>
+
+    @if (isEditMode) {
+      <button
+        type="button"
+        class="btn-primary"
+        (click)="onSaveChanges()"
+        [disabled]="recipeForm.invalid || isSavingChanges() || isSavingAsNew() || isDeleting()">
+        @if (isSavingChanges()) {
+          <span class="spinner" aria-hidden="true"></span>Updating...
+        } @else {
+          Save Changes
+        }
+      </button>
+    }
   </footer>
 </div>
-@if (isSubmitting()) {
+
+@if (isSavingChanges() || isSavingAsNew()) {
   <app-calculating-popup/>
 }
