@@ -61,7 +61,7 @@ export default class RecipeDetailPage {
 
   openEditModal(recipe: RecipeDto): void {
     const dialogRef = this.dialog.open(RecipeEditModalComponent, {
-      data: recipe,
+      data: { recipe, mode: 'edit' as const },
       width: '800px',
       maxWidth: '90vw',
       autoFocus: 'dialog'
@@ -71,6 +71,15 @@ export default class RecipeDetailPage {
       if (didUpdate) {
         this.recipe.reload();
       }
+    });
+  }
+
+  openCreateCopy(recipe: RecipeDto): void {
+    this.dialog.open(RecipeEditModalComponent, {
+      data: { recipe, mode: 'createFromHousehold' as const },
+      width: '800px',
+      maxWidth: '90vw',
+      autoFocus: 'dialog'
     });
   }
 
