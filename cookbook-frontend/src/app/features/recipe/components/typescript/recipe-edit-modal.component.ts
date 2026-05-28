@@ -17,6 +17,7 @@ import {
 } from '@features/recipe/components/typescript/recipe-ingredients-form.component';
 import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-component';
 import { Router } from '@angular/router';
+import { CalculatingPopupComponent } from '@features/recipe/components/typescript/calculating-popup.component';
 
 @Component({
   selector: 'app-recipe-edit-modal',
@@ -26,7 +27,8 @@ import { Router } from '@angular/router';
   imports: [
     ReactiveFormsModule,
     RecipeStepsComponent,
-    RecipeIngredientsFormComponent
+    RecipeIngredientsFormComponent,
+    CalculatingPopupComponent
   ]
 })
 export class RecipeEditModalComponent {
@@ -66,7 +68,7 @@ export class RecipeEditModalComponent {
         this.fb.group({
           id: [ing.ingredientId],
           name: [ing.name, [Validators.required]],
-          quantity: [ing.baseQuantity, [Validators.required, Validators.min(0.01)]],
+          quantity: [ ing.quantity, [ Validators.required, Validators.min(0.01) ] ],
           unit: [ing.unit]
         })
       );
