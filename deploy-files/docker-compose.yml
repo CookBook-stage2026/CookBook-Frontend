@@ -6,13 +6,31 @@ services:
     expose:
       - "8080"
     mem_limit: 1024m
+    depends_on:
+      firecrawl-mcp:
+        condition: service_healthy
 
   frontend:
     image: 819109475556.dkr.ecr.eu-north-1.amazonaws.com/cookbook/frontend
     expose:
       - "3000"
     mem_limit: 516m
-   
+
+  firecrawl-mcp:
+    image: node:26-alpine
+    command: sh -c "npx -y supergateway --port 3001 --outputTransport streamableHttp --stdio 'npx -y firecrawl-mcp'"
+    env_file:
+      - .env
+    expose:
+      - "3001"
+    mem_limit: 1024m
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "3001" ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 60s
   nginx:
     image: nginx:alpine
     ports:
