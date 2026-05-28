@@ -1,9 +1,6 @@
-import {
-  FormControl,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import { rxResource, toSignal } from '@angular/core/rxjs-interop';
-import { debounceTime, distinctUntilChanged, of } from 'rxjs';
+import { FormControl, ReactiveFormsModule, } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { IngredientService } from '@shared/services/ingredient';
 import { Ingredient } from '@shared/domain/ingredient';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
@@ -19,6 +16,7 @@ import {
   signal,
   viewChild
 } from '@angular/core';
+import { createIngredientSearchResource } from '@shared/util/ingredient-resource';
 
 @Component({
   selector: 'app-recipe-filter',
@@ -49,16 +47,13 @@ export class RecipeFilterComponent {
     { initialValue: '' }
   );
 
-  readonly ingredientResource = rxResource({
-    params: () => ({ query: this.debouncedQuery() }),
-    stream: ({ params }) => {
-      if (params.query.length < 1) return of([]);
-      return this.ingredientService.searchIngredients(params.query);
-    }
-  });
+  readonly ingredientResource = createIngredientSearchResource(
+    this.debouncedQuery,
+    this.ingredientService
+  );
 
   readonly filteredResults = computed(() => {
-    const results = this.ingredientResource.value() ?? [];
+    const results = this.ingredientResource.value()?.content ?? [];
     const selectedIds = new Set(this.selectedIngredients().map(i => i.id));
     return results.filter(ing => !selectedIds.has(ing.id));
   });

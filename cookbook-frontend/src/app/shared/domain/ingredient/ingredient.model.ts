@@ -38,10 +38,10 @@ export function formatUnitAbbreviation(unit: string): string {
 }
 
 export interface Ingredient {
-  id?: string;
+  id: string;
   name: string;
   defaultUnit?: string;
-  category?: string;
+  categories: string[];
 }
 
 export interface IngredientSearchRequest {
@@ -49,9 +49,16 @@ export interface IngredientSearchRequest {
   alreadySelectedIds?: string[];
   page?: number;
   size?: number;
+  onlyPersonal: boolean;
 }
 
 export interface CreateIngredientDto {
+  name: string;
+  defaultUnit: string;
+  categories: string[];
+}
+
+export interface UpdateIngredientDto {
   name: string;
   defaultUnit: string;
   categories: string[];

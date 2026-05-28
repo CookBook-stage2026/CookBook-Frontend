@@ -1,13 +1,14 @@
-import { ChangeDetectionStrategy, Component, ElementRef, computed, inject, viewChild, model } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, ElementRef, inject, model, viewChild } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { rxResource, toSignal } from '@angular/core/rxjs-interop';
-import { debounceTime, distinctUntilChanged, of } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { MatAutocompleteModule, MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { IngredientService } from '@shared/services/ingredient';
 import { Ingredient } from '@shared/domain/ingredient';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { createIngredientSearchResource } from '@shared/util/ingredient-resource';
 
 @Component({
   selector: 'app-exclude-ingredients',
@@ -29,17 +30,15 @@ export class ExcludeIngredientsComponent {
     { initialValue: '' }
   );
 
-  readonly ingredientResource = rxResource({
-    params: () => ({ query: this.debouncedQuery() }),
-    stream: ({ params }) => {
-      if (params.query.length < 1) return of([]);
-      return this.ingredientService.searchIngredients(params.query);
-    }
-  });
+  readonly ingredientResource = createIngredientSearchResource(
+    this.debouncedQuery,
+    this.ingredientService
+  );
 
   readonly filteredResults = computed(() => {
-    const results = this.ingredientResource.value() ?? [];
+    const results = this.ingredientResource.value()?.content ?? [];
     const excludedIds = new Set(this.excludedIngredients().map(i => i.id));
+
     return results.filter(ing => !excludedIds.has(ing.id));
   });
 
