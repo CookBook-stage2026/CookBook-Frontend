@@ -127,7 +127,12 @@ export default class SchedulePage {
   });
 
   readonly weekRangeLabel = computed(() => {
-    const end = new Date(this.nextWeekStart());
+    if (this.isShowingCurrentWeekPair()) {
+      const end = new Date(this.nextWeekStart());
+      end.setDate(end.getDate() + 6);
+      return `${this.formatDate(this.selectedWeekStart())} – ${this.formatDate(end)}`;
+    }
+    const end = new Date(this.selectedWeekStart());
     end.setDate(end.getDate() + 6);
     return `${this.formatDate(this.selectedWeekStart())} – ${this.formatDate(end)}`;
   });
@@ -224,16 +229,27 @@ export default class SchedulePage {
   previousWeek(): void {
     this.selectedWeekStart.update(date => {
       const d = new Date(date);
-      d.setDate(d.getDate() - 14);
+      d.setDate(d.getDate() - 7);
+
+      const currentMonday = this.getMonday(new Date());
+      const nextMonday = new Date(currentMonday);
+      nextMonday.setDate(nextMonday.getDate() + 7);
+
+      if (this.toLocalDateString(d) === this.toLocalDateString(nextMonday)) {
+        this.updateRouteParams(currentMonday, this.contextId());
+        return currentMonday;
+      }
+
       this.updateRouteParams(d, this.contextId());
       return d;
     });
   }
 
   nextWeek(): void {
+    const daysToAdd = this.isShowingCurrentWeekPair() ? 14 : 7;
     this.selectedWeekStart.update(date => {
       const d = new Date(date);
-      d.setDate(d.getDate() + 14);
+      d.setDate(d.getDate() + daysToAdd);
       this.updateRouteParams(d, this.contextId());
       return d;
     });
@@ -252,8 +268,15 @@ export default class SchedulePage {
   }
 
   planToday(): void {
-    this.modalWeekStart.set(this.getMonday(new Date()));
-    this.isCreateModalOpen.set(true);
+    const todayMonday = this.getMonday(new Date());
+    const existing = this.currentWeekSchedule();
+
+    if (existing) {
+      this.openEditModal(existing);
+    } else {
+      this.modalWeekStart.set(todayMonday);
+      this.isCreateModalOpen.set(true);
+    }
   }
 
   onWeekStartDateChanged(_date: Date): void {

@@ -1,3 +1,4 @@
+<
 <app-toast/>
 
 <div class="page-container">
@@ -83,7 +84,7 @@
     <button
       mat-icon-button
       (click)="previousWeek()"
-      aria-label="Go back two weeks"
+      aria-label="Go to previous week"
       [disabled]="schedulesResource.isLoading()">
       <mat-icon>chevron_left</mat-icon>
     </button>
@@ -95,7 +96,7 @@
         mat-stroked-button
         (click)="goToCurrentWeekPair()"
         class="today-btn"
-        aria-label="Jump back to current week and next week">
+        aria-label="Jump back to current week">
         <mat-icon>today</mat-icon>
         Today
       </button>
@@ -104,7 +105,7 @@
     <button
       mat-icon-button
       (click)="nextWeek()"
-      aria-label="Go forward two weeks"
+      aria-label="Go to next week"
       [disabled]="schedulesResource.isLoading()">
       <mat-icon>chevron_right</mat-icon>
     </button>
@@ -129,24 +130,25 @@
       />
     </section>
 
-    <hr class="week-section-divider" aria-hidden="true">
+    @if (isShowingCurrentWeekPair()) {
+      <hr class="week-section-divider" aria-hidden="true">
 
-    <section class="week-section" aria-labelledby="week-section-2-heading">
-      <app-week-schedule-view
-        [context]="selectedContext()"
-        [weekStartDate]="nextWeekStart()"
-        [refreshTrigger]="refreshSignal()"
-        [todayIsoDate]="todayIsoDate()"
-        [sectionTitle]="secondWeekLabel()"
-        [sectionSubtitle]="isShowingCurrentWeekPair() ? nextWeekDateRange() : ''"
-        [isSuggestingWeek]="isSuggestingNextWeek()"
-        (suggestWeek)="openSuggestWeek(nextWeekStart())"
-        (createSchedule)="openCreateModal(nextWeekStart())"
-        (editSchedule)="openEditModal($event)"
-        (deleteSchedule)="onScheduleDeleted()"
-      />
-    </section>
-
+      <section class="week-section" aria-labelledby="week-section-2-heading">
+        <app-week-schedule-view
+          [context]="selectedContext()"
+          [weekStartDate]="nextWeekStart()"
+          [refreshTrigger]="refreshSignal()"
+          [todayIsoDate]="todayIsoDate()"
+          [sectionTitle]="secondWeekLabel()"
+          [sectionSubtitle]="nextWeekDateRange()"
+          [isSuggestingWeek]="isSuggestingNextWeek()"
+          (suggestWeek)="openSuggestWeek(nextWeekStart())"
+          (createSchedule)="openCreateModal(nextWeekStart())"
+          (editSchedule)="openEditModal($event)"
+          (deleteSchedule)="onScheduleDeleted()"
+        />
+      </section>
+    }
   </div>
 </div>
 
