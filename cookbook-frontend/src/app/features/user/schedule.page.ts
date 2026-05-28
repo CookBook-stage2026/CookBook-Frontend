@@ -13,7 +13,8 @@ import { RecipeSummary } from '@shared/domain/recipe';
 import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-component';
 import { ToastService } from '@core/services';
 import { HouseholdService } from '@shared/services/household';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatFormField } from '@angular/material/input';
+import { MatOption, MatSelect } from '@angular/material/select';
 
 @Component({
   selector: 'app-schedule-page',
@@ -26,9 +27,10 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
     MatDialogModule,
     WeekScheduleCreateComponent,
     WeekScheduleViewComponent,
-    ToastComponent
     ToastComponent,
-    MatProgressSpinner
+    MatFormField,
+    MatSelect,
+    MatOption
   ]
 })
 export default class SchedulePage {
@@ -240,7 +242,7 @@ export default class SchedulePage {
   goToCurrentWeekPair(): void {
     const today = this.getMonday(new Date());
     this.selectedWeekStart.set(today);
-    this.updateRouteParam(today);
+    this.updateRouteParams(today, this.contextId());
   }
 
   startCookingToday(): void {
@@ -257,7 +259,7 @@ export default class SchedulePage {
   onWeekStartDateChanged(_date: Date): void {
     this.refreshSignal.update(v => v + 1);
     this.schedulesResource.reload();
-    this.updateRouteParams(date, this.contextId());
+    this.updateRouteParams(_date, this.contextId());
   }
 
   openSuggestWeek(weekStart: Date): void {
