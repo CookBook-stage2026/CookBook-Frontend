@@ -74,7 +74,7 @@ export default class RecipeDetailPage {
     });
   }
 
-  openCreateFromHouseholdModal(recipe: RecipeDto): void {
+  openCreateCopy(recipe: RecipeDto): void {
     this.dialog.open(RecipeEditModalComponent, {
       data: { recipe, mode: 'createFromHousehold' as const },
       width: '800px',

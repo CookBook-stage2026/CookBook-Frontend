@@ -175,44 +175,6 @@ export class RecipeEditModalComponent {
     });
   }
 
-  onSubmit(): void {
-    if (this.recipeForm.invalid || this.isSubmitting()) {
-      return;
-    }
-
-    this.isSubmitting.set(true);
-    const rawFormValues = this.recipeForm.getRawValue();
-
-    const updateDto: UpdateRecipeDto = {
-      name: rawFormValues.name,
-      description: rawFormValues.description,
-      durationInMinutes: rawFormValues.durationInMinutes,
-      servings: rawFormValues.servings,
-      steps: rawFormValues.steps,
-      isPublic: rawFormValues.isPublic,
-      ingredients: rawFormValues.ingredients.map((ing: unknown) => {
-        const item = ing as { id: string; quantity: number, unit: string };
-        return {
-          ingredientId: item.id,
-          baseQuantity: item.quantity,
-          unit: item.unit
-        };
-      })
-    };
-
-    this.recipeService.updateRecipe(this.recipeData.id, updateDto).subscribe({
-      next: () => {
-        this.isSubmitting.set(false);
-        this.toastService.show('Recipe successfully updated!', 'success');
-        this.dialogRef.close(true);
-      },
-      error: () => {
-        this.isSubmitting.set(false);
-        this.toastService.show('Failed to update the recipe.', 'error');
-      }
-    });
-  }
-
   closeModal(): void {
     this.dialogRef.close(false);
   }
@@ -224,7 +186,8 @@ export class RecipeEditModalComponent {
   private mapFormIngredients(ingredients: Array<Record<string, unknown>>): NewRecipeIngredientDto[] {
     return ingredients.map(ing => ({
       ingredientId: String(ing['id']),
-      baseQuantity: Number(ing['quantity'])
+      baseQuantity: Number(ing['quantity']),
+      unit: String(ing['unit'])
     }));
   }
 
