@@ -1,7 +1,7 @@
 <article
   class="household-card"
-  (click)=onOpen()
-  (keydown)=onOpen()
+  (click)="onDetailClick()"
+  (keydown.enter)="onDetailClick()"
   [attr.aria-label]="'Household: ' + household().name"
 >
   <div class="card-top">
@@ -9,7 +9,7 @@
       <div class="card-icon-wrap" aria-hidden="true">
         <mat-icon class="card-icon">home_work</mat-icon>
       </div>
-      <div>
+      <div class="card-meta">
         <h2 class="card-name">{{ household().name }}</h2>
         <p class="card-creator">
           <mat-icon class="meta-icon" aria-hidden="true">person_outline</mat-icon>
@@ -58,13 +58,13 @@
     @if (isCreator()) {
       <button
         mat-stroked-button
-        class="invite-btn"
+        class="manage-btn"
         type="button"
-        (click)="onInviteClick(); $event.stopPropagation()"
-        [attr.aria-label]="'Invite someone to ' + household().name"
+        (click)="onManageInvitesClick(); $event.stopPropagation()"
+        [attr.aria-label]="'Manage invites for ' + household().name"
       >
-        <mat-icon>person_add</mat-icon>
-        Invite
+        <mat-icon>group_add</mat-icon>
+        Manage Invites
       </button>
     }
 

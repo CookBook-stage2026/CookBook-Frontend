@@ -1,0 +1,138 @@
+<div class="modal-backdrop" (click)="onClose()" (keydown.esc)="$event.stopPropagation()" aria-modal="true"
+     aria-labelledby="detail-title">
+  <div class="modal" (click)="$event.stopPropagation()" (keydown.esc)="$event.stopPropagation()">
+
+    @if (householdResource.isLoading()) {
+      <output class="loading-state" aria-live="polite">
+        <mat-spinner diameter="32"/>
+        <p>Loading household…</p>
+      </output>
+    } @else if (householdResource.error()) {
+      <div class="feedback-state" role="alert">
+        <mat-icon class="feedback-icon feedback-icon--error">cloud_off</mat-icon>
+        <p>Failed to load household.</p>
+        <button mat-stroked-button (click)="householdResource.reload()">Retry</button>
+      </div>
+    } @else if (householdResource.value(); as household) {
+
+      <header class="household-header">
+        @if (isEditing()) {
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" class="edit-form">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Name</mat-label>
+              <input matInput formControlName="name" placeholder="Household name"/>
+              @if (form.controls.name.hasError('required')) {
+                <mat-error>Name is required</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Description</mat-label>
+              <textarea matInput formControlName="description" rows="2" placeholder="Description"></textarea>
+            </mat-form-field>
+
+            <div class="edit-actions">
+              <button mat-stroked-button type="button" (click)="cancelEditing()">Cancel</button>
+              <button
+                mat-flat-button
+                color="primary"
+                type="submit"
+                [disabled]="form.invalid || isSubmitting()"
+              >
+                @if (isSubmitting()) {
+                  <mat-spinner diameter="16"/>
+                } @else {
+                  Save
+                }
+              </button>
+            </div>
+          </form>
+        } @else {
+          <div class="header-info">
+            <h2 id="detail-title">{{ household.name }}</h2>
+            @if (household.description) {
+              <p class="header-description">{{ household.description }}</p>
+            }
+          </div>
+
+          @if (isCreator()) {
+            <div class="header-actions">
+              <button
+                mat-icon-button
+                type="button"
+                (click)="startEditing()"
+                aria-label="Edit household name and description"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button
+                mat-icon-button
+                class="delete-btn"
+                type="button"
+                (click)="deleteHousehold()"
+                aria-label="Delete entire household"
+              >
+                <mat-icon>delete_forever</mat-icon>
+              </button>
+            </div>
+          }
+        }
+      </header>
+
+      <section class="members-section" aria-labelledby="members-heading">
+        <h3 id="members-heading" class="section-heading">
+          <mat-icon aria-hidden="true">people</mat-icon>
+          Members
+        </h3>
+
+        <ul class="members-list">
+          <li class="member-row member-row--creator">
+            <div class="member-info">
+              <div
+                class="member-avatar"
+                [style.background-color]="getAvatarColor(household.creator)"
+                [attr.aria-label]="household.creator.displayName"
+              >
+                {{ getInitials(household.creator) }}
+              </div>
+              <span>{{ household.creator.displayName }}</span>
+            </div>
+            <span class="creator-badge">Creator</span>
+          </li>
+
+          @for (member of household.members; track member.userId) {
+            <li class="member-row">
+              <div class="member-info">
+                <div
+                  class="member-avatar"
+                  [style.background-color]="getAvatarColor(member)"
+                  [attr.aria-label]="member.displayName"
+                >
+                  {{ getInitials(member) }}
+                </div>
+                <span>{{ member.displayName }}</span>
+              </div>
+
+              @if (isCreator() && member.userId !== household.creator.userId) {
+                <button
+                  mat-icon-button
+                  class="remove-member-btn"
+                  type="button"
+                  (click)="removeMember(member.userId, member.displayName)"
+                  [attr.aria-label]="'Remove ' + member.displayName + ' from household'"
+                >
+                  <mat-icon>person_remove</mat-icon>
+                </button>
+              }
+            </li>
+          }
+
+          @if (household.members.length === 0) {
+            <li class="empty-state">No other members yet.</li>
+          }
+        </ul>
+      </section>
+
+    }
+  </div>
+</div>

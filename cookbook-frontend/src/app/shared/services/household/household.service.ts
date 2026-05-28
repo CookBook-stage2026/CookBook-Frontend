@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { CreateHouseholdRequest, Household } from '@shared/domain/household';
+import { CreateHouseholdRequest, EditHouseholdRequest, Household } from '@shared/domain/household';
 
 @Injectable({ providedIn: 'root' })
 export class HouseholdService {
@@ -26,5 +26,9 @@ export class HouseholdService {
 
   deleteHousehold(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  updateHousehold(request: EditHouseholdRequest): Observable<void> {
+    return this.http.put<void>(this.apiUrl, request);
   }
 }

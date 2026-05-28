@@ -12,3 +12,9 @@ export interface Household {
   members: User[];
   creator: User;
 }
+
+export interface EditHouseholdRequest {
+  householdId: string;
+  name: string;
+  description: string;
+}

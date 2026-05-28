@@ -12,3 +12,10 @@ export interface HouseholdInviteDto {
 export interface CreateHouseholdInviteRequest {
   durationMinutes?: number | null;
 }
+
+export interface HouseholdInviteResponse {
+  id: string;
+  expiresAt: string | null;
+  createdOn: string;
+  revoked: boolean;
+}
