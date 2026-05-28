@@ -11,10 +11,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { RecipeSummary } from '@shared/domain/recipe';
 import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-component';
-import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { ToastService } from '@core/services';
 import { HouseholdService } from '@shared/services/household';
-import { MatFormField, MatOption, MatSelect } from '@angular/material/select';
+import { MatFormField } from '@angular/material/input';
+import { MatOption, MatSelect } from '@angular/material/select';
 
 @Component({
   selector: 'app-schedule-page',
@@ -28,10 +28,9 @@ import { MatFormField, MatOption, MatSelect } from '@angular/material/select';
     WeekScheduleCreateComponent,
     WeekScheduleViewComponent,
     ToastComponent,
-    MatProgressSpinner,
+    MatFormField,
     MatSelect,
-    MatOption,
-    MatFormField
+    MatOption
   ]
 })
 export default class SchedulePage {
@@ -47,7 +46,7 @@ export default class SchedulePage {
   readonly selectedWeekStart = signal<Date>(this.getMonday(new Date()));
   readonly editingSchedule = signal<WeekScheduleResponse | undefined>(undefined);
   readonly modalWeekStart = signal<Date>(this.getMonday(new Date()));
-  readonly isSuggestingWeek = signal(false);
+  readonly isSuggestingWeekStart = signal<string | null>(null);
   readonly suggestedSchedule = signal<WeekScheduleResponse | undefined>(undefined);
 
   readonly contextId = signal<string>('personal');
@@ -91,31 +90,89 @@ export default class SchedulePage {
 
   readonly existingSchedules = computed(() => this.schedulesResource.value() ?? []);
 
-  readonly weekRangeLabel = computed(() => {
+  readonly nextWeekStart = computed(() => {
+    const d = new Date(this.selectedWeekStart());
+    d.setDate(d.getDate() + 7);
+    return d;
+  });
+
+  readonly isShowingCurrentWeekPair = computed(
+    () => this.toLocalDateString(this.selectedWeekStart()) === this.toLocalDateString(this.getMonday(new Date()))
+  );
+
+  readonly firstWeekLabel = computed(() =>
+    this.isShowingCurrentWeekPair()
+      ? 'This Week'
+      : `Week of ${this.formatDate(this.selectedWeekStart())}`
+  );
+
+  readonly secondWeekLabel = computed(() =>
+    this.isShowingCurrentWeekPair()
+      ? 'Next Week'
+      : `Week of ${this.formatDate(this.nextWeekStart())}`
+  );
+
+  readonly currentWeekDateRange = computed(() => {
     const start = this.selectedWeekStart();
     const end = new Date(start);
     end.setDate(end.getDate() + 6);
     return `${this.formatDate(start)} – ${this.formatDate(end)}`;
   });
 
+  readonly nextWeekDateRange = computed(() => {
+    const start = this.nextWeekStart();
+    const end = new Date(start);
+    end.setDate(end.getDate() + 6);
+    return `${this.formatDate(start)} – ${this.formatDate(end)}`;
+  });
+
+  readonly weekRangeLabel = computed(() => {
+    if (this.isShowingCurrentWeekPair()) {
+      const end = new Date(this.nextWeekStart());
+      end.setDate(end.getDate() + 6);
+      return `${this.formatDate(this.selectedWeekStart())} – ${this.formatDate(end)}`;
+    }
+    const end = new Date(this.selectedWeekStart());
+    end.setDate(end.getDate() + 6);
+    return `${this.formatDate(this.selectedWeekStart())} – ${this.formatDate(end)}`;
+  });
+
+  readonly isSuggestingCurrentWeek = computed(
+    () => this.isSuggestingWeekStart() === this.toLocalDateString(this.selectedWeekStart())
+  );
+
+  readonly isSuggestingNextWeek = computed(
+    () => this.isSuggestingWeekStart() === this.toLocalDateString(this.nextWeekStart())
+  );
+
+  readonly isSuggestingAnyWeek = computed(() => this.isSuggestingWeekStart() !== null);
+
+  readonly hasCurrentWeekSchedule = computed(() => {
+    const iso = this.toLocalDateString(this.selectedWeekStart());
+    return this.existingSchedules().some(s => s.weekStartDate === iso);
+  });
+
+  readonly hasNextWeekSchedule = computed(() => {
+    const iso = this.toLocalDateString(this.nextWeekStart());
+    return this.existingSchedules().some(s => s.weekStartDate === iso);
+  });
+
   readonly todayIsoDate = computed(() => this.toLocalDateString(new Date()));
   readonly todayDayOfWeek = signal<DayOfWeek>(this.getCurrentDayOfWeek());
   readonly todayWeekStartIso = computed(() => this.toLocalDateString(this.getMonday(new Date())));
 
-  readonly currentWeekSchedule = computed(() => {
-    const schedules = this.existingSchedules();
-    return schedules.find(s => s.weekStartDate === this.todayWeekStartIso());
-  });
+  readonly currentWeekSchedule = computed(() =>
+    this.existingSchedules().find(s => s.weekStartDate === this.todayWeekStartIso())
+  );
 
   readonly todayDaySchedule = computed(() => {
     const schedule = this.currentWeekSchedule();
-    if (!schedule) return undefined;
-    return schedule.days.find(d => d.day === this.todayDayOfWeek());
+    return schedule?.days.find(d => d.day === this.todayDayOfWeek());
   });
 
-  readonly todayRecipe = computed<RecipeSummary | undefined>(() => {
-    return this.todayDaySchedule()?.recipeSummary;
-  });
+  readonly todayRecipe = computed<RecipeSummary | undefined>(
+    () => this.todayDaySchedule()?.recipeSummary
+  );
 
   readonly hasTodayRecipe = computed(() => !!this.todayRecipe());
 
@@ -141,9 +198,9 @@ export default class SchedulePage {
     this.updateRouteParams(this.selectedWeekStart(), value);
   }
 
-  openCreateModal(): void {
+  openCreateModal(weekStart?: Date): void {
     this.editingSchedule.set(undefined);
-    this.modalWeekStart.set(this.selectedWeekStart());
+    this.modalWeekStart.set(weekStart ?? this.selectedWeekStart());
     this.isCreateModalOpen.set(true);
   }
 
@@ -173,38 +230,92 @@ export default class SchedulePage {
     this.selectedWeekStart.update(date => {
       const d = new Date(date);
       d.setDate(d.getDate() - 7);
+
+      const currentMonday = this.getMonday(new Date());
+      const nextMonday = new Date(currentMonday);
+      nextMonday.setDate(nextMonday.getDate() + 7);
+
+      if (this.toLocalDateString(d) === this.toLocalDateString(nextMonday)) {
+        this.updateRouteParams(currentMonday, this.contextId());
+        return currentMonday;
+      }
+
       this.updateRouteParams(d, this.contextId());
       return d;
     });
   }
 
   nextWeek(): void {
+    const daysToAdd = this.isShowingCurrentWeekPair() ? 14 : 7;
     this.selectedWeekStart.update(date => {
       const d = new Date(date);
-      d.setDate(d.getDate() + 7);
+      d.setDate(d.getDate() + daysToAdd);
       this.updateRouteParams(d, this.contextId());
       return d;
     });
   }
 
+  goToCurrentWeekPair(): void {
+    const today = this.getMonday(new Date());
+    this.selectedWeekStart.set(today);
+    this.updateRouteParams(today, this.contextId());
+  }
+
   startCookingToday(): void {
     const recipe = this.todayRecipe();
     if (!recipe) return;
-    this.router.navigate(['/recipes', recipe.id], {
-      queryParams: { mode: 'cooking' }
-    });
+    this.router.navigate([ '/recipes', recipe.id ], { queryParams: { mode: 'cooking' } });
   }
 
   planToday(): void {
-    this.modalWeekStart.set(this.getMonday(new Date()));
-    this.isCreateModalOpen.set(true);
+    const todayMonday = this.getMonday(new Date());
+    const existing = this.currentWeekSchedule();
+
+    if (existing) {
+      this.openEditModal(existing);
+    } else {
+      this.modalWeekStart.set(todayMonday);
+      this.isCreateModalOpen.set(true);
+    }
   }
 
-  onWeekStartDateChanged(date: Date): void {
-    this.selectedWeekStart.set(date);
+  onWeekStartDateChanged(_date: Date): void {
     this.refreshSignal.update(v => v + 1);
     this.schedulesResource.reload();
-    this.updateRouteParams(date, this.contextId());
+    this.updateRouteParams(_date, this.contextId());
+  }
+
+  openSuggestWeek(weekStart: Date): void {
+    const weekStartIso = this.toLocalDateString(weekStart);
+    const end = new Date(weekStart);
+    end.setDate(end.getDate() + 6);
+    const weekLabel = `${this.formatDate(weekStart)} – ${this.formatDate(end)}`;
+
+    const dialogRef = this.dialog.open(ConfirmDeleteComponent, {
+      data: { message: `Generate a suggested schedule for ${weekLabel}? You can edit it before saving.` }
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (!confirmed) return;
+
+      this.isSuggestingWeekStart.set(weekStartIso);
+      this.weekScheduleService.suggestWeekSchedule(this.selectedContext(), weekStartIso).subscribe({
+        next: (suggested) => {
+          this.isSuggestingWeekStart.set(null);
+          this.suggestedSchedule.set(suggested);
+          this.modalWeekStart.set(weekStart);
+          this.isCreateModalOpen.set(true);
+        },
+        error: (err) => {
+          this.isSuggestingWeekStart.set(null);
+          let message = 'Failed to generate suggested schedule.';
+          if (err.status === 502 || err.status === 503) {
+            message = 'AI processing failed. Please try again later.';
+          }
+          this.toastService.show(message, 'error');
+        }
+      });
+    });
   }
 
   private getCurrentDayOfWeek(): DayOfWeek {
@@ -219,37 +330,6 @@ export default class SchedulePage {
       6: 'SATURDAY'
     };
     return mapping[jsDay];
-  }
-
-  openSuggestWeek(): void {
-    const weekStart = this.toLocalDateString(this.selectedWeekStart());
-    const weekLabel = this.weekRangeLabel();
-
-    const dialogRef = this.dialog.open(ConfirmDeleteComponent, {
-      data: { message: `Generate a suggested schedule for ${weekLabel}? You can edit it before saving.` }
-    });
-
-    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
-      if (!confirmed) return;
-
-      this.isSuggestingWeek.set(true);
-      this.weekScheduleService.suggestWeekSchedule(this.selectedContext(), weekStart).subscribe({
-        next: (suggested) => {
-          this.isSuggestingWeek.set(false);
-          this.suggestedSchedule.set(suggested);
-          this.modalWeekStart.set(this.selectedWeekStart());
-          this.isCreateModalOpen.set(true);
-        },
-        error: (err) => {
-          this.isSuggestingWeek.set(false);
-          let message = 'Failed to generate suggested schedule.';
-          if (err.status === 502 || err.status === 503) {
-            message = 'AI processing failed. Please try again later.';
-          }
-          this.toastService.show(message, 'error');
-        }
-      });
-    });
   }
 
   private getMonday(date: Date): Date {

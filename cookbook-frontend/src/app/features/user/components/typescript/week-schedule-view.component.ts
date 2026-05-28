@@ -13,7 +13,6 @@ import {
   ScheduleContext,
   WeekScheduleResponse
 } from '@shared/domain/week-schedule';
-import { DatePipe } from '@angular/common';
 import { ToastService } from '@core/services';
 import { MatDialog } from '@angular/material/dialog';
 import { SuggestRecipeConfirmComponent } from '@features/user/components/typescript/suggest-recipe-confirm.component';
@@ -31,8 +30,7 @@ import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-compon
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    RouterLink,
-    DatePipe
+    RouterLink
   ]
 })
 export class WeekScheduleViewComponent {
@@ -42,6 +40,13 @@ export class WeekScheduleViewComponent {
   readonly todayIsoDate = input<string>('');
   readonly editSchedule = output<WeekScheduleResponse>();
   readonly deleteSchedule = output<void>();
+
+  readonly isSuggestingWeek = input<boolean>(false);
+
+  readonly suggestWeek = output<void>();
+  readonly createSchedule = output<void>();
+  readonly sectionTitle = input<string>('');
+  readonly sectionSubtitle = input<string>('');
 
   private readonly toastService = inject(ToastService);
   private readonly scheduleService = inject(WeekScheduleService);
@@ -172,6 +177,14 @@ export class WeekScheduleViewComponent {
         }
       });
     });
+  }
+
+  onSuggestWeek(): void {
+    this.suggestWeek.emit();
+  }
+
+  onCreateSchedule(): void {
+    this.createSchedule.emit();
   }
 
   private formatIso(date: Date): string {

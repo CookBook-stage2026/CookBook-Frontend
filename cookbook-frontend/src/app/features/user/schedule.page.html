@@ -1,3 +1,4 @@
+<
 <app-toast/>
 
 <div class="page-container">
@@ -5,31 +6,6 @@
     <div>
       <h1 class="page-title">Your Week Schedule</h1>
       <p class="page-subtitle">Plan your meals for the week ahead.</p>
-    </div>
-
-    <div class="header-actions">
-      <button
-        mat-stroked-button
-        color="accent"
-        (click)="openSuggestWeek()"
-        [disabled]="schedulesResource.isLoading() || isSuggestingWeek()"
-        class="suggest-btn">
-        @if (isSuggestingWeek()) {
-          <mat-spinner diameter="20" strokeWidth="2"></mat-spinner>
-        } @else {
-          <mat-icon>auto_awesome</mat-icon>
-        }
-        <span>Suggest Week</span>
-      </button>
-
-      <button
-        mat-flat-button
-        color="primary"
-        (click)="openCreateModal()"
-        [disabled]="schedulesResource.isLoading()">
-        <mat-icon>add</mat-icon>
-        Create New Schedule
-      </button>
     </div>
   </header>
 
@@ -104,24 +80,76 @@
     }
   </section>
 
-  <div class="week-navigator">
-    <button mat-icon-button (click)="previousWeek()" aria-label="Previous week" [disabled]="schedulesResource.isLoading()">
+  <nav class="week-navigator" aria-label="Browse other weeks">
+    <button
+      mat-icon-button
+      (click)="previousWeek()"
+      aria-label="Go to previous week"
+      [disabled]="schedulesResource.isLoading()">
       <mat-icon>chevron_left</mat-icon>
     </button>
+
     <span class="week-range" aria-live="polite">{{ weekRangeLabel() }}</span>
-    <button mat-icon-button (click)="nextWeek()" aria-label="Next week" [disabled]="schedulesResource.isLoading()">
+
+    @if (!isShowingCurrentWeekPair()) {
+      <button
+        mat-stroked-button
+        (click)="goToCurrentWeekPair()"
+        class="today-btn"
+        aria-label="Jump back to current week">
+        <mat-icon>today</mat-icon>
+        Today
+      </button>
+    }
+
+    <button
+      mat-icon-button
+      (click)="nextWeek()"
+      aria-label="Go to next week"
+      [disabled]="schedulesResource.isLoading()">
       <mat-icon>chevron_right</mat-icon>
     </button>
-  </div>
+  </nav>
 
-  <app-week-schedule-view
-    [context]="selectedContext()"
-    [weekStartDate]="selectedWeekStart()"
-    [refreshTrigger]="refreshSignal()"
-    [todayIsoDate]="todayIsoDate()"
-    (editSchedule)="openEditModal($event)"
-    (deleteSchedule)="onScheduleDeleted()"
-  />
+  <hr class="week-section-divider" aria-hidden="true">
+
+  <div class="week-sections">
+    <section class="week-section" aria-labelledby="week-section-1-heading">
+      <app-week-schedule-view
+        [context]="selectedContext()"
+        [weekStartDate]="selectedWeekStart()"
+        [refreshTrigger]="refreshSignal()"
+        [todayIsoDate]="todayIsoDate()"
+        [sectionTitle]="firstWeekLabel()"
+        [sectionSubtitle]="isShowingCurrentWeekPair() ? currentWeekDateRange() : ''"
+        [isSuggestingWeek]="isSuggestingCurrentWeek()"
+        (suggestWeek)="openSuggestWeek(selectedWeekStart())"
+        (createSchedule)="openCreateModal(selectedWeekStart())"
+        (editSchedule)="openEditModal($event)"
+        (deleteSchedule)="onScheduleDeleted()"
+      />
+    </section>
+
+    @if (isShowingCurrentWeekPair()) {
+      <hr class="week-section-divider" aria-hidden="true">
+
+      <section class="week-section" aria-labelledby="week-section-2-heading">
+        <app-week-schedule-view
+          [context]="selectedContext()"
+          [weekStartDate]="nextWeekStart()"
+          [refreshTrigger]="refreshSignal()"
+          [todayIsoDate]="todayIsoDate()"
+          [sectionTitle]="secondWeekLabel()"
+          [sectionSubtitle]="nextWeekDateRange()"
+          [isSuggestingWeek]="isSuggestingNextWeek()"
+          (suggestWeek)="openSuggestWeek(nextWeekStart())"
+          (createSchedule)="openCreateModal(nextWeekStart())"
+          (editSchedule)="openEditModal($event)"
+          (deleteSchedule)="onScheduleDeleted()"
+        />
+      </section>
+    }
+  </div>
 </div>
 
 @if (isCreateModalOpen()) {

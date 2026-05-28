@@ -17,16 +17,45 @@
   </div>
 } @else {
   <div class="schedule-header">
-    <h2 class="schedule-title">Week of {{ weekStartDate() | date:'mediumDate' }}</h2>
+    <div class="schedule-title-group">
+      <h2 class="schedule-title">{{ sectionTitle() }}</h2>
+      @if (sectionSubtitle()) {
+        <span class="schedule-subtitle">{{ sectionSubtitle() }}</span>
+      }
+    </div>
     <div class="action-buttons">
+      <button
+        mat-stroked-button
+        color="accent"
+        (click)="onSuggestWeek()"
+        [disabled]="isDeleting() || isSaving() || isSuggesting() || isSuggestingWeek()"
+        class="suggest-btn">
+        @if (isSuggestingWeek()) {
+          <mat-spinner diameter="20" strokeWidth="2"></mat-spinner>
+        } @else {
+          <mat-icon>auto_awesome</mat-icon>
+        }
+        <span>Suggest Week</span>
+      </button>
+
+      @if (!schedule() && !isSuggestingWeek()) {
+        <button
+          mat-flat-button
+          color="primary"
+          (click)="onCreateSchedule()"
+          [disabled]="isDeleting() || isSaving() || isSuggesting()">
+          <mat-icon>add</mat-icon>
+          Create Schedule
+        </button>
+      }
+
       @if (schedule()) {
         <button
           mat-stroked-button
           color="primary"
           (click)="onEdit()"
           aria-label="Edit schedule"
-          [disabled]="isDeleting() || isSaving() || isSuggesting()"
-        >
+          [disabled]="isDeleting() || isSaving() || isSuggesting()">
           <mat-icon>edit</mat-icon>
           Edit Schedule
         </button>
@@ -35,8 +64,7 @@
           mat-stroked-button
           color="warn"
           (click)="onDelete()"
-          [disabled]="isDeleting() || isSaving() || isSuggesting()"
-        >
+          [disabled]="isDeleting() || isSaving() || isSuggesting()">
           <mat-icon>delete</mat-icon>
           {{ isDeleting() ? 'Deleting…' : 'Delete Schedule' }}
         </button>
@@ -61,8 +89,7 @@
               [matTooltip]="getRecipeForDay(day) ? 'View recipe' : ''"
               class="action-btn"
               [style.visibility]="!getRecipeForDay(day) ? 'hidden' : 'visible'"
-              [attr.aria-hidden]="!getRecipeForDay(day)"
-            >
+              [attr.aria-hidden]="!getRecipeForDay(day)">
               <mat-icon>open_in_new</mat-icon>
             </a>
           </div>
@@ -75,8 +102,7 @@
                       (click)="onSuggest(day)"
                       [disabled]="isSuggesting() || isSaving() || isDeleting()"
                       [matTooltip]="'Suggest a recipe'"
-                      [attr.aria-label]="'Suggest recipe for ' + dayLabels[day]"
-              >
+                      [attr.aria-label]="'Suggest recipe for ' + dayLabels[day]">
                 <mat-icon>auto_awesome</mat-icon>
               </button>
             }

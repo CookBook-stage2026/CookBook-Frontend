@@ -10,71 +10,67 @@
   padding: 2rem 2.5rem;
 }
 
-.week-navigator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
+.page-header {
   margin-bottom: 1.5rem;
-  padding: 0.75rem;
-  background: var(--bg-surface);
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
+
+  .page-title {
+    margin: 0 0 0.25rem;
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--text-main);
+  }
+
+  .page-subtitle {
+    margin: 0;
+    color: var(--text-muted);
+  }
 }
 
-.week-range {
-  font-weight: 600;
-  min-width: 180px;
-  text-align: center;
-}
-
-.modal-overlay {
-  position: fixed;
-  inset: 0;
+.context-selector {
+  margin-bottom: 1.5rem;
   display: flex;
+  justify-content: flex-start;
   align-items: center;
-  justify-content: center;
-  background: rgba(15, 23, 42, 0.5);
-  backdrop-filter: blur(4px);
-  z-index: 1000;
-  border: none;
-  padding: 0;
-  margin: 0;
   width: 100%;
-  height: 100%;
-  max-width: none;
-  max-height: none;
 }
 
-.modal-overlay::backdrop {
-  background: rgba(15, 23, 42, 0.5);
-}
+.native-dropdown {
+  padding: 0.75rem 2.5rem 0.75rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 280px;
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 1.25rem;
 
-.modal-wrapper {
-  background: var(--bg-surface);
-  border-radius: var(--radius-lg);
-  width: 95%;
-  max-width: 900px;
-  max-height: 90vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
+  &:focus {
+    outline: none;
+    border-color: var(--element-primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
 
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.close-btn {
-  color: var(--text-muted);
+  option {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    padding: 0.5rem;
+  }
 }
 
 .today-recipe-card {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
   border-radius: var(--radius-lg);
   border: 1px solid var(--border-color);
   background: var(--bg-surface);
@@ -100,6 +96,7 @@
   color: var(--text-on-primary);
   display: grid;
   place-items: center;
+  flex-shrink: 0;
 }
 
 .today-recipe-info {
@@ -154,6 +151,7 @@
   color: var(--text-muted);
   display: grid;
   place-items: center;
+  flex-shrink: 0;
 }
 
 .empty-title {
@@ -164,6 +162,112 @@
 
 .empty-text {
   margin: 0.25rem 0 0;
+  color: var(--text-muted);
+}
+
+.today-recipe-empty {
+  .empty-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .plan-btn {
+    flex-shrink: 0;
+    margin-left: auto;
+  }
+}
+
+.week-sections {
+  display: flex;
+  flex-direction: column;
+}
+
+.week-section-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 2.5rem 0;
+}
+
+.week-navigator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin: 2rem 0 2rem 0;
+  padding: 0.75rem 1rem;
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+
+.week-range {
+  font-weight: 600;
+  min-width: 200px;
+  text-align: center;
+  color: var(--text-main);
+}
+
+.today-btn {
+  font-size: 0.875rem;
+}
+
+.suggest-btn {
+  display: inline-flex;
+  align-items: center;
+}
+
+::ng-deep .suggest-btn .mdc-button__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+::ng-deep .suggest-btn mat-spinner svg {
+  vertical-align: middle;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  border: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+}
+
+.modal-overlay::backdrop {
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.modal-wrapper {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  width: 95%;
+  max-width: 900px;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.close-btn {
   color: var(--text-muted);
 }
 
@@ -182,67 +286,21 @@
   .plan-btn {
     width: 100%;
   }
-}
 
-.today-recipe-empty {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  padding: 1.25rem 1.5rem;
-
-  .empty-info {
-    flex: 1;
-    min-width: 0;
+  .today-recipe-empty .plan-btn {
+    margin-left: 0;
   }
 
-  .plan-btn {
-    flex-shrink: 0;
-    margin-left: auto;
+  .week-navigator {
+    flex-wrap: wrap;
+    justify-content: center;
   }
-}
 
-@media (max-width: 640px) {
-  .today-recipe-empty {
-    flex-direction: column;
-    align-items: flex-start;
-
-    .plan-btn {
-      margin-left: 0;
-      width: 100%;
-
-      button {
-        width: 100%;
-      }
-    }
+  .week-range {
+    min-width: unset;
+    order: -1;
+    width: 100%;
   }
-}
-
-.state-container.loading {
-  display: flex;
-  gap: 0.50rem;
-  padding: 1rem;
-  text-align: center;
-}
-
-.suggest-btn {
-  display: inline-flex;
-  align-items: center;
-}
-
-::ng-deep .suggest-btn .mdc-button__label {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-::ng-deep .suggest-btn mat-spinner svg {
-  vertical-align: middle;
-}
-
-.context-selector {
-  margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: flex-start;
 }
 
 .context-select {
