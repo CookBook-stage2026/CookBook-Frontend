@@ -19,8 +19,8 @@ services:
   firecrawl-mcp:
     image: node:26-alpine
     command: sh -c "npx -y supergateway --port 3001 --outputTransport streamableHttp --stdio 'npx -y firecrawl-mcp'"
-    env_file:
-      - .env
+    environment:
+      - FIRECRAWL_API_KEY=${FIRECRAWL_API_KEY}
     expose:
       - "3001"
     mem_limit: 1024m
