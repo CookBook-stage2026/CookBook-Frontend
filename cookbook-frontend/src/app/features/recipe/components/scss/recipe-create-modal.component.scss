@@ -374,19 +374,6 @@ select.form-control {
   justify-content: center;
 }
 
-.read-only-unit {
-  background-color: var(--disabled);
-  cursor: default;
-  pointer-events: none;
-  user-select: none;
-
-  &:focus, &:hover, &:active {
-    border-color: var(--border-color) !important;
-    box-shadow: none !important;
-    outline: none !important;
-  }
-}
-
 .step-row {
   display: flex;
   align-items: flex-start;

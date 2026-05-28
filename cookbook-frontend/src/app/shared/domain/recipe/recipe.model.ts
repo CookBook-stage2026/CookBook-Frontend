@@ -1,6 +1,7 @@
 export interface NewRecipeIngredientDto {
   ingredientId: string;
   baseQuantity: number;
+  unit: string;
 }
 
 export interface MacroDto {
