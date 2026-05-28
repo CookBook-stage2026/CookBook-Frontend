@@ -104,9 +104,10 @@
   </div>
 </div>
 
-<app-ingredient-create-modal
+<app-ingredient-modal
   [isOpen]="isCreateModalOpen()"
+  [ingredient]="null"
   [initialName]="currentSearchTerm()"
   (closeModal)="isCreateModalOpen.set(false)"
-  (ingredientCreated)="onIngredientCreated($event)"
+  (ingredientSaved)="onIngredientCreated($event)"
 />

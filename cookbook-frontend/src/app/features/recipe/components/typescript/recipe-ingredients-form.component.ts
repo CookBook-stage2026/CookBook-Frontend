@@ -10,15 +10,13 @@ import {
 } from '@angular/material/autocomplete';
 import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CdkScrollable } from '@angular/cdk/scrolling';
-import {
-  IngredientCreateModalComponent
-} from '@features/recipe/components/typescript/ingredient-create-modal.component';
 import { Overlay } from '@angular/cdk/overlay';
+import { IngredientModalComponent } from '@shared/components/ingredient/ingredient-modal.component';
 
 @Component({
   selector: 'app-recipe-ingredients',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ ReactiveFormsModule, MatAutocompleteModule, IngredientCreateModalComponent, CdkScrollable ],
+  imports: [ReactiveFormsModule, MatAutocompleteModule, CdkScrollable, IngredientModalComponent],
   templateUrl: '../html/recipe-ingredients-form.component.html',
   styleUrl: '../scss/recipe-create-modal.component.scss',
   providers: [
@@ -66,8 +64,18 @@ export class RecipeIngredientsFormComponent {
       debounceTime(100),
       switchMap(({ query, rowIndex }) => {
         if (!query.trim()) return of({ results: [] as Ingredient[], rowIndex });
-        return this.ingredientService.searchIngredients(query).pipe(
-          map(results => ({ results, rowIndex }))
+
+        return this.ingredientService.searchIngredients({
+          query: query,
+          alreadySelectedIds: [],
+          page: 0,
+          size: 10,
+          onlyPersonal: false
+        }).pipe(
+          map(response => ({
+            results: response.content,
+            rowIndex
+          }))
         );
       }),
       takeUntilDestroyed()

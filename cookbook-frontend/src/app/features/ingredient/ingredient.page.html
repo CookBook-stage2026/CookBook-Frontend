@@ -1,0 +1,55 @@
+<app-toast/>
+
+<div class="page-container">
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Your ingredients</h1>
+      <p class="page-subtitle">Manage your personal ingredients.</p>
+    </div>
+
+    <div class="header-actions">
+      <button mat-flat-button color="primary" type="button" (click)="openModal()">
+        <mat-icon>add</mat-icon>
+        Add Ingredient
+      </button>
+    </div>
+  </header>
+
+  <div class="filter-toolbar">
+    <div class="search-box">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        #searchInput
+        type="text"
+        placeholder="Filter ingredients by name..."
+        aria-label="Filter ingredients by name"
+        class="search-input"
+        (input)="onSearchChange($event)">
+      @if (searchQuery()) {
+        <button
+          type="button"
+          class="clear-btn"
+          (click)="clearSearch(searchInput)"
+          aria-label="Clear search query">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </div>
+  </div>
+
+  <app-ingredient-list
+    [ingredients]="ingredients()"
+    [pageIndex]="pageIndex()"
+    [totalPages]="totalPages()"
+    [isLoading]="isLoading()"
+    (pageChange)="onPageChange($event)"
+    (edit)="openModal($event)"
+    (delete)="onDeleteRequest($event)"/>
+</div>
+
+<app-ingredient-modal
+  [isOpen]="isModalOpen()"
+  [ingredient]="selectedIngredientForEdit()"
+  [initialName]="searchQuery()"
+  (closeModal)="closeModal()"
+  (ingredientSaved)="onIngredientSaved($event)"/>
