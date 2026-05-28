@@ -32,6 +32,7 @@ import { MatSelect } from '@angular/material/select';
 export class InviteHouseholdComponent {
   readonly householdId = input.required<string>();
   readonly closeModal = output<void>();
+  readonly inviteCreated = output<void>();
 
   private readonly document = inject(DOCUMENT);
   private readonly inviteService = inject(HouseholdInviteService);
@@ -73,6 +74,7 @@ export class InviteHouseholdComponent {
         next: (invite) => {
           this.invite.set(invite);
           this.isCreating.set(false);
+          this.inviteCreated.emit();
         },
         error: () => {
           this.isCreating.set(false);
@@ -118,24 +120,6 @@ export class InviteHouseholdComponent {
     navigator
       .share({ title: 'Household Invite', url: link })
       .catch(() => void 0);
-  }
-
-  revokeInvite(): void {
-    const inv = this.invite();
-    if (!inv || this.isRevoking()) return;
-    this.isRevoking.set(true);
-
-    this.inviteService.revokeInvite(this.householdId(), inv.id).subscribe({
-      next: () => {
-        this.invite.set(null);
-        this.isRevoking.set(false);
-        this.toastService.show('Invite link revoked.', 'success');
-      },
-      error: () => {
-        this.isRevoking.set(false);
-        this.toastService.show('Failed to revoke invite link.', 'error');
-      },
-    });
   }
 
   onClose(): void {

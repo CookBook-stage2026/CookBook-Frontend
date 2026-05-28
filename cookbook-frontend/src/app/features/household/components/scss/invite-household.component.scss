@@ -10,7 +10,7 @@
 }
 
 .modal-container {
-  background-color: var(--bg-main);
+  background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   width: 100%;
@@ -137,38 +137,5 @@
   &--email {
     border-color: var(--element-primary);
     color: var(--element-primary);
-  }
-}
-
-.revoke-section {
-  border-top: 1px solid var(--border-color);
-  padding-top: 20px;
-}
-
-.revoke-btn {
-  background-color: var(--revoke-bg);
-  color: var(--revoke-text);
-  border: 1px solid var(--revoke-border);
-  font-size: 0.875rem;
-  font-weight: 500;
-  border-radius: 8px;
-  padding: 0 16px;
-  min-height: 36px;
-  cursor: pointer;
-
-  &:hover:not([disabled]) {
-    background-color: var(--revoke-hover-bg);
-    color: var(--revoke-hover-text);
-    border-color: var(--revoke-hover-border);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--revoke-focus-ring);
-    outline-offset: 2px;
-  }
-
-  &:disabled {
-    opacity: 0.45;
-    cursor: not-allowed;
   }
 }
