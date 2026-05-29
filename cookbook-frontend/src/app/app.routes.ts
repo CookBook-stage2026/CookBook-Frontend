@@ -27,6 +27,10 @@ export const routes: Routes = [
         loadComponent: () => import('@features/recipe/recipe.page'),
       },
       {
+        path: 'ingredients',
+        loadComponent: () => import('@features/ingredient/ingredient.page'),
+      },
+      {
         path: 'preferences',
         loadComponent: () => import('@features/user/preferences.page'),
       },

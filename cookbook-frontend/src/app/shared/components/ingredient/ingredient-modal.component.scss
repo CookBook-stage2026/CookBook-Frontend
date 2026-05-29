@@ -1,0 +1,144 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.modal-dialog {
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+
+  border: none;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid var(--border-color);
+
+  h2 {
+    margin: 0;
+    color: var(--text-main);
+    font-size: 1.5rem;
+    &[mat-dialog-title] { margin: 0; }
+  }
+}
+
+.modal-subtitle {
+  margin: 0.25rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.modal-body {
+  padding: 2rem !important;
+  max-height: unset !important;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.modal-footer {
+  padding: 1.5rem 2rem !important;
+  border-top: 1px solid var(--border-color);
+  margin: 0 !important;
+  gap: 0.75rem;
+}
+
+.recipe-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.mat-mdc-form-field {
+  --mdc-outlined-text-field-outline-color: var(--border-color);
+  --mdc-outlined-text-field-focus-outline-color: var(--element-primary);
+  --mdc-outlined-text-field-label-text-color: var(--text-muted);
+  --mdc-outlined-text-field-input-text-color: var(--text-main);
+  --mdc-outlined-text-field-container-color: var(--bg-main);
+
+  mat-form-field .mat-mdc-text-field-wrapper {
+    background: var(--bg-main) !important;
+  }
+
+  margin-bottom: 0.5rem;
+}
+
+.categories-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.categories-label {
+  font-weight: 500;
+  font-size: 0.95rem;
+  color: var(--text-main);
+}
+
+.categories-error {
+  font-size: 0.75rem;
+}
+
+.chip-list-invalid .mat-mdc-chip-listbox {
+  border-color: var(--mat-sys-error, #dc3545);
+}
+
+.mat-mdc-chip-option {
+  --mdc-chip-elevated-container-color: var(--bg-surface);
+  --mdc-chip-label-text-color: var(--text-muted);
+  --mdc-chip-outline-color: var(--border-color);
+
+  &.mdc-evolution-chip--selected {
+    --mdc-chip-elevated-selected-container-color: var(--element-primary);
+    --mdc-chip-selected-label-text-color: var(--element-primary-contrast);
+  }
+}
+
+.mat-mdc-progress-spinner {
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+  --mdc-circular-progress-active-indicator-color: currentColor;
+}
+
+.unit-context-hint {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  line-height: 1.4;
+  white-space: normal;
+  margin-left: -1rem;
+
+  .hint-icon {
+    font-size: 1rem;
+    width: 1rem;
+    height: 1rem;
+    flex-shrink: 0;
+    margin-top: 0.5rem;
+    color: var(--element-primary);
+  }
+}
+
+.unit-field {
+  margin-bottom: 2.5rem;
+}
