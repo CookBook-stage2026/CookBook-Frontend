@@ -1,0 +1,152 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  background-color: var(--bg-surface);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+
+  h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+  }
+}
+
+.modal-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow: auto;
+  min-height: 0;
+}
+
+.create-section {
+  display: flex;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.loading-state,
+.empty-state,
+.feedback-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px;
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
+  color: var(--text-muted);
+}
+
+.invites-scroll-container {
+  overflow-y: auto;
+  max-height: 400px;
+  min-height: 0;
+  padding-right: 4px;
+}
+
+.invites-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.invite-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: color-mix(in srgb, var(--bg-main) 97%, var(--element-primary));
+  flex-shrink: 0;
+
+  &--revoked {
+    opacity: 0.6;
+    background-color: var(--bg-main);
+  }
+}
+
+.invite-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.invite-date {
+  font-weight: 500;
+  font-size: 0.875rem;
+  color: var(--text-main);
+}
+
+.invite-meta {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.badge {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+
+  &--active {
+    background-color: color-mix(in srgb, var(--element-primary) 12%, transparent);
+    color: var(--element-primary);
+  }
+
+  &--revoked {
+    background-color: var(--danger-hover);
+    color: var(--danger-text);
+  }
+}
+
+.revoke-btn {
+  border-color: var(--danger-border);
+  color: var(--danger-text);
+  background-color: transparent;
+
+  &:hover:not(:disabled) {
+    background-color: var(--danger-hover);
+  }
+
+  mat-icon {
+    color: var(--danger-text);
+  }
+}
