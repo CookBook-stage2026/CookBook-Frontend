@@ -58,7 +58,7 @@
     (pageChange)="onPageChange($event)"/>
 </div>
 
-<app-recipe-create-modal
+<app-recipe-form-modal
   [isOpen]="isCreateModalOpen()"
   (closeModal)="closeModal()"
-  (recipeCreated)="onRecipeCreated()"/>
+  (recipeSaved)="onRecipeCreated()"/>

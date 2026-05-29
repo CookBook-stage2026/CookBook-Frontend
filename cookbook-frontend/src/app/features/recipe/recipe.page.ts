@@ -1,27 +1,28 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { ToastComponent } from '@shared/components/toast/toast.component';
-import { RecipeService } from '@shared/services/recipe';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { MatButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { rxResource } from '@angular/core/rxjs-interop';
+
+import { RecipeService } from '@shared/services/recipe';
 import { RecipeDto } from '@shared/domain/recipe';
-import { RecipeCreateModalComponent } from '@features/recipe/components/typescript/recipe-create-modal.component';
+import { ToastComponent } from '@shared/components/toast/toast.component';
 import { RecipeListComponent } from '@features/recipe/components/typescript/recipe-list.component';
 import { RecipeFilterComponent } from '@features/recipe/components/typescript/recipe-filter.component';
 import { RecipeImportDialogComponent } from '@features/recipe/components/typescript/recipe-import-dialog.component';
+import { RecipeFormModalComponent } from '@features/recipe/components/typescript/recipe-form-modal.component';
 
 @Component({
   selector: 'app-recipe-list-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RecipeCreateModalComponent,
     ToastComponent,
     RecipeListComponent,
     RecipeFilterComponent,
     MatButton,
     MatIcon,
+    RecipeFormModalComponent,
   ],
   templateUrl: './recipe.page.html',
   styleUrl: './recipe.page.scss',

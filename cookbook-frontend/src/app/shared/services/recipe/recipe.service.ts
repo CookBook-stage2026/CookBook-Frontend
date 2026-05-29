@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { catchError, Observable, tap, throwError } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { CreateRecipeDto, RecipeDto, RecipeSearchRequest, RecipeSummary, UpdateRecipeDto } from '@shared/domain/recipe';
 import { ToastService } from '@core/services';
 import { environment } from '../../../../environment';
@@ -16,13 +16,7 @@ export class RecipeService {
   private readonly apiUrl = `${environment.apiUrl}/recipes`;
 
   createRecipe(recipe: CreateRecipeDto): Observable<RecipeDto> {
-    return this.http.post<RecipeDto>(this.apiUrl, recipe).pipe(
-      tap(() => this.toastService.show("Recipe successfully created!", "success")),
-      catchError(err => {
-        this.toastService.show('Failed to create a recipe.', 'error');
-        return throwError(() => err);
-      })
-    );
+    return this.http.post<RecipeDto>(this.apiUrl, recipe);
   }
 
   searchRecipesByFilter(
@@ -121,5 +115,9 @@ export class RecipeService {
 
   getRecipeForServings(id: string, servings: number): Observable<RecipeDto> {
     return this.http.get<RecipeDto>(`${this.apiUrl}/${id}/servings/${servings}`);
+  }
+
+  calculateMacros(id: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/${id}/macros`, null);
   }
 }

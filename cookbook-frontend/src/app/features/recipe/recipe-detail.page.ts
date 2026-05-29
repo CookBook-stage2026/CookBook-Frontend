@@ -1,3 +1,7 @@
+import { ChangeDetectionStrategy, Component, effect, inject, input, signal, untracked } from '@angular/core';
+import { Location } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { RecipeService } from '@shared/services/recipe';
 import { RecipeDto } from '@shared/domain/recipe';
@@ -6,17 +10,21 @@ import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatChip, MatChipSet } from '@angular/material/chips';
 import { MatIcon } from '@angular/material/icon';
 import { MatDivider } from '@angular/material/list';
+import { MatButton } from '@angular/material/button';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { of } from 'rxjs';
+
+import { RecipeService } from '@shared/services/recipe';
+import { RecipeDto } from '@shared/domain/recipe';
+import { ToastService } from '@core/services';
+
 import { RecipeIngredientsComponent } from '@features/recipe/components/typescript/recipe-ingredients-list.component';
 import { RecipePreparationComponent } from '@features/recipe/components/typescript/recipe-preparation-list';
-import { MatDialog } from '@angular/material/dialog';
-import { MatButton } from '@angular/material/button';
-import { ToastService } from '@core/services';
-import { RecipeEnhanceModalComponent } from '@features/recipe/components/typescript/recipe-enhance-modal.component';
-import { of } from 'rxjs';
 import { RecipeCookingModeComponent } from '@features/recipe/components/typescript/recipe-cooking-mode.component';
-import { Location } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { RecipeMacrosComponent } from '@features/recipe/components/typescript/recipe-macros.component';
+import { RecipeEnhanceModalComponent } from '@features/recipe/components/typescript/recipe-enhance-modal.component';
 import { ToastComponent } from '@shared/components/toast/toast.component';
+import { RecipeFormModalComponent } from '@features/recipe/components/typescript/recipe-form-modal.component';
 import { RecipeEditModalComponent } from '@features/recipe/components/typescript/recipe-edit-modal.component';
 import { RecipeMacrosComponent } from '@features/recipe/components/typescript/recipe-macros.component';
 import {
@@ -27,6 +35,7 @@ import {
   selector: 'app-recipe-detail-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './recipe-detail.page.html',
+  styleUrls: ['./recipe-detail.page.scss'],
   imports: [
     MatProgressSpinner,
     MatChipSet,
@@ -40,7 +49,8 @@ import {
     RecipeCookingModeComponent,
     ToastComponent,
     RecipeMacrosComponent,
-    RecipeServingsAdjusterComponent
+    RecipeServingsAdjusterComponent,
+    RecipeFormModalComponent
   ],
   styleUrls: ['./recipe-detail.page.scss']
 })
@@ -52,9 +62,11 @@ export default class RecipeDetailPage {
   readonly route = inject(ActivatedRoute);
 
   readonly recipeId = input.required<string>();
+
   readonly isCookingMode = signal(false);
   readonly isUpdatingVisibility = signal(false);
-  readonly isSubmittingEdit = signal(false);
+  readonly isGeneratingMacros = signal(false);
+  readonly isFormModalOpen = signal(false);
 
   readonly enhanceRequest = signal<string | undefined>(undefined);
   readonly adjustedServings = signal<number | undefined>(undefined);
@@ -94,50 +106,6 @@ export default class RecipeDetailPage {
     this.recipe.error() || (this.isPreviewMode() && this.adjustedRecipe.error())
   );
 
-  openEditModal(recipe: RecipeDto): void {
-    const dialogRef = this.dialog.open(RecipeEditModalComponent, {
-      data: { recipe, mode: 'edit' as const },
-      width: '800px',
-      maxWidth: '90vw',
-      autoFocus: 'dialog'
-    });
-
-    dialogRef.afterClosed().subscribe((didUpdate: boolean) => {
-      if (didUpdate) {
-        this.recipe.reload();
-      }
-    });
-  }
-
-  openCreateCopy(recipe: RecipeDto): void {
-    this.dialog.open(RecipeEditModalComponent, {
-      data: { recipe, mode: 'createFromHousehold' as const },
-      width: '800px',
-      maxWidth: '90vw',
-      autoFocus: 'dialog'
-    });
-  }
-
-  toggleVisibility(currentPublicStatus: boolean): void {
-    const id = this.recipeId();
-    if (!id) return;
-
-    const nextStatus = !currentPublicStatus;
-    this.isUpdatingVisibility.set(true);
-
-    this.recipeService.changeVisibility(id, nextStatus).subscribe({
-      next: () => {
-        this.isUpdatingVisibility.set(false);
-        this.toastService.show(`Recipe is now ${nextStatus ? 'Public' : 'Private'}.`, 'success');
-        this.recipe.reload();
-      },
-      error: () => {
-        this.isUpdatingVisibility.set(false);
-        this.toastService.show('Failed to alter recipe visibility configuration.', 'error');
-      }
-    });
-  }
-
   constructor() {
     const mode = this.route.snapshot.queryParamMap.get('mode');
     if (mode === 'cooking') {
@@ -174,6 +142,34 @@ export default class RecipeDetailPage {
         });
 
         untracked(() => this.enhanceRequest.set(undefined));
+      }
+    });
+  }
+
+  openFormModal(): void {
+    this.isFormModalOpen.set(true);
+  }
+
+  onRecipeSaved(): void {
+    this.recipe.reload();
+  }
+
+  toggleVisibility(currentPublicStatus: boolean): void {
+    const id = this.recipeId();
+    if (!id) return;
+
+    const nextStatus = !currentPublicStatus;
+    this.isUpdatingVisibility.set(true);
+
+    this.recipeService.changeVisibility(id, nextStatus).subscribe({
+      next: () => {
+        this.isUpdatingVisibility.set(false);
+        this.toastService.show(`Recipe is now ${nextStatus ? 'Public' : 'Private'}.`, 'success');
+        this.recipe.reload();
+      },
+      error: () => {
+        this.isUpdatingVisibility.set(false);
+        this.toastService.show('Failed to alter recipe visibility configuration.', 'error');
       }
     });
   }
@@ -220,5 +216,24 @@ export default class RecipeDetailPage {
     if (id) {
       this.enhanceRequest.set(id);
     }
+  }
+
+  generateMacros(): void {
+    const id = this.recipeId();
+    if (!id || this.isGeneratingMacros()) return;
+
+    this.isGeneratingMacros.set(true);
+
+    this.recipeService.calculateMacros(id).subscribe({
+      next: () => {
+        this.isGeneratingMacros.set(false);
+        this.toastService.show('Macronutrients calculated successfully.', 'success');
+        this.recipe.reload();
+      },
+      error: () => {
+        this.isGeneratingMacros.set(false);
+        this.toastService.show('Failed to calculate nutritional macros. Please verify ingredient mappings.', 'error');
+      }
+    });
   }
 }
