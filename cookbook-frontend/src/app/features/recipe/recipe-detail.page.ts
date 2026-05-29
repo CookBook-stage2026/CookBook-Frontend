@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, signal, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { RecipeService } from '@shared/services/recipe';
 import { RecipeDto } from '@shared/domain/recipe';
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -19,6 +19,9 @@ import { ActivatedRoute } from '@angular/router';
 import { ToastComponent } from '@shared/components/toast/toast.component';
 import { RecipeEditModalComponent } from '@features/recipe/components/typescript/recipe-edit-modal.component';
 import { RecipeMacrosComponent } from '@features/recipe/components/typescript/recipe-macros.component';
+import {
+  RecipeServingsAdjusterComponent
+} from '@features/recipe/components/typescript/recipe-servings-adjuster.component';
 
 @Component({
   selector: 'app-recipe-detail-page',
@@ -36,7 +39,8 @@ import { RecipeMacrosComponent } from '@features/recipe/components/typescript/re
     MatButton,
     RecipeCookingModeComponent,
     ToastComponent,
-    RecipeMacrosComponent
+    RecipeMacrosComponent,
+    RecipeServingsAdjusterComponent
   ],
   styleUrls: ['./recipe-detail.page.scss']
 })
@@ -53,11 +57,42 @@ export default class RecipeDetailPage {
   readonly isSubmittingEdit = signal(false);
 
   readonly enhanceRequest = signal<string | undefined>(undefined);
+  readonly adjustedServings = signal<number | undefined>(undefined);
+  readonly isPreviewMode = signal(false);
 
   readonly recipe = rxResource<RecipeDto, string | undefined>({
     params: () => this.recipeId(),
     stream: ({ params }) => this.recipeService.getRecipeById(params)
   });
+
+  readonly adjustedRecipe = rxResource<RecipeDto | undefined, { id: string; servings: number } | undefined>({
+    params: () => {
+      const id = this.recipeId();
+      const servings = this.adjustedServings();
+      if (!id || !servings) return undefined;
+      return { id, servings };
+    },
+    stream: ({ params }) => {
+      if (!params) return of(undefined);
+      return this.recipeService.getRecipeForServings(params.id, params.servings);
+    }
+  });
+
+  readonly displayRecipe = computed(() => {
+    const adjusted = this.adjustedRecipe.value();
+    if (adjusted && this.isPreviewMode()) {
+      return adjusted;
+    }
+    return this.recipe.value();
+  });
+
+  readonly isLoading = computed(() =>
+    this.recipe.isLoading() || (this.isPreviewMode() && this.adjustedRecipe.isLoading())
+  );
+
+  readonly hasError = computed(() =>
+    this.recipe.error() || (this.isPreviewMode() && this.adjustedRecipe.error())
+  );
 
   openEditModal(recipe: RecipeDto): void {
     const dialogRef = this.dialog.open(RecipeEditModalComponent, {
@@ -147,6 +182,10 @@ export default class RecipeDetailPage {
     this.isCookingMode.set(true);
   }
 
+  enterCookingModeWithAdjusted(recipe: RecipeDto): void {
+    this.isCookingMode.set(true);
+  }
+
   exitCookingMode(): void {
     this.isCookingMode.set(false);
     if (this.route.snapshot.queryParamMap.has('mode')) {
@@ -154,6 +193,18 @@ export default class RecipeDetailPage {
       url.searchParams.delete('mode');
       globalThis.history.replaceState({}, '', url);
     }
+  }
+
+  onServingsChanged(servings: number): void {
+    const currentRecipe = this.recipe.value();
+    if (!currentRecipe || servings === currentRecipe.servings) {
+      this.isPreviewMode.set(false);
+      this.adjustedServings.set(undefined);
+      return;
+    }
+
+    this.adjustedServings.set(servings);
+    this.isPreviewMode.set(true);
   }
 
   readonly enhancedRecipe = rxResource<RecipeDto | undefined, string | undefined>({

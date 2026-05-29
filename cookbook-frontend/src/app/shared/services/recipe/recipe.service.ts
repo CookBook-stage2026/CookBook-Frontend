@@ -118,4 +118,8 @@ export class RecipeService {
   getMacroTypes(): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}/macro-types`);
   }
+
+  getRecipeForServings(id: string, servings: number): Observable<RecipeDto> {
+    return this.http.get<RecipeDto>(`${this.apiUrl}/${id}/servings/${servings}`);
+  }
 }
