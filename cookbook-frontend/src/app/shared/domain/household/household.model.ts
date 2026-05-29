@@ -14,7 +14,6 @@ export interface Household {
 }
 
 export interface EditHouseholdRequest {
-  householdId: string;
   name: string;
   description: string;
 }
