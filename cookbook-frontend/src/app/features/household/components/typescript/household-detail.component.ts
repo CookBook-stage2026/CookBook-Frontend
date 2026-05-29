@@ -88,10 +88,9 @@ export class HouseholdDetailComponent implements OnInit {
 
     this.householdService
       .updateHousehold({
-        householdId: this.householdId(),
         name: value.name,
         description: value.description,
-      })
+      }, this.householdId())
       .subscribe({
         next: () => {
           this.isSubmitting.set(false);

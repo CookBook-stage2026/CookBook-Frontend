@@ -4,20 +4,23 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { ToastService } from '@core/services';
 import { HouseholdInviteService } from '@shared/services/household-invite';
 import { InviteHouseholdComponent } from '@features/household/components/typescript/invite-household.component';
+import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-component';
 
 @Component({
   selector: 'app-manage-invites',
   templateUrl: '../html/manage-invites.component.html',
   styleUrls: [ '../scss/manage-invites.component.scss' ],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ MatButtonModule, MatIconModule, MatProgressSpinnerModule, DatePipe, InviteHouseholdComponent ],
+  imports: [ MatButtonModule, MatIconModule, MatProgressSpinnerModule, MatDialogModule, DatePipe, InviteHouseholdComponent ],
 })
 export class ManageInvitesComponent {
   private readonly inviteService = inject(HouseholdInviteService);
   private readonly toastService = inject(ToastService);
+  private readonly dialog = inject(MatDialog);
 
   readonly householdId = input.required<string>();
 
@@ -53,17 +56,25 @@ export class ManageInvitesComponent {
   onRevokeInvite(inviteId: string): void {
     if (this.revokingInviteId()) return;
 
-    this.revokingInviteId.set(inviteId);
-    this.inviteService.revokeInvite(this.householdId(), inviteId).subscribe({
-      next: () => {
-        this.revokingInviteId.set(null);
-        this.invitesResource.reload();
-        this.toastService.show('Invite revoked.', 'success');
-      },
-      error: () => {
-        this.revokingInviteId.set(null);
-        this.toastService.show('Failed to revoke invite.', 'error');
-      },
+    const ref = this.dialog.open(ConfirmDeleteComponent, {
+      data: { message: 'Revoke this invite?' },
+    });
+
+    ref.afterClosed().subscribe(confirmed => {
+      if (!confirmed) return;
+
+      this.revokingInviteId.set(inviteId);
+      this.inviteService.revokeInvite(this.householdId(), inviteId).subscribe({
+        next: () => {
+          this.revokingInviteId.set(null);
+          this.invitesResource.reload();
+          this.toastService.show('Invite revoked.', 'success');
+        },
+        error: () => {
+          this.revokingInviteId.set(null);
+          this.toastService.show('Failed to revoke invite.', 'error');
+        },
+      });
     });
   }
 

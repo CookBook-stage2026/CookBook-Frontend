@@ -28,7 +28,7 @@ export class HouseholdService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  updateHousehold(request: EditHouseholdRequest): Observable<void> {
-    return this.http.put<void>(this.apiUrl, request);
+  updateHousehold(request: EditHouseholdRequest, householdId: string): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${householdId}`, request);
   }
 }

@@ -40,7 +40,6 @@ export class InviteHouseholdComponent {
   private readonly fb = inject(FormBuilder).nonNullable;
 
   readonly isCreating = signal(false);
-  readonly isRevoking = signal(false);
   readonly isCopied = signal(false);
   readonly invite = signal<HouseholdInvite | null>(null);
 
