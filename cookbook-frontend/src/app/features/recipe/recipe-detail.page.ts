@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, effect, inject, input, signal, untracked } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { Location } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
-import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { RecipeService } from '@shared/services/recipe';
 import { RecipeDto } from '@shared/domain/recipe';
 import { rxResource } from '@angular/core/rxjs-interop';
@@ -11,11 +10,7 @@ import { MatChip, MatChipSet } from '@angular/material/chips';
 import { MatIcon } from '@angular/material/icon';
 import { MatDivider } from '@angular/material/list';
 import { MatButton } from '@angular/material/button';
-import { rxResource } from '@angular/core/rxjs-interop';
 import { of } from 'rxjs';
-
-import { RecipeService } from '@shared/services/recipe';
-import { RecipeDto } from '@shared/domain/recipe';
 import { ToastService } from '@core/services';
 
 import { RecipeIngredientsComponent } from '@features/recipe/components/typescript/recipe-ingredients-list.component';
@@ -25,8 +20,6 @@ import { RecipeMacrosComponent } from '@features/recipe/components/typescript/re
 import { RecipeEnhanceModalComponent } from '@features/recipe/components/typescript/recipe-enhance-modal.component';
 import { ToastComponent } from '@shared/components/toast/toast.component';
 import { RecipeFormModalComponent } from '@features/recipe/components/typescript/recipe-form-modal.component';
-import { RecipeEditModalComponent } from '@features/recipe/components/typescript/recipe-edit-modal.component';
-import { RecipeMacrosComponent } from '@features/recipe/components/typescript/recipe-macros.component';
 import {
   RecipeServingsAdjusterComponent
 } from '@features/recipe/components/typescript/recipe-servings-adjuster.component';
@@ -35,7 +28,7 @@ import {
   selector: 'app-recipe-detail-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './recipe-detail.page.html',
-  styleUrls: ['./recipe-detail.page.scss'],
+  styleUrl: './recipe-detail.page.scss',
   imports: [
     MatProgressSpinner,
     MatChipSet,
@@ -51,8 +44,7 @@ import {
     RecipeMacrosComponent,
     RecipeServingsAdjusterComponent,
     RecipeFormModalComponent
-  ],
-  styleUrls: ['./recipe-detail.page.scss']
+  ]
 })
 export default class RecipeDetailPage {
   readonly recipeService = inject(RecipeService);
@@ -175,10 +167,6 @@ export default class RecipeDetailPage {
   }
 
   enterCookingMode(): void {
-    this.isCookingMode.set(true);
-  }
-
-  enterCookingModeWithAdjusted(recipe: RecipeDto): void {
     this.isCookingMode.set(true);
   }
 
