@@ -68,14 +68,14 @@
 
 .visibility-toggle-btn {
   &.is-public {
-    background-color: var(--success-hover) !important;
+    background-color: var(--success-bg) !important;
     color: var(--success-text) !important;
-    border: 1px solid var(--success-border);
+    border: 1px solid var(--success-border) !important;
   }
   &.is-private {
-    background-color: var(--hover-color) !important;
-    color: var(--text-muted) !important;
-    border: 1px solid var(--border-color);
+    background-color: var(--revoke-bg) !important;
+    color: var(--revoke-text) !important;
+    border: 1px solid var(--danger-border) !important;
   }
 }
 
