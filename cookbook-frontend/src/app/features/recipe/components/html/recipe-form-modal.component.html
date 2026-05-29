@@ -1,0 +1,231 @@
+@if (isOpen()) {
+  <div class="modal-backdrop" (click)="!isActionPending() && closeModal.emit()" (keydown.esc)="!isActionPending() && closeModal.emit()">
+    <dialog
+      open
+      class="modal-dialog"
+      (click)="$event.stopPropagation()"
+      (keydown.esc)="$event.stopPropagation()"
+      aria-labelledby="modal-title"
+      aria-describedby="modal-description">
+
+      <header class="modal-header">
+        <div>
+          <h2 id="modal-title">
+            @if (isEditMode()) {
+              Edit Recipe
+            } @else {
+              Create New Recipe
+            }
+          </h2>
+          <p id="modal-description">
+            @if (isEditMode()) {
+              Modify details below to update your recipe or duplicate it.
+            } @else {
+              Fill in the details below to add a new recipe.
+            }
+          </p>
+        </div>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="closeModal.emit()"
+          [disabled]="isActionPending()"
+          aria-label="Close modal">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+          </svg>
+        </button>
+      </header>
+
+      <div class="modal-body" cdkScrollable>
+        <form [formGroup]="recipeForm" class="recipe-form">
+          <div class="form-group">
+            <label for="name">Recipe Name *</label>
+            <div class="input-wrapper">
+              <input
+                type="text"
+                id="name"
+                formControlName="name"
+                placeholder="e.g., Homemade Pizza"
+                class="form-control"
+                [class.is-invalid]="recipeForm.controls.name.invalid && recipeForm.controls.name.touched"
+                aria-required="true">
+              @if (recipeForm.controls.name.invalid && recipeForm.controls.name.touched) {
+                <div class="tooltip-error" role="alert">
+                  <span>Recipe name is required</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="description">Short Description *</label>
+            <div class="input-wrapper">
+              <textarea
+                id="description"
+                formControlName="description"
+                rows="3"
+                placeholder="Describe the dish briefly..."
+                class="form-control"
+                [class.is-invalid]="recipeForm.controls.description.invalid && recipeForm.controls.description.touched"
+                aria-required="true"></textarea>
+              @if (recipeForm.controls.description.invalid && recipeForm.controls.description.touched) {
+                <div class="tooltip-error" role="alert">
+                  <span>Description is required</span>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="durationInMinutes">Total Duration (minutes) *</label>
+              <div class="input-wrapper">
+                <input
+                  type="number"
+                  id="durationInMinutes"
+                  formControlName="durationInMinutes"
+                  placeholder="15"
+                  class="form-control"
+                  min="1"
+                  step="1"
+                  (input)="onDurationInput($event)"
+                  [class.is-invalid]="recipeForm.controls.durationInMinutes.invalid && recipeForm.controls.durationInMinutes.touched"
+                  aria-required="true">
+                @if (recipeForm.controls.durationInMinutes.invalid && recipeForm.controls.durationInMinutes.touched) {
+                  <div class="tooltip-error" role="alert">
+                    <span>Duration must be at least 1 minute</span>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="servings">Servings *</label>
+              <div class="input-wrapper">
+                <input
+                  type="number"
+                  id="servings"
+                  formControlName="servings"
+                  placeholder="4"
+                  class="form-control"
+                  min="1"
+                  step="1"
+                  (input)="onServingsInput($event)"
+                  [class.is-invalid]="recipeForm.controls.servings.invalid && recipeForm.controls.servings.touched"
+                  aria-required="true">
+                @if (recipeForm.controls.servings.invalid && recipeForm.controls.servings.touched) {
+                  <div class="tooltip-error" role="alert">
+                    <span>Servings must be at least 1</span>
+                  </div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <mat-checkbox formControlName="isPublic" class="custom-checkbox">
+              <div class="checkbox-content">
+                <span class="checkbox-title">Public recipe</span>
+                <p class="checkbox-description">
+                  Other users will be able to view this recipe.
+                </p>
+              </div>
+            </mat-checkbox>
+          </div>
+
+          <hr class="divider" aria-hidden="true">
+
+          <app-recipe-ingredients
+            [ingredients]="ingredients"
+            [isSubmitting]="isActionPending()"
+            (addIngredient)="addIngredient()"
+            (removeIngredient)="removeIngredient($event)"
+          />
+
+          <hr class="divider" aria-hidden="true">
+
+          <app-recipe-steps
+            [steps]="steps"
+            [isSubmitting]="isActionPending()"
+            (addStep)="addStep()"
+            (removeStep)="removeStep($event)"
+          />
+        </form>
+      </div>
+
+      <footer class="modal-footer">
+        @if (isEditMode()) {
+          <button
+            type="button"
+            class="btn-icon danger"
+            (click)="onDeleteRecipe()"
+            [disabled]="isActionPending()"
+            aria-label="Delete recipe">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M3 6h18"/>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+            </svg>
+          </button>
+        }
+
+        <div class="flex-grow" aria-hidden="true"></div>
+
+        <div class="footer-macro-checkbox">
+          <mat-checkbox
+            [checked]="calculateMacrosOption()"
+            (change)="calculateMacrosOption.set($event.checked)"
+            [disabled]="isActionPending()">
+            Calculate macros
+          </mat-checkbox>
+        </div>
+
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="closeModal.emit()"
+          [disabled]="isActionPending()">
+          Cancel
+        </button>
+
+        @if (isEditMode()) {
+          <button
+            type="button"
+            class="btn-secondary"
+            (click)="onSaveAsNew()"
+            [disabled]="recipeForm.invalid || ingredients.length === 0 || isActionPending()">
+            @if (isSavingAsNew()) {
+              <span class="inline-spinner" aria-hidden="true">
+                <mat-spinner diameter="18"></mat-spinner>
+              </span>
+              Saving Copy...
+            } @else {
+              Save as New
+            }
+          </button>
+        }
+
+        <button
+          type="button"
+          class="btn-primary"
+          (click)="onSubmit()"
+          [disabled]="recipeForm.invalid || ingredients.length === 0 || isActionPending()">
+          @if (isSubmitting()) {
+            <span class="inline-spinner" aria-hidden="true">
+              <mat-spinner diameter="18"></mat-spinner>
+            </span>
+            {{ isEditMode() ? 'Updating...' : 'Creating...' }}
+          } @else {
+            {{ isEditMode() ? 'Save Changes' : 'Create Recipe' }}
+          }
+        </button>
+      </footer>
+    </dialog>
+  </div>
+
+  @if ((isSubmitting() || isSavingAsNew()) && calculateMacrosOption()) {
+    <app-calculating-popup/>
+  }
+}

@@ -46,7 +46,7 @@ body {
   display: flex;
   flex-direction: column;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  animation: slideUp 0.3s ease-out;
+  border: none;
 
   &--sm {
     max-width: 520px;
@@ -145,8 +145,13 @@ body {
   border: 1px solid var(--border-color);
   cursor: pointer;
 
-  &:hover {
-    background-color: var(--bg-main);
+  &:hover:not(:disabled) {
+    opacity: 0.9;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
 
@@ -449,19 +454,29 @@ select.form-control {
   margin-top: 0.25rem;
 }
 
-.spinner {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: 50%;
-  border-top-color: white;
-  animation: spin 0.6s linear infinite;
-  margin-right: 8px;
-}
-
 @keyframes spin {
   to {
     transform: rotate(360deg);
+  }
+}
+
+.footer-macro-checkbox {
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+
+  .inline-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    user-select: none;
+    margin: 0;
+  }
+
+  .text-sm {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-main);
   }
 }

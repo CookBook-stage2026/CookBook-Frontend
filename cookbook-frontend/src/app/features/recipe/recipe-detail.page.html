@@ -66,8 +66,9 @@
             <button
               mat-flat-button
               color="accent"
-              (click)="openEditModal(r)"
-              [disabled]="isSubmittingEdit() || isUpdatingVisibility()"
+              (click)="openFormModal()"
+              [disabled]="isUpdatingVisibility()"
+              aria-label="Edit recipe details"
             >
               <mat-icon aria-hidden="true">edit</mat-icon>
               <span>Edit Recipe</span>
@@ -91,7 +92,11 @@
           }
 
           @if (!r.isOwner) {
-            <button mat-flat-button color="accent" (click)="openCreateCopy(r)">
+            <button
+              mat-flat-button
+              color="accent"
+              (click)="openFormModal()"
+              aria-label="Create your own recipe from this household recipe">
               <mat-icon aria-hidden="true">content_copy</mat-icon>
               <span>Create Copy</span>
             </button>
@@ -124,11 +129,43 @@
         </div>
 
         @if (r.totalMacros && r.totalMacros.length > 0) {
-          <aside class="macros-sidebar">
+          <aside class="macros-sidebar" aria-label="Nutritional Information">
             <app-recipe-macros [macros]="r.totalMacros"/>
+          </aside>
+        } @else {
+          <aside class="macros-sidebar missing-macros-box" aria-labelledby="missing-macros-heading">
+            <h3 id="missing-macros-heading">Nutritional Information</h3>
+
+            @if (r.isOwner) {
+              <p class="macros-placeholder-text">No nutritional details added yet. Let’s calculate the calories and macros based on your ingredient list.</p>
+              <button
+                mat-flat-button
+                color="primary"
+                class="btn-generate-macros"
+                (click)="generateMacros()"
+                [disabled]="isGeneratingMacros()">
+                @if (isGeneratingMacros()) {
+                  <span class="inline-spinner" aria-hidden="true">
+                    <mat-spinner diameter="18"></mat-spinner>
+                  </span>
+                  <span>Calculating...</span>
+                } @else {
+                  <span>Generate Macros</span>
+                }
+              </button>
+            } @else {
+              <p class="macros-placeholder-text">Nutritional insights are not yet available for this recipe. Save a copy to your profile to calculate the macros.</p>
+            }
           </aside>
         }
       </div>
+
+      <app-recipe-form-modal
+        [isOpen]="isFormModalOpen()"
+        [recipe]="r"
+        (closeModal)="isFormModalOpen.set(false)"
+        (recipeSaved)="onRecipeSaved()"
+      />
     }
   }
 </div>
