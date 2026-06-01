@@ -18,7 +18,7 @@ import { IngredientModalComponent } from '@shared/components/ingredient/ingredie
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule, MatAutocompleteModule, CdkScrollable, IngredientModalComponent],
   templateUrl: '../html/recipe-ingredients-form.component.html',
-  styleUrl: '../scss/recipe-create-modal.component.scss',
+  styleUrl: '../scss/recipe-form-modal.component.scss',
   providers: [
     {
       provide: MAT_AUTOCOMPLETE_SCROLL_STRATEGY,
