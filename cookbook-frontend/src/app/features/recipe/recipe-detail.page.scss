@@ -19,6 +19,12 @@
   animation: fadeIn 0.15s ease-out;
 }
 
+.page-loader {
+  display: flex;
+  justify-content: center;
+  padding: 4rem 0;
+}
+
 .loading-modal-card {
   background-color: var(--bg-surface);
   border: 1px solid var(--border-color);
