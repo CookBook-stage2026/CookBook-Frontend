@@ -45,7 +45,7 @@ import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-compon
     MatProgressSpinner
   ],
   templateUrl: '../html/recipe-form-modal.component.html',
-  styleUrl: '../scss/recipe-create-modal.component.scss',
+  styleUrl: '../scss/recipe-form-modal.component.scss',
   host: {
     '[attr.aria-hidden]': '!isOpen()'
   }

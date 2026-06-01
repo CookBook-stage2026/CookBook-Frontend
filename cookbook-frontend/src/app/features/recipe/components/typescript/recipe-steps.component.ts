@@ -1,12 +1,12 @@
-import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
-import { ReactiveFormsModule, FormArray, FormControl } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
+import { FormArray, FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-recipe-steps',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ReactiveFormsModule],
   templateUrl: '../html/recipe-steps.component.html',
-  styleUrl: '../scss/recipe-create-modal.component.scss'
+  styleUrl: '../scss/recipe-form-modal.component.scss'
 })
 export class RecipeStepsComponent {
   readonly steps = input.required<FormArray<FormControl>>();
