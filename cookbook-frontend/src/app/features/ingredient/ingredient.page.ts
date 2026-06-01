@@ -100,7 +100,7 @@ export default class IngredientPage {
   }
 
   onDeleteRequest(ingredient: Ingredient): void {
-    this.recipeService.searchRecipesByFilter([ingredient.id], false, false, 0, 3).subscribe({
+    this.recipeService.searchRecipesByFilter([ ingredient.id ], false, false, 0, 3, "", "").subscribe({
       next: (response) => {
         let message = `Are you sure you want to delete "${ingredient.name}"? This action cannot be undone.`;
 

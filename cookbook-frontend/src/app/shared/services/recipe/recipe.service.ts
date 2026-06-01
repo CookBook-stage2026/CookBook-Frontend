@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
-import { CreateRecipeDto, RecipeDto, RecipeSearchRequest, RecipeSummary, UpdateRecipeDto } from '@shared/domain/recipe';
+import { CreateRecipeDto, RecipeDto, RecipeSummary, UpdateRecipeDto } from '@shared/domain/recipe';
 import { ToastService } from '@core/services';
 import { environment } from '../../../../environment';
 import { PaginatedResponse } from '@shared/domain/paginated-response';
@@ -20,21 +20,23 @@ export class RecipeService {
   }
 
   searchRecipesByFilter(
-    ingredientIds: string[] = [],
-    shouldApplyPreferences: boolean = true,
-    includeAccessibleRecipes: boolean = true,
-    page: number = 0,
-    size: number = 20
+    ingredientIds: string[],
+    shouldApplyPreferences: boolean,
+    includeAccessibleRecipes: boolean,
+    page: number,
+    size: number,
+    sortBy: string,
+    sortDirection: string
   ): Observable<PaginatedResponse<RecipeSummary>> {
-    const body: RecipeSearchRequest = {
+    return this.http.post<PaginatedResponse<RecipeSummary>>(`${this.apiUrl}/filter`, {
+      page,
+      size,
       ingredientIds,
       shouldApplyPreferences,
       includeAccessibleRecipes,
-      page,
-      size,
-    };
-
-    return this.http.post<PaginatedResponse<RecipeSummary>>(`${this.apiUrl}/filter`, body);
+      sortBy,
+      sortDirection
+    });
   }
 
   getRecipeById(id: string): Observable<RecipeDto> {

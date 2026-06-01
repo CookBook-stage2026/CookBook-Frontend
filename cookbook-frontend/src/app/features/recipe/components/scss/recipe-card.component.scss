@@ -1,8 +1,22 @@
+recipe-card,
 .recipe-card {
   display: flex;
   flex-direction: column;
   height: 240px;
   background-color: var(--bg-surface);
+
+  border: 1px solid var(--border-color);
+  border-top: 4px solid transparent;
+  border-radius: var(--radius-md);
+  transition: border 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+:host(.is-own-recipe) {
+  mat-card.recipe-card,
+  .recipe-card {
+    border-color: var(--border-color);
+    border-top-color: var(--element-primary);
+  }
 }
 
 .clickable-card {
@@ -10,7 +24,7 @@
   transition: box-shadow 0.2s ease-in-out;
 
   &:hover {
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   }
 }
 

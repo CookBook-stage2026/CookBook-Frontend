@@ -1,13 +1,16 @@
-import {ChangeDetectionStrategy, Component, computed, input, output} from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import { RecipeSummary } from '@shared/domain/recipe';
 import { RecipeCardComponent } from './recipe-card.component';
 import { MatButtonModule } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatOption } from '@angular/material/core';
+import { MatFormField, MatSelect } from '@angular/material/select';
 
 @Component({
   selector: 'app-recipe-list',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [RecipeCardComponent, MatButtonModule],
+  imports: [ RecipeCardComponent, MatButtonModule, MatIcon, MatOption, MatSelect, MatFormField ],
   templateUrl: '../html/recipe-list.component.html',
   styleUrl: '../scss/recipe-list.component.scss'
 })
@@ -22,6 +25,12 @@ export class RecipeListComponent {
 
   isPrevDisabled = computed(() => this.pageIndex() === 0 || this.isLoading());
 
+  sortBy = input.required<string>();
+  sortDirection = input.required<string>();
+
+  sortFieldChange = output<string>();
+  sortDirectionChange = output<void>();
+
   isNextDisabled = computed(() => {
     const lastPageIndex = Math.max(0, this.totalPages() - 1);
     return this.pageIndex() >= lastPageIndex || this.totalPages() === 0 || this.isLoading();
@@ -29,6 +38,14 @@ export class RecipeListComponent {
 
   displayPage = computed(() => this.pageIndex() + 1);
   displayTotalPages = computed(() => this.totalPages() || 1);
+
+  onSortFieldChange(val: string): void {
+    this.sortFieldChange.emit(val);
+  }
+
+  onToggleDirection(): void {
+    this.sortDirectionChange.emit();
+  }
 
   onNextPage(): void {
     if (!this.isNextDisabled()) {

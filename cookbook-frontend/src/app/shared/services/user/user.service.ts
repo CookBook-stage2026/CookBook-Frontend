@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 import { environment } from '../../../../environment';
 import { UpdateUserPreferencesRequest, User, UserPreferencesDto } from '@shared/domain/user';
 
@@ -8,6 +8,10 @@ import { UpdateUserPreferencesRequest, User, UserPreferencesDto } from '@shared/
 export class UserService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/users`;
+
+  private readonly currentUser$ = this.http.get<User>(`${this.apiUrl}/me`).pipe(
+    shareReplay(1)
+  );
 
   getPreferences(): Observable<UserPreferencesDto> {
     return this.http.get<UserPreferencesDto>(`${this.apiUrl}/preferences`);
@@ -18,6 +22,6 @@ export class UserService {
   }
 
   getCurrentUser(): Observable<User> {
-    return this.http.get<User>(`${this.apiUrl}/me`);
+    return this.currentUser$;
   }
 }
