@@ -183,8 +183,8 @@
         </div>
 
         <button
+          mat-stroked-button
           type="button"
-          class="btn-secondary"
           (click)="closeModal.emit()"
           [disabled]="isActionPending()">
           Cancel
@@ -192,8 +192,8 @@
 
         @if (isEditMode()) {
           <button
+            mat-stroked-button
             type="button"
-            class="btn-secondary"
             (click)="onSaveAsNew()"
             [disabled]="recipeForm.invalid || ingredients.length === 0 || isActionPending()">
             @if (isSavingAsNew()) {
@@ -208,8 +208,8 @@
         }
 
         <button
+          mat-flat-button
           type="button"
-          class="btn-primary"
           (click)="onSubmit()"
           [disabled]="recipeForm.invalid || ingredients.length === 0 || isActionPending()">
           @if (isSubmitting()) {

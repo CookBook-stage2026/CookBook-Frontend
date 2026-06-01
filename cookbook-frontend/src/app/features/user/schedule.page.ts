@@ -15,6 +15,7 @@ import { ToastService } from '@core/services';
 import { HouseholdService } from '@shared/services/household';
 import { MatFormField } from '@angular/material/input';
 import { MatOption, MatSelect } from '@angular/material/select';
+import { MatDivider } from '@angular/material/list';
 
 @Component({
   selector: 'app-schedule-page',
@@ -30,7 +31,8 @@ import { MatOption, MatSelect } from '@angular/material/select';
     ToastComponent,
     MatFormField,
     MatSelect,
-    MatOption
+    MatOption,
+    MatDivider
   ]
 })
 export default class SchedulePage {

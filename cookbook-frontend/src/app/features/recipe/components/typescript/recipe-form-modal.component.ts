@@ -31,6 +31,7 @@ import { RecipeIngredientsFormComponent } from './recipe-ingredients-form.compon
 import { RecipeStepsComponent } from './recipe-steps.component';
 import { CalculatingPopupComponent } from '@features/recipe/components/typescript/calculating-popup.component';
 import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-component';
+import { MatButton } from '@angular/material/button';
 
 @Component({
   selector: 'app-recipe-form-modal',
@@ -42,7 +43,8 @@ import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-compon
     CdkScrollable,
     CalculatingPopupComponent,
     MatCheckbox,
-    MatProgressSpinner
+    MatProgressSpinner,
+    MatButton
   ],
   templateUrl: '../html/recipe-form-modal.component.html',
   styleUrl: '../scss/recipe-form-modal.component.scss',
