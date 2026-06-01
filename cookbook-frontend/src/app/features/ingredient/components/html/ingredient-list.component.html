@@ -1,0 +1,68 @@
+<div class="list-wrapper">
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="skeleton-row"></div>
+      <div class="skeleton-row"></div>
+      <div class="skeleton-row"></div>
+    </div>
+  } @else if (ingredients().length === 0) {
+    <div class="empty-state">
+      <mat-icon>inventory_2</mat-icon>
+      <p>No ingredients found that match your selection.</p>
+    </div>
+  } @else {
+    <div class="table-container">
+      <table class="custom-table">
+        <thead>
+        <tr>
+          <th>Name</th>
+          <th>Default Unit</th>
+          <th>Categories</th>
+          <th class="actions-column">Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+          @for (item of ingredients(); track item.id) {
+            <tr>
+              <td class="font-semibold">{{ item.name }}</td>
+              <td><span class="unit-badge">{{ labelUnit(item.defaultUnit) }}</span></td>
+              <td>
+                <div class="chip-row">
+                  @for (cat of item.categories; track cat) {
+                    <span class="static-chip">{{ labelCategory(cat) }}</span>
+                  }
+                </div>
+              </td>
+              <td class="actions-column">
+                <button mat-icon-button (click)="edit.emit(item)" aria-label="Edit ingredient">
+                  <mat-icon>edit</mat-icon>
+                </button>
+                <button class="delete-button" mat-icon-button color="warn" (click)="delete.emit(item)" aria-label="Delete ingredient">
+                  <mat-icon>delete</mat-icon>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination-bar">
+      <span class="page-info">Page {{ pageIndex() + 1 }} of {{ totalPages() || 1 }}</span>
+      <div class="pagination-actions">
+        <button
+          mat-stroked-button
+          [disabled]="pageIndex() === 0"
+          (click)="pageChange.emit(pageIndex() - 1)">
+          Previous
+        </button>
+        <button
+          mat-stroked-button
+          [disabled]="pageIndex() >= totalPages() - 1"
+          (click)="pageChange.emit(pageIndex() + 1)">
+          Next
+        </button>
+      </div>
+    </div>
+  }
+</div>

@@ -122,26 +122,6 @@
               </button>
             }
         </div>
-
-        <div class="revoke-section">
-          <button
-            mat-button
-            type="button"
-            class="revoke-btn"
-            (click)="revokeInvite()"
-            [disabled]="isRevoking()"
-          >
-            @if (isRevoking()) {
-              <span class="inline-spinner" aria-hidden="true"><mat-spinner diameter="16"></mat-spinner></span> Revoking…
-              <span class="visually-hidden">Revoke link in progress</span>
-            } @else {
-              <ng-container matButtonIcon>
-                <mat-icon aria-hidden="true">link_off</mat-icon>
-                <span class="visually-hidden">Revoke link</span>
-              </ng-container>
-            }
-          </button>
-        </div>
       }
     </div>
   </dialog>

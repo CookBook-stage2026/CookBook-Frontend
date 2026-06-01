@@ -1,0 +1,102 @@
+<div class="modal-overlay" aria-modal="true" aria-labelledby="invites-title">
+  <div class="modal-content">
+    <header class="modal-header">
+      <h2 id="invites-title">Manage Invites</h2>
+      <button mat-icon-button type="button" (click)="onClose()" aria-label="Close dialog">
+        <mat-icon>close</mat-icon>
+      </button>
+    </header>
+
+    <div class="modal-body">
+      <div class="create-section">
+        @if (isCreating()) {
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            disabled
+          >
+            <mat-spinner diameter="20"/>
+          </button>
+        } @else {
+          <button
+            mat-flat-button
+            color="primary"
+            type="button"
+            (click)="onCreateInvite()"
+          >
+            <mat-icon>add</mat-icon>
+            Create New Invite
+          </button>
+        }
+      </div>
+
+      @if (isCreating()) {
+        <app-invite-household
+          [householdId]="householdId()"
+          (closeModal)="onInviteClosed()"
+          (inviteCreated)="onInviteCreated()"
+        />
+      } @else if (invitesResource.isLoading()) {
+        <output class="loading-state" aria-live="polite">
+          <mat-spinner diameter="32"/>
+          <p>Loading invites…</p>
+        </output>
+      } @else if (invitesResource.error()) {
+        <div class="feedback-state" role="alert">
+          <mat-icon class="feedback-icon feedback-icon--error">cloud_off</mat-icon>
+          <p>Failed to load invites.</p>
+          <button mat-stroked-button (click)="invitesResource.reload()">Retry</button>
+        </div>
+      } @else if (!hasInvites()) {
+        <div class="empty-state">
+          <mat-icon aria-hidden="true">mail_outline</mat-icon>
+          <p>No active invites</p>
+        </div>
+      } @else {
+        <div class="invites-scroll-container">
+          <ul class="invites-list" aria-label="Household invites">
+            @for (invite of sortedInvites()!; track invite.id) {
+              <li class="invite-item" [class.invite-item--revoked]="invite.revoked">
+                <div class="invite-info">
+                  <span class="invite-date">Created {{ invite.createdOn | date:'short' }}</span>
+                  <span class="invite-meta">
+                    @if (invite.revoked) {
+                      <span class="badge badge--revoked">Revoked</span>
+                    } @else if (invite.expiresAt) {
+                      <span>Expires {{ invite.expiresAt | date:'short' }}</span>
+                    } @else {
+                      <span class="badge badge--active">Active</span>
+                    }
+                  </span>
+                </div>
+                @if (!invite.revoked && isRevoking(invite.id)) {
+                  <button
+                    mat-stroked-button
+                    class="revoke-btn"
+                    type="button"
+                    disabled
+                  >
+                    <mat-spinner diameter="16"/>
+                  </button>
+                }
+
+                @if (!invite.revoked && !isRevoking(invite.id)) {
+                  <button
+                    mat-stroked-button
+                    class="revoke-btn"
+                    type="button"
+                    (click)="onRevokeInvite(invite.id)"
+                  >
+                    <mat-icon>block</mat-icon>
+                    Revoke
+                  </button>
+                }
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  </div>
+</div>

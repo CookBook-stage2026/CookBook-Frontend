@@ -6,64 +6,183 @@
       <h1 class="page-title">Your Week Schedule</h1>
       <p class="page-subtitle">Plan your meals for the week ahead.</p>
     </div>
-    <div class="header-actions">
-      <button
-        mat-flat-button
-        color="primary"
-        (click)="openCreateModal()"
-        [disabled]="schedulesResource.isLoading()">
-        <mat-icon>add</mat-icon>
-        Create New Schedule
-      </button>
-    </div>
   </header>
 
-  <div class="week-navigator">
-    <button mat-icon-button (click)="previousWeek()" aria-label="Previous week" [disabled]="schedulesResource.isLoading()">
-      <mat-icon>chevron_left</mat-icon>
-    </button>
-    <span class="week-range" aria-live="polite">{{ weekRangeLabel() }}</span>
-    <button mat-icon-button (click)="nextWeek()" aria-label="Next week" [disabled]="schedulesResource.isLoading()">
-      <mat-icon>chevron_right</mat-icon>
-    </button>
+  <div class="context-selector">
+    <mat-form-field appearance="outline" class="context-select">
+      <mat-select
+        [value]="selectedContextId()"
+        (selectionChange)="onContextChange($event.value)">
+
+        @for (ctx of contexts(); track ctx.type + (ctx.householdId ?? '')) {
+          <mat-option [value]="ctx.householdId ?? 'personal'">
+            {{ ctx.label }}
+          </mat-option>
+        }
+
+      </mat-select>
+    </mat-form-field>
   </div>
 
-  <app-week-schedule-view
-    [weekStartDate]="selectedWeekStart()"
-    [refreshTrigger]="refreshSignal()"
-    (editSchedule)="openEditModal($event)"
-  />
+  <section
+    class="today-recipe-card"
+    aria-label="Today's recipe"
+    [class.has-recipe]="hasTodayRecipe()"
+    [class.empty]="!hasTodayRecipe()">
+
+    @if (hasTodayRecipe()) {
+      <div class="today-recipe-content">
+        <div class="today-recipe-visual">
+          <div class="recipe-icon-circle">
+            <mat-icon>restaurant</mat-icon>
+          </div>
+        </div>
+        <div class="today-recipe-info">
+          <span class="today-badge">Today</span>
+          <h2 class="today-recipe-name">{{ todayRecipe()?.name }}</h2>
+          <div class="today-recipe-meta">
+            <span class="meta-item">
+              <mat-icon>schedule</mat-icon>
+              {{ todayRecipe()?.durationInMinutes }} min
+            </span>
+          </div>
+        </div>
+        <div class="today-recipe-action">
+          <button
+            mat-flat-button
+            color="primary"
+            (click)="startCookingToday()"
+            class="cooking-btn">
+            <mat-icon>restaurant</mat-icon>
+            Start Cooking
+          </button>
+        </div>
+      </div>
+    } @else {
+      <div class="today-recipe-empty">
+        <div class="empty-icon">
+          <mat-icon>event_busy</mat-icon>
+        </div>
+        <div class="empty-info">
+          <h2 class="empty-title">No recipe planned for today.</h2>
+          <p class="empty-text">Add a recipe to your schedule to get started.</p>
+        </div>
+        <button
+          mat-stroked-button
+          color="primary"
+          (click)="planToday()"
+          class="plan-btn">
+          <mat-icon>add</mat-icon>
+          Plan Today
+        </button>
+      </div>
+    }
+  </section>
+
+  <nav class="week-navigator" aria-label="Browse other weeks">
+    <button
+      mat-icon-button
+      (click)="previousWeek()"
+      aria-label="Go to previous week"
+      [disabled]="schedulesResource.isLoading()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+
+    <span class="week-range" aria-live="polite">{{ weekRangeLabel() }}</span>
+
+    @if (!isShowingCurrentWeekPair()) {
+      <button
+        mat-stroked-button
+        (click)="goToCurrentWeekPair()"
+        class="today-btn"
+        aria-label="Jump back to current week">
+        <mat-icon>today</mat-icon>
+        Today
+      </button>
+    }
+
+    <button
+      mat-icon-button
+      (click)="nextWeek()"
+      aria-label="Go to next week"
+      [disabled]="schedulesResource.isLoading()">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </nav>
+
+  <hr class="week-section-divider" aria-hidden="true">
+
+  <div class="week-sections">
+    <section class="week-section" aria-labelledby="week-section-1-heading">
+      <app-week-schedule-view
+        [context]="selectedContext()"
+        [weekStartDate]="selectedWeekStart()"
+        [refreshTrigger]="refreshSignal()"
+        [todayIsoDate]="todayIsoDate()"
+        [sectionTitle]="firstWeekLabel()"
+        [sectionSubtitle]="isShowingCurrentWeekPair() ? currentWeekDateRange() : ''"
+        [isSuggestingWeek]="isSuggestingCurrentWeek()"
+        (suggestWeek)="openSuggestWeek(selectedWeekStart())"
+        (createSchedule)="openCreateModal(selectedWeekStart())"
+        (editSchedule)="openEditModal($event)"
+        (deleteSchedule)="onScheduleDeleted()"
+      />
+    </section>
+
+    @if (isShowingCurrentWeekPair()) {
+      <hr class="week-section-divider" aria-hidden="true">
+
+      <section class="week-section" aria-labelledby="week-section-2-heading">
+        <app-week-schedule-view
+          [context]="selectedContext()"
+          [weekStartDate]="nextWeekStart()"
+          [refreshTrigger]="refreshSignal()"
+          [todayIsoDate]="todayIsoDate()"
+          [sectionTitle]="secondWeekLabel()"
+          [sectionSubtitle]="nextWeekDateRange()"
+          [isSuggestingWeek]="isSuggestingNextWeek()"
+          (suggestWeek)="openSuggestWeek(nextWeekStart())"
+          (createSchedule)="openCreateModal(nextWeekStart())"
+          (editSchedule)="openEditModal($event)"
+          (deleteSchedule)="onScheduleDeleted()"
+        />
+      </section>
+    }
+  </div>
 </div>
 
 @if (isCreateModalOpen()) {
-  <div
+  <dialog
     class="modal-overlay"
+    (keydown.esc)="closeCreateModal()"
     (click)="closeCreateModal()"
-    (keydown.escape)="closeCreateModal()"
-  >
+    aria-modal="true"
+    [attr.aria-label]="editingSchedule() ? 'Edit schedule' : 'Create schedule'">
     <div
       class="modal-wrapper"
-      (click)="$event.stopPropagation()"
-      (keydown.escape)="$event.stopPropagation()"
-    >
+      (keydown.esc)="$event.stopPropagation()"
+      (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h3>{{ editingSchedule() ? 'Edit Schedule' : 'Create Schedule' }}</h3>
+        <h3>{{ editingSchedule() ? 'Edit ' + selectedContext().label : 'Create ' + selectedContext().label }}</h3>
         <button
           mat-icon-button
           (click)="closeCreateModal()"
           class="close-btn"
-          [attr.aria-label]="'Close modal'"
-        >
+          aria-label="Close modal">
           <mat-icon>close</mat-icon>
         </button>
       </div>
       <app-week-schedule-create
+        [context]="selectedContext()"
         [existingSchedule]="editingSchedule()"
+        [suggestedSchedule]="suggestedSchedule()"
         [weekStartDate]="modalWeekStart()"
         [existingSchedules]="existingSchedules()"
+        [todayIsoDate]="todayIsoDate()"
         (closeModal)="closeCreateModal()"
         (scheduleCreated)="onScheduleCreated()"
+        (weekStartDateChanged)="onWeekStartDateChanged($event)"
       />
     </div>
-  </div>
+  </dialog>
 }

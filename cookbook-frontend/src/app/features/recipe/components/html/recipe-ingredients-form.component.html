@@ -1,23 +1,25 @@
 <div class="array-section">
   <div class="section-header">
     <h3>Ingredients *</h3>
-    <button type="button" class="btn-text" (click)="add()" [disabled]="isSubmitting()">
-      + Add Ingredient
-    </button>
+    <div class="section-header-actions">
+      @if (hasUnselectedRow()) {
+        <button type="button" class="btn-create-ingredient" (click)="openCreateModal()">
+          + {{ createButtonText() }}
+        </button>
+      }
+      <button type="button" class="btn-text" (click)="add()" [disabled]="isSubmitting()">
+        + Add Ingredient
+      </button>
+    </div>
   </div>
 
-  <div class="array-container">
+  <div class="array-container" cdkScrollable>
     @for (ingredientCtrl of ingredients().controls; track $index) {
       <div [formGroup]="ingredientCtrl" class="ingredient-row">
 
         <div class="form-group flex-2">
           <label for="ingredient-name-{{ $index }}">Ingredient Name *</label>
           <div class="input-wrapper">
-            @if (ingredientCtrl.get('id')?.invalid && ingredientCtrl.get('name')?.touched) {
-              <div [id]="'name-error-' + $index" class="tooltip-error tooltip-above" role="tooltip">
-                <span>Please select a valid ingredient from the list</span>
-              </div>
-            }
             <input
               type="text"
               formControlName="name"
@@ -27,12 +29,12 @@
               autocomplete="off"
               aria-required="true"
               [matAutocomplete]="auto"
-              [attr.aria-describedby]="ingredientCtrl.get('id')?.invalid && ingredientCtrl.get('name')?.touched ? 'name-error-' + $index : null"
               [class.is-invalid]="ingredientCtrl.get('id')?.invalid && ingredientCtrl.get('name')?.touched"
-              (input)="onNameChange($event, ingredientCtrl)">
+              (input)="onNameChange($event, ingredientCtrl, $index)">
 
-            <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onOptionSelected($event, ingredientCtrl)">
-              @for (ingredient of allIngredients(); track ingredient.id) {
+            <mat-autocomplete #auto="matAutocomplete"
+                              (optionSelected)="onOptionSelected($event, ingredientCtrl, $index)">
+              @for (ingredient of (ingredientsByRow().get($index) ?? []); track ingredient.id) {
                 <mat-option [value]="ingredient.name">{{ ingredient.name }}</mat-option>
               }
             </mat-autocomplete>
@@ -62,15 +64,19 @@
         </div>
 
         <div class="form-group flex-1">
-          <label for="unit-{{ $index }}">Unit</label>
+          <label for="unit-{{ $index }}">Unit *</label>
           <div class="input-wrapper">
-            <input
-              type="text"
-              [value]="getDisplayUnit(ingredientCtrl)"
+            <select
+              formControlName="unit"
               id="unit-{{ $index }}"
-              class="form-control read-only-unit"
-              readonly
-              tabindex="-1">
+              class="form-control"
+              aria-required="true">
+              @for (unitCode of unitsResource.value() ?? []; track unitCode) {
+                <option [value]="unitCode">
+                  {{ displayUnitLabel(unitCode, ingredientCtrl.get('quantity')?.value ?? 0) }}
+                </option>
+              }
+            </select>
           </div>
         </div>
 
@@ -97,3 +103,11 @@
     }
   </div>
 </div>
+
+<app-ingredient-modal
+  [isOpen]="isCreateModalOpen()"
+  [ingredient]="null"
+  [initialName]="currentSearchTerm()"
+  (closeModal)="isCreateModalOpen.set(false)"
+  (ingredientSaved)="onIngredientCreated($event)"
+/>

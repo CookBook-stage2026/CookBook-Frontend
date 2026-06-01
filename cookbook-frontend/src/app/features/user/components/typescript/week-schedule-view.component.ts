@@ -6,8 +6,13 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { RouterLink } from '@angular/router';
 import { WeekScheduleService } from '@shared/services/week-schedule';
-import { DAY_LABELS, DayOfWeek, DAYS_OF_WEEK, WeekScheduleResponse } from '@shared/domain/week-schedule';
-import { DatePipe } from '@angular/common';
+import {
+  DAY_LABELS,
+  DayOfWeek,
+  DAYS_OF_WEEK,
+  ScheduleContext,
+  WeekScheduleResponse
+} from '@shared/domain/week-schedule';
 import { ToastService } from '@core/services';
 import { MatDialog } from '@angular/material/dialog';
 import { SuggestRecipeConfirmComponent } from '@features/user/components/typescript/suggest-recipe-confirm.component';
@@ -25,15 +30,23 @@ import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-compon
     MatIconModule,
     MatProgressSpinnerModule,
     MatTooltipModule,
-    RouterLink,
-    DatePipe
+    RouterLink
   ]
 })
 export class WeekScheduleViewComponent {
+  readonly context = input.required<ScheduleContext>();
   readonly weekStartDate = input.required<Date>();
   readonly refreshTrigger = input(0, { transform: (value: number) => value });
+  readonly todayIsoDate = input<string>('');
   readonly editSchedule = output<WeekScheduleResponse>();
   readonly deleteSchedule = output<void>();
+
+  readonly isSuggestingWeek = input<boolean>(false);
+
+  readonly suggestWeek = output<void>();
+  readonly createSchedule = output<void>();
+  readonly sectionTitle = input<string>('');
+  readonly sectionSubtitle = input<string>('');
 
   private readonly toastService = inject(ToastService);
   private readonly scheduleService = inject(WeekScheduleService);
@@ -49,11 +62,12 @@ export class WeekScheduleViewComponent {
 
   readonly scheduleResource = rxResource({
     params: () => ({
+      context: this.context(),
       start: this.formatIso(this.weekStartDate()),
       end: this.formatIso(this.getEndOfWeek(this.weekStartDate())),
       refresh: this.refreshTrigger()
     }),
-    stream: ({ params }) => this.scheduleService.getSchedules(params.start, params.end)
+    stream: ({ params }) => this.scheduleService.getSchedules(params.context, params.start, params.end)
   });
 
   readonly schedule = computed(() => {
@@ -93,7 +107,7 @@ export class WeekScheduleViewComponent {
     const isoDate = this.getDayIsoDate(day);
     this.suggestingDay.set(isoDate);
 
-    this.scheduleService.suggestRecipeForDay(isoDate).subscribe({
+    this.scheduleService.suggestRecipeForDay(this.context(), isoDate).subscribe({
       next: (suggestedSchedule) => {
         this.suggestingDay.set(null);
 
@@ -126,7 +140,7 @@ export class WeekScheduleViewComponent {
               },
               error: () => {
                 this.isSaving.set(false);
-                this.toastService.show('Failed to save recipe.', 'error');
+                this.toastService.show('Failed to save recipe. Please try again.', 'error');
               }
             });
         });
@@ -163,6 +177,14 @@ export class WeekScheduleViewComponent {
         }
       });
     });
+  }
+
+  onSuggestWeek(): void {
+    this.suggestWeek.emit();
+  }
+
+  onCreateSchedule(): void {
+    this.createSchedule.emit();
   }
 
   private formatIso(date: Date): string {

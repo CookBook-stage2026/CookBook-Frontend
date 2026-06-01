@@ -26,6 +26,7 @@ import {
   of,
 } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { ScheduleContext } from '@shared/domain/week-schedule';
 
 export const SKIP_DAY_VALUE = '__SKIP__';
 
@@ -74,6 +75,7 @@ export const SKIP_DAY_VALUE = '__SKIP__';
   ],
 })
 export class RecipeAutocompleteComponent implements AfterViewInit {
+  readonly context = input.required<ScheduleContext>();
   readonly label = input.required<string>();
   readonly control = input.required<FormControl<string | RecipeSummary | null>>();
   readonly preselectedRecipe = input<RecipeSummary | undefined>(undefined);
@@ -94,7 +96,7 @@ export class RecipeAutocompleteComponent implements AfterViewInit {
         debounceTime(300),
         distinctUntilChanged(),
         switchMap((query) =>
-          this.recipeService.searchRecipesByName(query, 0, 10).pipe(
+          this.recipeService.searchRecipesByName(this.context(), query, 0, 10).pipe(
             catchError(() => of([] as RecipeSummary[]))
           )
         ),

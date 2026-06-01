@@ -103,6 +103,24 @@ $modal-max-height: 85vh;
       color: var(--element-primary-contrast);
     }
   }
+
+  &.today .step-marker {
+    border: 2px solid var(--mat-sys-tertiary, #3b82f6);
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    background: var(--bg-surface);
+
+    .day-label {
+      color: var(--mat-sys-tertiary, #3b82f6);
+      font-weight: 800;
+    }
+  }
+
+  &.today .step-body {
+    background: rgba(59, 130, 246, 0.03);
+    border-radius: 8px;
+    padding: 8px;
+    margin: -8px;
+  }
 }
 
 .step-marker {

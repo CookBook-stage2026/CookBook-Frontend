@@ -12,3 +12,8 @@ export interface Household {
   members: User[];
   creator: User;
 }
+
+export interface EditHouseholdRequest {
+  name: string;
+  description: string;
+}

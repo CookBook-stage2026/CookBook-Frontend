@@ -12,16 +12,16 @@
     </button>
   </header>
 
-  <main class="page-content" [class.page-content--centered]="isCentered()">
+  <main class="page-content">
     @if (householdsResource.isLoading()) {
-      <output class="loading-state" aria-live="polite" aria-label="Loading households">
+      <output class="state-card" aria-live="polite">
         <mat-spinner diameter="40" />
         <p>Loading your households…</p>
       </output>
 
     } @else if (householdsResource.error()) {
-      <div class="feedback-state" role="alert">
-        <mat-icon class="feedback-icon feedback-icon--error">cloud_off</mat-icon>
+      <div class="state-card state-card--error" role="alert">
+        <mat-icon class="state-icon state-icon--error">cloud_off</mat-icon>
         <h2>Something went wrong</h2>
         <p>We couldn't load your households. Please try again.</p>
         <button mat-stroked-button (click)="householdsResource.reload()">
@@ -31,8 +31,8 @@
       </div>
 
     } @else if (!hasHouseholds()) {
-      <div class="feedback-state">
-        <mat-icon class="feedback-icon" aria-hidden="true">home_work</mat-icon>
+      <div class="state-card">
+        <mat-icon class="state-icon" aria-hidden="true">home_work</mat-icon>
         <h2>No Households Yet</h2>
         <p>You aren't part of any households. Create one to get started!</p>
       </div>
@@ -44,8 +44,8 @@
             <app-household-card
               [household]="household"
               [currentUser]="currentUser()!"
-              (inviteClicked)="openInviteModal($event)"
-              (opened)="openMembersDialog($event)"
+              (detailClicked)="openDetailModal($event)"
+              (manageInvitesClicked)="openManageInvitesModal($event)"
               (leaveClicked)="onLeaveHousehold($event)"
             />
           }
@@ -61,18 +61,19 @@
     />
   }
 
-  @if (isInviteModalOpen()) {
-    <app-invite-household
+  @if (isDetailModalOpen()) {
+    <app-household-detail
       [householdId]="selectedHouseholdId()!"
-      (closeModal)="closeInviteModal()"
+      [currentUser]="currentUser()!"
+      (closeModal)="closeDetailModal()"
+      (householdUpdated)="onHouseholdUpdated()"
     />
   }
 
-  @if (selectedMembersHouseholdId()) {
-    <app-household-members
-      [householdId]="selectedMembersHouseholdId()!"
-      [currentUser]="currentUser()!"
-      (closeModal)="closeMembersDialog()"
+  @if (isManageInvitesModalOpen()) {
+    <app-manage-invites
+      [householdId]="managingInvitesHouseholdId()!"
+      (closeModal)="closeManageInvitesModal()"
     />
   }
 </div>

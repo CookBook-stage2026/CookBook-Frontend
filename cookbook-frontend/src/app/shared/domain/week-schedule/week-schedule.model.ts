@@ -55,3 +55,11 @@ export interface CreateWeekScheduleRequest {
 export interface UpdateWeekScheduleRequest {
   readonly days: CreateDayScheduleRequest[];
 }
+
+export type ScheduleContextType = 'personal' | 'household';
+
+export interface ScheduleContext {
+  readonly type: ScheduleContextType;
+  readonly householdId?: string;
+  readonly label: string;
+}

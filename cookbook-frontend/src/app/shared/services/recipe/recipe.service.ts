@@ -1,10 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
-import { catchError, Observable, tap, throwError } from 'rxjs';
+import { catchError, Observable, throwError } from 'rxjs';
 import { CreateRecipeDto, RecipeDto, RecipeSearchRequest, RecipeSummary, UpdateRecipeDto } from '@shared/domain/recipe';
 import { ToastService } from '@core/services';
 import { environment } from '../../../../environment';
 import { PaginatedResponse } from '@shared/domain/paginated-response';
+import { ScheduleContext } from '@shared/domain/week-schedule';
 
 @Injectable({
   providedIn: 'root'
@@ -15,24 +16,20 @@ export class RecipeService {
   private readonly apiUrl = `${environment.apiUrl}/recipes`;
 
   createRecipe(recipe: CreateRecipeDto): Observable<RecipeDto> {
-    return this.http.post<RecipeDto>(this.apiUrl, recipe).pipe(
-      tap(() => this.toastService.show("Recipe successfully created!", "success")),
-      catchError(err => {
-        this.toastService.show('Failed to create a recipe.', 'error');
-        return throwError(() => err);
-      })
-    );
+    return this.http.post<RecipeDto>(this.apiUrl, recipe);
   }
 
   searchRecipesByFilter(
     ingredientIds: string[] = [],
     shouldApplyPreferences: boolean = true,
+    includeAccessibleRecipes: boolean = true,
     page: number = 0,
     size: number = 20
   ): Observable<PaginatedResponse<RecipeSummary>> {
     const body: RecipeSearchRequest = {
       ingredientIds,
-      shouldApplyPreferences: shouldApplyPreferences,
+      shouldApplyPreferences,
+      includeAccessibleRecipes,
       page,
       size,
     };
@@ -45,10 +42,15 @@ export class RecipeService {
   }
 
   searchRecipesByName(
+    context: ScheduleContext,
     query: string | null,
     page = 0,
     size = 10
   ): Observable<RecipeSummary[]> {
+    const endpoint = context.type === 'personal'
+      ? `${this.apiUrl}/search/personal`
+      : `${this.apiUrl}/search/households/${context.householdId}`;
+
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
@@ -57,7 +59,7 @@ export class RecipeService {
       params = params.set('query', query.trim());
     }
 
-    return this.http.get<RecipeSummary[]>(`${this.apiUrl}/search`, { params }).pipe(
+    return this.http.get<RecipeSummary[]>(endpoint, { params }).pipe(
       catchError(err => {
         console.error('Search failed:', err);
         return throwError(() => err);
@@ -85,6 +87,10 @@ export class RecipeService {
     return this.http.put<void>(`${this.apiUrl}/${id}`, dto);
   }
 
+  changeVisibility(id: string, isPublic: boolean): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}/visibility`, { isPublic });
+  }
+
   importRecipe(url: string): Observable<RecipeDto> {
     return this.http.post<RecipeDto>(`${this.apiUrl}/import`, { url }).pipe(
       catchError((error: HttpErrorResponse) => {
@@ -97,5 +103,21 @@ export class RecipeService {
         return throwError(() => new Error(errorMessage));
       }),
     );
+  }
+
+  deleteRecipe(id: string) {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
+
+  getMacroTypes(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/macro-types`);
+  }
+
+  getRecipeForServings(id: string, servings: number): Observable<RecipeDto> {
+    return this.http.get<RecipeDto>(`${this.apiUrl}/${id}/servings/${servings}`);
+  }
+
+  calculateMacros(id: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/${id}/macros`, null);
   }
 }

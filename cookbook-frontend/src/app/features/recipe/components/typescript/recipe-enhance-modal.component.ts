@@ -71,8 +71,10 @@ export class RecipeEnhanceModalComponent {
       servings: this.recipe.servings,
       ingredients: this.recipe.ingredients.map(ing => ({
         ingredientId: ing.ingredientId,
-        baseQuantity: ing.baseQuantity
-      }))
+        baseQuantity: ing.quantity,
+        unit: ing.unit
+      })),
+      isPublic: this.recipe.isPublic
     };
 
     this.recipeService.updateRecipe(this.recipe.id, updateDto).subscribe({

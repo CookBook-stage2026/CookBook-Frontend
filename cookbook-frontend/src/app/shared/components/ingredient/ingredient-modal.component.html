@@ -1,0 +1,123 @@
+@if (isOpen()) {
+  <div
+    class="modal-backdrop"
+    (click)="!isSubmitting() && closeModal.emit()"
+    (keydown.esc)="!isSubmitting() && closeModal.emit()">
+
+    <dialog
+      class="modal-dialog"
+      aria-labelledby="modal-title"
+      open
+      (click)="$event.stopPropagation()"
+      (keydown)="$event.stopPropagation()">
+
+      <header class="modal-header">
+        <div>
+          <h2 id="modal-title" mat-dialog-title>
+            @if (isEditMode()) {
+              Edit Ingredient
+            } @else {
+              New Ingredient
+            }
+          </h2>
+          <p class="modal-subtitle">
+            @if (isEditMode()) {
+              Modify your configuration parameters below.
+            } @else {
+              This ingredient will be saved and added to your recipe.
+            }
+          </p>
+        </div>
+        <button
+          mat-icon-button
+          type="button"
+          (click)="closeModal.emit()"
+          [disabled]="isSubmitting()"
+          aria-label="Close modal">
+          <mat-icon>close</mat-icon>
+        </button>
+      </header>
+
+      <mat-dialog-content class="modal-body">
+        <form [formGroup]="ingredientForm" id="ingredient-form" class="recipe-form" (ngSubmit)="onSubmit()">
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Ingredient Name</mat-label>
+            <input matInput formControlName="name" placeholder="e.g., Olive Oil" required/>
+            @if (ingredientForm.get('name')?.hasError('required')) {
+              <mat-error>Name is required</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width unit-field">
+            <mat-label>Unit</mat-label>
+            <mat-select formControlName="unit" required>
+              @for (unit of formattedUnits(); track unit.value) {
+                <mat-option [value]="unit.value">{{ unit.label }}</mat-option>
+              }
+            </mat-select>
+            @if (ingredientForm.get('unit')?.hasError('required')) {
+              <mat-error>Unit is required</mat-error>
+            }
+
+            <mat-hint class="unit-context-hint">
+              <mat-icon class="hint-icon">info</mat-icon>
+              <span>This sets the default unit for new recipes. Existing recipes using this ingredient will keep their currently assigned unit.</span>
+            </mat-hint>
+          </mat-form-field>
+
+          <div class="categories-field">
+            <span class="categories-label" id="categories-label">
+              Categories <span aria-hidden="true">*</span>
+            </span>
+            <mat-chip-listbox
+              aria-labelledby="categories-label"
+              aria-required="true"
+              multiple
+              formControlName="categories"
+              [class.chip-list-invalid]="ingredientForm.get('categories')?.invalid && ingredientForm.get('categories')?.touched">
+              @for (category of formattedCategories(); track category.value) {
+                <mat-chip-option
+                  [value]="category.value"
+                  [disabled]="isSubmitting()">
+                  {{ category.label }}
+                </mat-chip-option>
+              }
+            </mat-chip-listbox>
+            @if (ingredientForm.get('categories')?.invalid && ingredientForm.get('categories')?.touched) {
+              <mat-error class="categories-error">Select at least one category</mat-error>
+            }
+          </div>
+
+        </form>
+      </mat-dialog-content>
+
+      <mat-dialog-actions align="end" class="modal-footer">
+        <button
+          mat-stroked-button
+          type="button"
+          (click)="closeModal.emit()"
+          [disabled]="isSubmitting()">
+          Cancel
+        </button>
+        <button
+          mat-flat-button
+          type="submit"
+          form="ingredient-form"
+          [disabled]="ingredientForm.invalid || isSubmitting()">
+          @if (isSubmitting()) {
+            <mat-spinner diameter="16"/>
+            Saving...
+          } @else {
+            @if (isEditMode()) {
+              Update Ingredient
+            } @else {
+              Create Ingredient
+            }
+          }
+        </button>
+      </mat-dialog-actions>
+
+    </dialog>
+  </div>
+}

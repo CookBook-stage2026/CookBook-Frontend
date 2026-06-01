@@ -174,3 +174,16 @@
     background-color: color-mix(in srgb, var(--element-primary) 8%, transparent);
   }
 }
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.card-actions {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}

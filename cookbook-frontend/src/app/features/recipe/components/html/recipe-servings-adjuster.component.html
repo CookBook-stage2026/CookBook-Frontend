@@ -1,0 +1,54 @@
+<div class="interactive-servings-chip">
+  <mat-icon class="chip-avatar-icon">people</mat-icon>
+  <span class="chip-text-label">Servings:</span>
+
+  <div class="chip-counter-controls">
+    <button
+      mat-icon-button
+      class="chip-step-btn"
+      type="button"
+      (click)="decrement()"
+      [disabled]="!canDecrease()"
+      aria-label="Decrease servings"
+    >
+      <mat-icon class="center-icon">remove</mat-icon>
+    </button>
+
+    <mat-form-field subscriptSizing="dynamic" class="chip-material-form">
+      <input
+        matInput
+        #servingsInput
+        type="number"
+        [min]="1"
+        [max]="1000"
+        [value]="localServings() ?? ''"
+        (input)="handleInputChange(servingsInput)"
+        (blur)="sanitizeOnBlur(servingsInput)"
+        class="chip-clean-input"
+        aria-label="Number of servings"
+      />
+    </mat-form-field>
+
+    <button
+      mat-icon-button
+      class="chip-step-btn"
+      type="button"
+      (click)="increment()"
+      [disabled]="!canIncrease()"
+      aria-label="Increase servings"
+    >
+      <mat-icon class="center-icon">add</mat-icon>
+    </button>
+  </div>
+
+  @if (hasPendingChanges()) {
+    <button
+      mat-icon-button
+      class="chip-apply-btn"
+      (click)="applyNewServings()"
+      aria-label="Confirm and apply scaled servings"
+    >
+      <mat-icon class="center-icon">done</mat-icon>
+    </button>
+  }
+</div>

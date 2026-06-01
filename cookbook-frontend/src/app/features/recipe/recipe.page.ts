@@ -1,27 +1,28 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { ToastComponent } from '@shared/components/toast/toast.component';
-import { RecipeService } from '@shared/services/recipe';
-import { rxResource } from '@angular/core/rxjs-interop';
-import { MatButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
+import { MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { rxResource } from '@angular/core/rxjs-interop';
+
+import { RecipeService } from '@shared/services/recipe';
 import { RecipeDto } from '@shared/domain/recipe';
-import { RecipeCreateModalComponent } from '@features/recipe/components/typescript/recipe-create-modal.component';
+import { ToastComponent } from '@shared/components/toast/toast.component';
 import { RecipeListComponent } from '@features/recipe/components/typescript/recipe-list.component';
 import { RecipeFilterComponent } from '@features/recipe/components/typescript/recipe-filter.component';
 import { RecipeImportDialogComponent } from '@features/recipe/components/typescript/recipe-import-dialog.component';
+import { RecipeFormModalComponent } from '@features/recipe/components/typescript/recipe-form-modal.component';
 
 @Component({
   selector: 'app-recipe-list-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    RecipeCreateModalComponent,
     ToastComponent,
     RecipeListComponent,
     RecipeFilterComponent,
     MatButton,
     MatIcon,
+    RecipeFormModalComponent,
   ],
   templateUrl: './recipe.page.html',
   styleUrl: './recipe.page.scss',
@@ -36,6 +37,7 @@ export default class RecipePage {
   readonly pageIndex = signal(0);
   readonly selectedIngredientIds = signal<string[]>([]);
   readonly shouldApplyPreferences = signal(true);
+  readonly includeAccessibleRecipes = signal(true);
 
   readonly recipeResource = rxResource({
     params: () => ({
@@ -43,19 +45,25 @@ export default class RecipePage {
       size: this.pageSize(),
       ingredients: this.selectedIngredientIds(),
       applyPrefs: this.shouldApplyPreferences(),
+      includeAccessible: this.includeAccessibleRecipes()
     }),
-    stream: ({ params }) =>
-      this.recipeService.searchRecipesByFilter(
-        params.ingredients,
-        params.applyPrefs,
-        params.page,
-        params.size,
-      ),
+    stream: ({ params }) => this.recipeService.searchRecipesByFilter(
+      params.ingredients,
+      params.applyPrefs,
+      params.includeAccessible,
+      params.page,
+      params.size
+    )
   });
 
   readonly recipes = computed(() => this.recipeResource.value()?.content ?? []);
   readonly totalPages = computed(() => this.recipeResource.value()?.page.totalPages ?? 0);
   readonly isLoading = this.recipeResource.isLoading;
+
+  toggleScope(): void {
+    this.includeAccessibleRecipes.update(val => !val);
+    this.pageIndex.set(0);
+  }
 
   togglePreferences(): void {
     this.shouldApplyPreferences.update(val => !val);

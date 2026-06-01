@@ -2,27 +2,36 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environment';
-import { Ingredient, IngredientSearchRequest } from '@shared/domain/ingredient';
+import {
+  CreateIngredientDto,
+  Ingredient,
+  IngredientSearchRequest,
+  UpdateIngredientDto
+} from '@shared/domain/ingredient';
+import { PaginatedResponse } from '@shared/domain/paginated-response';
 
 @Injectable({ providedIn: 'root' })
 export class IngredientService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/ingredients`;
 
-  searchIngredients(
-    query?: string,
-    alreadySelectedIds: string[] = [],
-    page = 0,
-    size = 10
-  ): Observable<Ingredient[]> {
-    const body: IngredientSearchRequest = {
-      query: query?.trim() || undefined,
-      alreadySelectedIds: alreadySelectedIds.length > 0 ? alreadySelectedIds : undefined,
-      page,
-      size,
-    };
+  createIngredient(recipe: CreateIngredientDto): Observable<Ingredient> {
+    return this.http.post<Ingredient>(this.apiUrl, recipe);
+  }
 
-    return this.http.post<Ingredient[]>(`${this.apiUrl}/search`, body);
+  searchIngredients(request: IngredientSearchRequest): Observable<PaginatedResponse<Ingredient>> {
+    return this.http.post<PaginatedResponse<Ingredient>>(
+      `${this.apiUrl}/search`,
+      request
+    );
+  }
+
+  updateIngredient(id: string, dto: UpdateIngredientDto): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${id}`, dto);
+  }
+
+  deleteIngredient(id: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
   getCategories(): Observable<string[]> {
