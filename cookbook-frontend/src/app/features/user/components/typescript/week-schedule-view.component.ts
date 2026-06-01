@@ -22,7 +22,7 @@ import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-compon
 @Component({
   selector: 'app-week-schedule-view',
   templateUrl: '../html/week-schedule-view.component.html',
-  styleUrls: ['../scss/week-schedule-view.component.scss'],
+  styleUrl: '../scss/week-schedule-view.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     MatCardModule,

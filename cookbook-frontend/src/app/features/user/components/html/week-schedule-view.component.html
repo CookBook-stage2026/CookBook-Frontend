@@ -51,7 +51,7 @@
 
       @if (schedule()) {
         <button
-          mat-stroked-button
+          mat-flat-button
           color="primary"
           (click)="onEdit()"
           aria-label="Edit schedule"
@@ -61,7 +61,7 @@
         </button>
 
         <button
-          mat-stroked-button
+          mat-flat-button
           color="warn"
           (click)="onDelete()"
           [disabled]="isDeleting() || isSaving() || isSuggesting()">

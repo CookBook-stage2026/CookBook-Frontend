@@ -1,37 +1,54 @@
 <div class="list-container">
-  <div class="list-header">
-    <nav class="pagination" aria-label="Recipe pagination">
-      <button mat-stroked-button (click)="onPrevPage()" [disabled]="isPrevDisabled()">Prev</button>
-      <span class="page-info" aria-live="polite">Page {{ displayPage() }} / {{ displayTotalPages() }}</span>
-      <button mat-stroked-button (click)="onNextPage()" [disabled]="isNextDisabled()">Next</button>
-    </nav>
-
-    <div class="sort-group">
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="compact-dropdown">
-        <mat-select [value]="sortBy()" (selectionChange)="onSortFieldChange($event.value)">
-          @for (option of sortingOptions(); track option) {
-            <mat-option [value]="option">{{ enumHelper.formatEnum(option) }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-
-      <button
-        mat-icon-button
-        color="primary"
-        type="button"
-        (click)="onToggleDirection()"
-        class="compact-icon-btn"
-        title="Toggle Sort Direction">
-        <mat-icon>{{ sortDirection() === 'ASCENDING' ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
-      </button>
-    </div>
-  </div>
-
   @if (isLoading()) {
     <div class="status-msg" aria-live="polite">Loading recipes...</div>
   } @else if (recipes().length === 0) {
-    <div class="status-msg" aria-live="polite">No recipes found.</div>
+    <div class="empty-state">
+      <mat-icon>restaurant_menu</mat-icon>
+      <p>No recipes found that match your selection.</p>
+    </div>
   } @else {
+    <div class="list-header">
+      <div class="pagination-bar">
+        <div class="pagination-actions">
+          <button
+            mat-stroked-button
+            [disabled]="isPrevDisabled()"
+            (click)="onPrevPage()">
+            Previous
+          </button>
+
+          <span class="page-info">Page {{ displayPage() }} of {{ displayTotalPages() }}</span>
+
+          <button
+            mat-stroked-button
+            [disabled]="isNextDisabled()"
+            (click)="onNextPage()">
+            Next
+          </button>
+        </div>
+      </div>
+
+      <div class="sort-group">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="compact-dropdown">
+          <mat-select [value]="sortBy()" (selectionChange)="onSortFieldChange($event.value)">
+            @for (option of sortingOptions(); track option) {
+              <mat-option [value]="option">{{ enumHelper.formatEnum(option) }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+
+        <button
+          mat-icon-button
+          color="primary"
+          type="button"
+          (click)="onToggleDirection()"
+          class="compact-icon-btn"
+          title="Toggle Sort Direction">
+          <mat-icon>{{ sortDirection() === 'ASCENDING' ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+        </button>
+      </div>
+    </div>
+
     <ul class="grid">
       @for (recipe of recipes(); track recipe.id) {
         <li>

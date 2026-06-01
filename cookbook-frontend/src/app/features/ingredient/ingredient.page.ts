@@ -12,6 +12,7 @@ import { IngredientListComponent } from '@features/ingredient/components/typescr
 import { IngredientModalComponent } from '@shared/components/ingredient/ingredient-modal.component';
 import { RecipeService } from '@shared/services/recipe';
 import { EnumHelper } from '@shared/utils/enum-helper.service';
+import { MatDivider } from '@angular/material/list';
 
 @Component({
   selector: 'app-ingredient-page',
@@ -22,7 +23,8 @@ import { EnumHelper } from '@shared/utils/enum-helper.service';
     MatDialogModule,
     ToastComponent,
     IngredientListComponent,
-    IngredientModalComponent
+    IngredientModalComponent,
+    MatDivider
   ],
   templateUrl: './ingredient.page.html',
   styleUrl: './ingredient.page.scss'

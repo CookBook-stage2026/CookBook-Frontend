@@ -68,6 +68,29 @@
         </div>
 
         <div class="header-actions">
+          @if (r.isOwner && !isPreviewMode()) {
+            <button
+              mat-stroked-button
+              color="accent"
+              (click)="enhanceRecipe()"
+              [disabled]="enhancedRecipe.isLoading()"
+            >
+              @if (enhancedRecipe.isLoading()) {
+                <mat-spinner diameter="20" aria-hidden="true"/>
+              } @else {
+                <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+              }
+              @if (!enhancedRecipe.isLoading()) {
+                <span>Enhance Recipe</span>
+              }
+            </button>
+          }
+
+          <button mat-flat-button color="primary" (click)="enterCookingMode()">
+            <mat-icon>restaurant</mat-icon>
+            Start Cooking
+          </button>
+
           @if (r.isOwner) {
             <button
               mat-flat-button
@@ -83,18 +106,13 @@
             @if (!isPreviewMode()) {
               <button
                 mat-flat-button
-                color="accent"
-                (click)="enhanceRecipe()"
-                [disabled]="enhancedRecipe.isLoading()"
+                class="delete-button"
+                color="warn"
+                (click)="onDeleteRecipe()"
+                [disabled]="enhancedRecipe.isLoading() || isDeleting()"
               >
-                @if (enhancedRecipe.isLoading()) {
-                  <mat-spinner diameter="20" aria-hidden="true"/>
-                } @else {
-                  <mat-icon aria-hidden="true">auto_awesome</mat-icon>
-                }
-                @if (!enhancedRecipe.isLoading()) {
-                  <span>Enhance Recipe</span>
-                }
+                <mat-icon>delete</mat-icon>
+                {{ isDeleting() ? 'Deleting…' : 'Delete Recipe' }}
               </button>
             }
           }
@@ -109,11 +127,6 @@
               <span>Create Copy</span>
             </button>
           }
-
-          <button mat-flat-button color="primary" (click)="enterCookingMode()">
-            <mat-icon>restaurant</mat-icon>
-            Start Cooking
-          </button>
         </div>
       </header>
 
@@ -145,7 +158,8 @@
             <h3 id="missing-macros-heading">Nutritional Information</h3>
 
             @if (r.isOwner) {
-              <p class="macros-placeholder-text">No nutritional details added yet. Let’s calculate the calories and macros based on your ingredient list.</p>
+              <p class="macros-placeholder-text">No nutritional details added yet. Let’s calculate the calories and
+                macros based on your ingredient list.</p>
               <button
                 mat-flat-button
                 color="primary"
@@ -162,7 +176,8 @@
                 }
               </button>
             } @else {
-              <p class="macros-placeholder-text">Nutritional insights are not yet available for this recipe. Save a copy to your profile to calculate the macros.</p>
+              <p class="macros-placeholder-text">Nutritional insights are not yet available for this recipe. Save a copy
+                to your profile to calculate the macros.</p>
             }
           </aside>
         }

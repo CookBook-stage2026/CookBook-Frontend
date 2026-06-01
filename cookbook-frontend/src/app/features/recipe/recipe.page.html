@@ -49,6 +49,8 @@
 
   <app-recipe-filter (selectedIngredientsChange)="onFilterChange($event)"/>
 
+  <mat-divider class="section-divider"/>
+
   <app-recipe-list
     [recipes]="recipes()"
     [pageSize]="pageSize()"

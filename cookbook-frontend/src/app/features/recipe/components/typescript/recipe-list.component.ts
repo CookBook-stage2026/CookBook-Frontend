@@ -13,7 +13,7 @@ import { RecipeService } from '@shared/services/recipe';
   selector: 'app-recipe-list',
   standalone: true,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ RecipeCardComponent, MatButtonModule, MatIcon, MatOption, MatSelect, MatFormField ],
+  imports: [RecipeCardComponent, MatButtonModule, MatIcon, MatOption, MatSelect, MatFormField],
   templateUrl: '../html/recipe-list.component.html',
   styleUrl: '../scss/recipe-list.component.scss'
 })

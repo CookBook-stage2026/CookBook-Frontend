@@ -13,17 +13,6 @@
   align-items: stretch;
 }
 
-.provider-btn--microsoft {
-  background-color: var(--bg-main);
-  color: var(--text-main);
-}
-
-.provider-btn--microsoft:hover {
-  background-color: var(--bg-surface);
-  border-color: #94a3b8;
-  box-shadow: 0 1px 4px rgba(0 0 0 / 0.06);
-}
-
 .brand-panel__inner {
   position: relative;
   z-index: 1;
@@ -160,6 +149,12 @@
   margin: 0;
 }
 
+.auth-providers {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -171,39 +166,17 @@
   border: 0;
 }
 
-.divider-container {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 4px 0;
-}
-
-.divider-line {
-  flex: 1;
-  height: 1px;
-  border: none;
-  background-color: var(--border-color);
-  margin: 0;
-}
-
-.divider-text {
-  color: var(--text-muted);
-  font-size: 0.8125rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-}
-
 .provider-btn {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 1rem;
   width: 100%;
-  padding: 13px 18px;
+  padding: 1rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
+  background-color: var(--bg-main);
   font-family: 'Inter', system-ui, sans-serif;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 500;
   cursor: pointer;
   transition:
@@ -212,6 +185,12 @@
     box-shadow 150ms ease,
     transform 100ms ease;
   text-align: left;
+}
+
+.provider-btn:hover {
+  background-color: var(--bg-surface);
+  border-color: #94a3b8;
+  box-shadow: 0 1px 4px rgba(0 0 0 / 0.06);
 }
 
 .provider-btn:focus-visible {
@@ -227,28 +206,6 @@
   flex-shrink: 0;
   width: 20px;
   height: 20px;
-}
-
-.provider-btn--google {
-  background-color: var(--bg-main);
-  color: var(--text-main);
-}
-
-.provider-btn--google:hover {
-  background-color: var(--bg-surface);
-  border-color: #94a3b8;
-  box-shadow: 0 1px 4px rgba(0 0 0 / 0.06);
-}
-
-.provider-btn--github {
-  background-color: var(--text-main);
-  color: var(--bg-main);
-  border-color: transparent;
-}
-
-.provider-btn--github:hover {
-  opacity: 0.88;
-  box-shadow: 0 1px 6px rgba(0 0 0 / 0.18);
 }
 
 .auth-footer p {
