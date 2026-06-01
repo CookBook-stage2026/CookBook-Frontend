@@ -1,6 +1,8 @@
-import { Component, computed, ChangeDetectionStrategy, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { ThemeService } from '@core/services';
+import { UserService } from '@shared/services/user';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-top-bar',
@@ -13,6 +15,8 @@ import { ThemeService } from '@core/services';
 export class TopBarComponent {
   themeService = inject(ThemeService);
   private readonly router = inject(Router);
+  private readonly userService = inject(UserService);
+  readonly currentUser = toSignal(this.userService.getCurrentUser());
 
   isDarkMode = computed(() => {
     const theme = this.themeService.currentTheme();

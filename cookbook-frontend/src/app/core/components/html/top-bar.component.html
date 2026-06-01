@@ -20,6 +20,10 @@
     </div>
 
     <div class="header-actions">
+      @if (currentUser(); as user) {
+        <span class="user-greeting">Hello, {{ user.displayName }}!</span>
+      }
+
       <button
         (click)="themeService.toggleTheme()"
         class="theme-toggle"
