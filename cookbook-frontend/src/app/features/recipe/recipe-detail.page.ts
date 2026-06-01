@@ -64,6 +64,18 @@ export default class RecipeDetailPage {
   readonly adjustedServings = signal<number | undefined>(undefined);
   readonly isPreviewMode = signal(false);
 
+  readonly isLoading = computed(() =>
+    this.recipe.isLoading() || (this.isPreviewMode() && this.adjustedRecipe.isLoading())
+  );
+
+  readonly hasError = computed(() =>
+    this.recipe.error() || (this.isPreviewMode() && this.adjustedRecipe.error())
+  );
+
+  readonly isCraftingOverlayVisible = computed(() =>
+    (this.isPreviewMode() && this.adjustedRecipe.isLoading()) || this.enhancedRecipe.isLoading()
+  );
+
   readonly recipe = rxResource<RecipeDto, string | undefined>({
     params: () => this.recipeId(),
     stream: ({ params }) => this.recipeService.getRecipeById(params)
@@ -89,14 +101,6 @@ export default class RecipeDetailPage {
     }
     return this.recipe.value();
   });
-
-  readonly isLoading = computed(() =>
-    this.recipe.isLoading() || (this.isPreviewMode() && this.adjustedRecipe.isLoading())
-  );
-
-  readonly hasError = computed(() =>
-    this.recipe.error() || (this.isPreviewMode() && this.adjustedRecipe.error())
-  );
 
   constructor() {
     const mode = this.route.snapshot.queryParamMap.get('mode');

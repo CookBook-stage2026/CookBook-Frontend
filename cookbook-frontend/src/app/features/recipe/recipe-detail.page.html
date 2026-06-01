@@ -1,12 +1,18 @@
 <app-toast/>
 
 <div class="page-container">
-  @if (isLoading()) {
+  @if (isCraftingOverlayVisible()) {
     <div class="loading-modal-backdrop" aria-modal="true" aria-label="Loading application state">
       <div class="loading-modal-card">
         <mat-spinner diameter="44" aria-hidden="true"/>
         <p class="cooking-text">Crafting your recipe...</p>
       </div>
+    </div>
+  }
+
+  @if (recipe.isLoading() && !displayRecipe()) {
+    <div class="page-loader">
+      <mat-spinner diameter="40"></mat-spinner>
     </div>
   }
 
@@ -24,7 +30,7 @@
           <span class="back-text">Back</span>
         </button>
 
-        @if (r.isOwner) {
+        @if (r.isOwner && !isPreviewMode()) {
           <button
             mat-flat-button
             class="visibility-toggle-btn"
@@ -74,21 +80,23 @@
               <span>Edit Recipe</span>
             </button>
 
-            <button
-              mat-flat-button
-              color="accent"
-              (click)="enhanceRecipe()"
-              [disabled]="enhancedRecipe.isLoading()"
-            >
-              @if (enhancedRecipe.isLoading()) {
-                <mat-spinner diameter="20" aria-hidden="true"/>
-              } @else {
-                <mat-icon aria-hidden="true">auto_awesome</mat-icon>
-              }
-              @if (!enhancedRecipe.isLoading()) {
-                <span>Enhance Recipe</span>
-              }
-            </button>
+            @if (!isPreviewMode()) {
+              <button
+                mat-flat-button
+                color="accent"
+                (click)="enhanceRecipe()"
+                [disabled]="enhancedRecipe.isLoading()"
+              >
+                @if (enhancedRecipe.isLoading()) {
+                  <mat-spinner diameter="20" aria-hidden="true"/>
+                } @else {
+                  <mat-icon aria-hidden="true">auto_awesome</mat-icon>
+                }
+                @if (!enhancedRecipe.isLoading()) {
+                  <span>Enhance Recipe</span>
+                }
+              </button>
+            }
           }
 
           @if (!r.isOwner) {
