@@ -29,8 +29,14 @@
               autocomplete="off"
               aria-required="true"
               [matAutocomplete]="auto"
-              [class.is-invalid]="ingredientCtrl.get('id')?.invalid && ingredientCtrl.get('name')?.touched"
+              [class.is-invalid]="ingredientCtrl.get('name')?.invalid && ingredientCtrl.get('name')?.touched"
               (input)="onNameChange($event, ingredientCtrl, $index)">
+
+            @if (ingredientCtrl.get('name')?.invalid && ingredientCtrl.get('name')?.touched) {
+              <div class="tooltip-error" role="alert">
+                <span>Ingredient name is required</span>
+              </div>
+            }
 
             <mat-autocomplete #auto="matAutocomplete"
                               (optionSelected)="onOptionSelected($event, ingredientCtrl, $index)">
@@ -44,11 +50,6 @@
         <div class="form-group flex-1">
           <label for="quantity-{{ $index }}">Quantity *</label>
           <div class="input-wrapper">
-            @if (ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched) {
-              <div [id]="'quantity-error-' + $index" class="tooltip-error tooltip-above" role="tooltip">
-                <span>Must be > 0</span>
-              </div>
-            }
             <input
               type="text"
               inputmode="decimal"
@@ -57,9 +58,14 @@
               placeholder="2.5"
               class="form-control"
               aria-required="true"
-              [attr.aria-describedby]="ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched ? 'quantity-error-' + $index : null"
               [class.is-invalid]="ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched"
               (input)="onQuantityInput($event, ingredientCtrl.get('quantity')!)">
+
+            @if (ingredientCtrl.get('quantity')?.invalid && ingredientCtrl.get('quantity')?.touched) {
+              <div class="tooltip-error" role="alert">
+                <span>Quantity must be at least 0.01</span>
+              </div>
+            }
           </div>
         </div>
 
@@ -70,13 +76,20 @@
               formControlName="unit"
               id="unit-{{ $index }}"
               class="form-control"
-              aria-required="true">
+              aria-required="true"
+              [class.is-invalid]="ingredientCtrl.get('unit')?.invalid && ingredientCtrl.get('unit')?.touched">
               @for (unitCode of unitsResource.value() ?? []; track unitCode) {
                 <option [value]="unitCode">
                   {{ displayUnitLabel(unitCode, ingredientCtrl.get('quantity')?.value ?? 0) }}
                 </option>
               }
             </select>
+
+            @if (ingredientCtrl.get('unit')?.invalid && ingredientCtrl.get('unit')?.touched) {
+              <div class="tooltip-error" role="alert">
+                <span>Unit is required</span>
+              </div>
+            }
           </div>
         </div>
 
