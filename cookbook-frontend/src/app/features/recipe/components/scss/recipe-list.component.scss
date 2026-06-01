@@ -4,7 +4,6 @@
   gap: 1rem;
 }
 
-/* Align pagination and sorting on the same row */
 .list-header {
   display: flex;
   justify-content: space-between;
@@ -37,7 +36,7 @@
   box-sizing: border-box;
 
   .compact-dropdown {
-    max-width: 102px;
+    max-width: 105px;
 
     ::ng-deep {
       .mdc-text-field--outlined {
@@ -68,7 +67,7 @@
         align-items: center;
         justify-content: space-between;
         width: 100%;
-        gap: 4px;
+        gap: 6px;
       }
 
       .mat-mdc-select-value {

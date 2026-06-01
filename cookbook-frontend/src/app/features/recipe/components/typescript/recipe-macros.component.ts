@@ -1,6 +1,6 @@
-import { formatMacroType, formatMacroValue } from '@shared/services/recipe';
 import { MacroDto } from '@shared/domain/recipe';
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { EnumHelper } from '@shared/utils/enum-helper.service';
 
 @Component({
   selector: 'app-recipe-macros',
@@ -14,8 +14,8 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         <div class="macros-list">
           @for (macro of macroList; track macro.type) {
             <div class="macro-row">
-              <span class="macro-label">{{ formatType(macro.type) }}</span>
-              <span class="macro-value">{{ formatValue(macro.value, macro.type) }}</span>
+              <span class="macro-label">{{ enumHelper.formatMacroType(macro.type) }}</span>
+              <span class="macro-value">{{ enumHelper.formatMacroValue(macro.value, macro.type) }}</span>
             </div>
           }
         </div>
@@ -70,12 +70,5 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 })
 export class RecipeMacrosComponent {
   readonly macros = input.required<MacroDto[]>();
-
-  formatType(type: string): string {
-    return formatMacroType(type);
-  }
-
-  formatValue(value: number, type: string): string {
-    return formatMacroValue(value, type);
-  }
+  readonly enumHelper = inject(EnumHelper);
 }

@@ -9,9 +9,9 @@
     <div class="sort-group">
       <mat-form-field appearance="outline" subscriptSizing="dynamic" class="compact-dropdown">
         <mat-select [value]="sortBy()" (selectionChange)="onSortFieldChange($event.value)">
-          <mat-option value="name">Name</mat-option>
-          <mat-option value="duration">Duration</mat-option>
-          <mat-option value="user">Creator</mat-option>
+          @for (option of sortingOptions(); track option) {
+            <mat-option [value]="option">{{ enumHelper.formatEnum(option) }}</mat-option>
+          }
         </mat-select>
       </mat-form-field>
 
@@ -22,7 +22,7 @@
         (click)="onToggleDirection()"
         class="compact-icon-btn"
         title="Toggle Sort Direction">
-        <mat-icon>{{ sortDirection() === 'asc' ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+        <mat-icon>{{ sortDirection() === 'ASCENDING' ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
       </button>
     </div>
   </div>

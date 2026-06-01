@@ -40,7 +40,7 @@ export class RecipeService {
   }
 
   getRecipeById(id: string): Observable<RecipeDto> {
-    return this.http.get<RecipeDto>(`${this.apiUrl}/${id}`)
+    return this.http.get<RecipeDto>(`${this.apiUrl}/${id}`);
   }
 
   searchRecipesByName(
@@ -107,12 +107,16 @@ export class RecipeService {
     );
   }
 
-  deleteRecipe(id: string) {
+  deleteRecipe(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
   getMacroTypes(): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}/macro-types`);
+  }
+
+  getSortingOptions(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/sorting-options`);
   }
 
   getRecipeForServings(id: string, servings: number): Observable<RecipeDto> {

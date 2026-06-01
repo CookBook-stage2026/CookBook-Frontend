@@ -4,7 +4,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { rxResource } from '@angular/core/rxjs-interop';
-
 import { RecipeService } from '@shared/services/recipe';
 import { RecipeDto } from '@shared/domain/recipe';
 import { ToastComponent } from '@shared/components/toast/toast.component';
@@ -14,6 +13,7 @@ import { RecipeImportDialogComponent } from '@features/recipe/components/typescr
 import { RecipeFormModalComponent } from '@features/recipe/components/typescript/recipe-form-modal.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
+import { EnumHelper } from '@shared/utils/enum-helper.service';
 
 @Component({
   selector: 'app-recipe-list-page',
@@ -33,6 +33,7 @@ import { MatSelectModule } from '@angular/material/select';
 })
 export default class RecipePage {
   private readonly recipeService = inject(RecipeService);
+  private readonly enumHelper = inject(EnumHelper);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
 
@@ -43,8 +44,10 @@ export default class RecipePage {
   readonly shouldApplyPreferences = signal(true);
   readonly includeAccessibleRecipes = signal(true);
 
-  readonly sortBy = signal<string>('name');
-  readonly sortDirection = signal<string>('asc');
+  readonly sortBy = signal<string>('NAME');
+  readonly sortDirection = signal<string>('ASCENDING');
+
+  readonly initialSortBy = this.enumHelper.formatEnum('NAME');
 
   readonly recipeResource = rxResource({
     params: () => ({
@@ -125,7 +128,7 @@ export default class RecipePage {
   }
 
   toggleSortDirection(): void {
-    this.sortDirection.update(dir => dir === 'asc' ? 'desc' : 'asc');
+    this.sortDirection.update(dir => dir === 'ASCENDING' ? 'DESCENDING' : 'ASCENDING');
     this.pageIndex.set(0);
   }
 }

@@ -45,6 +45,7 @@ export interface RecipeSummary {
   description: string;
   durationInMinutes: number;
   creator: string;
+  isOwner: boolean;
 }
 
 export interface RecipeSearchRequest {

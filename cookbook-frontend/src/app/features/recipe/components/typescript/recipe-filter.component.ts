@@ -16,7 +16,7 @@ import {
   signal,
   viewChild
 } from '@angular/core';
-import { createIngredientSearchResource } from '@shared/util/ingredient-resource';
+import { createIngredientSearchResource } from '@shared/utils/ingredient-resource';
 
 @Component({
   selector: 'app-recipe-filter',

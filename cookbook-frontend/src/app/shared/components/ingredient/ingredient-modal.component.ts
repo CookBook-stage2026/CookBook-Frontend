@@ -13,10 +13,10 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { IngredientService } from '@shared/services/ingredient';
 import {
   CreateIngredientDto,
-  UpdateIngredientDto,
   formatCategoryLabel,
   formatUnit,
-  Ingredient
+  Ingredient,
+  UpdateIngredientDto
 } from '@shared/domain/ingredient';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { MatDialogActions, MatDialogContent, MatDialogTitle } from '@angular/material/dialog';
@@ -58,7 +58,6 @@ export class IngredientModalComponent implements OnInit {
   );
 
   readonly selectedCategories = signal<string[]>([]);
-  readonly selectedCategorySet = computed(() => new Set(this.selectedCategories()));
 
   readonly ingredientForm: FormGroup = this.fb.group({
     name: ['', Validators.required],

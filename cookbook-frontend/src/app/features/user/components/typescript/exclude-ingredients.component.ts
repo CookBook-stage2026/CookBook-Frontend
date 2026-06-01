@@ -8,7 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { IngredientService } from '@shared/services/ingredient';
 import { Ingredient } from '@shared/domain/ingredient';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
-import { createIngredientSearchResource } from '@shared/util/ingredient-resource';
+import { createIngredientSearchResource } from '@shared/utils/ingredient-resource';
 
 @Component({
   selector: 'app-exclude-ingredients',

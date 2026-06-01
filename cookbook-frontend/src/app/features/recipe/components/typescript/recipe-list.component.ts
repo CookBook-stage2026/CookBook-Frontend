@@ -1,10 +1,13 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, input, output } from '@angular/core';
 import { RecipeSummary } from '@shared/domain/recipe';
 import { RecipeCardComponent } from './recipe-card.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { MatOption } from '@angular/material/core';
 import { MatFormField, MatSelect } from '@angular/material/select';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { EnumHelper } from '@shared/utils/enum-helper.service';
+import { RecipeService } from '@shared/services/recipe';
 
 @Component({
   selector: 'app-recipe-list',
@@ -15,6 +18,9 @@ import { MatFormField, MatSelect } from '@angular/material/select';
   styleUrl: '../scss/recipe-list.component.scss'
 })
 export class RecipeListComponent {
+  protected readonly enumHelper = inject(EnumHelper);
+  private readonly recipeService = inject(RecipeService);
+
   recipes = input.required<RecipeSummary[]>();
   pageSize = input.required<number>();
   pageIndex = input.required<number>();
@@ -30,6 +36,8 @@ export class RecipeListComponent {
 
   sortFieldChange = output<string>();
   sortDirectionChange = output<void>();
+
+  readonly sortingOptions = toSignal(this.recipeService.getSortingOptions(), { initialValue: [] });
 
   isNextDisabled = computed(() => {
     const lastPageIndex = Math.max(0, this.totalPages() - 1);
