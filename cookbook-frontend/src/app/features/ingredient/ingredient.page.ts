@@ -11,6 +11,7 @@ import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-compon
 import { IngredientListComponent } from '@features/ingredient/components/typescript/ingredient-list.component';
 import { IngredientModalComponent } from '@shared/components/ingredient/ingredient-modal.component';
 import { RecipeService } from '@shared/services/recipe';
+import { EnumHelper } from '@shared/utils/enum-helper.service';
 
 @Component({
   selector: 'app-ingredient-page',
@@ -29,6 +30,7 @@ import { RecipeService } from '@shared/services/recipe';
 export default class IngredientPage {
   private readonly ingredientService = inject(IngredientService);
   private readonly recipeService = inject(RecipeService);
+  private readonly enumHelper = inject(EnumHelper);
   private readonly dialog = inject(MatDialog);
   private readonly toastService = inject(ToastService);
 
@@ -100,7 +102,15 @@ export default class IngredientPage {
   }
 
   onDeleteRequest(ingredient: Ingredient): void {
-    this.recipeService.searchRecipesByFilter([ingredient.id], false, false, 0, 3).subscribe({
+    this.recipeService.searchRecipesByFilter(
+      [ ingredient.id ],
+      false,
+      false,
+      0,
+      3,
+      this.enumHelper.humanizedToEnum('NAME'),
+      this.enumHelper.humanizedToEnum('ASCENDING')
+    ).subscribe({
       next: (response) => {
         let message = `Are you sure you want to delete "${ingredient.name}"? This action cannot be undone.`;
 

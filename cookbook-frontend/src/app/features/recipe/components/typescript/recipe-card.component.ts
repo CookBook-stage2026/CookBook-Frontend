@@ -1,9 +1,10 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { RecipeSummary } from '@shared/domain/recipe';
-import { DurationPipe } from '@shared/pipes/duration.pipe';
+import { RouterLink } from '@angular/router';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterLink } from '@angular/router';
+
+import { RecipeSummary } from '@shared/domain/recipe';
+import { DurationPipe } from '@shared/pipes/duration.pipe';
 
 @Component({
   selector: 'app-recipe-card',
@@ -11,7 +12,10 @@ import { RouterLink } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [DurationPipe, MatCardModule, MatIconModule, RouterLink],
   templateUrl: '../html/recipe-card.component.html',
-  styleUrl: '../scss/recipe-card.component.scss'
+  styleUrl: '../scss/recipe-card.component.scss',
+  host: {
+    '[class.is-own-recipe]': 'recipe().isOwner'
+  }
 })
 export class RecipeCardComponent {
   recipe = input.required<RecipeSummary>();

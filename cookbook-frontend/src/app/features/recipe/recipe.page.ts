@@ -4,7 +4,6 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { rxResource } from '@angular/core/rxjs-interop';
-
 import { RecipeService } from '@shared/services/recipe';
 import { RecipeDto } from '@shared/domain/recipe';
 import { ToastComponent } from '@shared/components/toast/toast.component';
@@ -12,6 +11,9 @@ import { RecipeListComponent } from '@features/recipe/components/typescript/reci
 import { RecipeFilterComponent } from '@features/recipe/components/typescript/recipe-filter.component';
 import { RecipeImportDialogComponent } from '@features/recipe/components/typescript/recipe-import-dialog.component';
 import { RecipeFormModalComponent } from '@features/recipe/components/typescript/recipe-form-modal.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatSelectModule } from '@angular/material/select';
+import { EnumHelper } from '@shared/utils/enum-helper.service';
 
 @Component({
   selector: 'app-recipe-list-page',
@@ -23,12 +25,15 @@ import { RecipeFormModalComponent } from '@features/recipe/components/typescript
     MatButton,
     MatIcon,
     RecipeFormModalComponent,
+    MatFormFieldModule,
+    MatSelectModule
   ],
   templateUrl: './recipe.page.html',
   styleUrl: './recipe.page.scss',
 })
 export default class RecipePage {
   private readonly recipeService = inject(RecipeService);
+  private readonly enumHelper = inject(EnumHelper);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
 
@@ -39,20 +44,29 @@ export default class RecipePage {
   readonly shouldApplyPreferences = signal(true);
   readonly includeAccessibleRecipes = signal(true);
 
+  readonly sortBy = signal<string>('NAME');
+  readonly sortDirection = signal<string>('ASCENDING');
+
+  readonly initialSortBy = this.enumHelper.formatEnum('NAME');
+
   readonly recipeResource = rxResource({
     params: () => ({
       page: this.pageIndex(),
       size: this.pageSize(),
       ingredients: this.selectedIngredientIds(),
       applyPrefs: this.shouldApplyPreferences(),
-      includeAccessible: this.includeAccessibleRecipes()
+      includeAccessible: this.includeAccessibleRecipes(),
+      sortBy: this.sortBy(),
+      sortDirection: this.sortDirection()
     }),
     stream: ({ params }) => this.recipeService.searchRecipesByFilter(
       params.ingredients,
       params.applyPrefs,
       params.includeAccessible,
       params.page,
-      params.size
+      params.size,
+      params.sortBy,
+      params.sortDirection
     )
   });
 
@@ -106,5 +120,15 @@ export default class RecipePage {
 
   closeModal(): void {
     this.isCreateModalOpen.set(false);
+  }
+
+  onSortFieldChange(field: string): void {
+    this.sortBy.set(field);
+    this.pageIndex.set(0);
+  }
+
+  toggleSortDirection(): void {
+    this.sortDirection.update(dir => dir === 'ASCENDING' ? 'DESCENDING' : 'ASCENDING');
+    this.pageIndex.set(0);
   }
 }

@@ -4,6 +4,14 @@
   gap: 1rem;
 }
 
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
 .pagination {
   display: flex;
   align-items: center;
@@ -14,6 +22,101 @@
     padding: 0 16px;
     font-size: 14px;
     line-height: normal;
+  }
+}
+
+.sort-group {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  background-color: var(--bg-surface);
+  border-radius: var(--radius-md, 6px);
+  border: 1px solid var(--border-color);
+  padding: 0 4px 0 8px;
+  box-sizing: border-box;
+
+  .compact-dropdown {
+    max-width: 105px;
+
+    ::ng-deep {
+      .mdc-text-field--outlined {
+        height: 30px;
+      }
+
+      .mdc-notched-outline {
+        display: none;
+      }
+
+      .mat-mdc-form-field-infix {
+        padding: 0 !important;
+        min-height: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+      }
+
+      .mat-mdc-select {
+        display: flex;
+        align-items: center;
+        height: 100%;
+      }
+
+      .mat-mdc-select-trigger {
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        gap: 6px;
+      }
+
+      .mat-mdc-select-value {
+        font-size: 14px;
+        color: var(--text-on-primary);
+        line-height: 1;
+        transform: translateY(1px);
+      }
+
+      .mat-mdc-select-arrow-wrapper {
+        display: flex;
+        align-items: center;
+        height: 100%;
+      }
+
+      .mat-mdc-select-arrow {
+        color: var(--text-on-primary) !important;
+        margin: 0;
+      }
+    }
+  }
+
+  .compact-icon-btn {
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-on-primary);
+    margin-left: 6px;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      left: -4px;
+      top: 6px;
+      width: 1px;
+      height: 16px;
+      background-color: var(--text-muted);
+    }
+
+    ::ng-deep mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      line-height: 18px;
+    }
   }
 }
 

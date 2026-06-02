@@ -55,7 +55,11 @@
     [pageIndex]="pageIndex()"
     [totalPages]="totalPages()"
     [isLoading]="isLoading()"
-    (pageChange)="onPageChange($event)"/>
+    [sortBy]="sortBy()"
+    [sortDirection]="sortDirection()"
+    (pageChange)="onPageChange($event)"
+    (sortFieldChange)="onSortFieldChange($event)"
+    (sortDirectionChange)="toggleSortDirection()"/>
 </div>
 
 <app-recipe-form-modal

@@ -1,10 +1,30 @@
 <div class="list-container">
-  <div>
+  <div class="list-header">
     <nav class="pagination" aria-label="Recipe pagination">
       <button mat-stroked-button (click)="onPrevPage()" [disabled]="isPrevDisabled()">Prev</button>
       <span class="page-info" aria-live="polite">Page {{ displayPage() }} / {{ displayTotalPages() }}</span>
       <button mat-stroked-button (click)="onNextPage()" [disabled]="isNextDisabled()">Next</button>
     </nav>
+
+    <div class="sort-group">
+      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="compact-dropdown">
+        <mat-select [value]="sortBy()" (selectionChange)="onSortFieldChange($event.value)">
+          @for (option of sortingOptions(); track option) {
+            <mat-option [value]="option">{{ enumHelper.formatEnum(option) }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <button
+        mat-icon-button
+        color="primary"
+        type="button"
+        (click)="onToggleDirection()"
+        class="compact-icon-btn"
+        title="Toggle Sort Direction">
+        <mat-icon>{{ sortDirection() === 'ASCENDING' ? 'arrow_downward' : 'arrow_upward' }}</mat-icon>
+      </button>
+    </div>
   </div>
 
   @if (isLoading()) {
