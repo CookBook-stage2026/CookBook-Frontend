@@ -4,7 +4,7 @@
   <header class="page-header">
     <div>
       <h1 class="page-title">Recipes</h1>
-      <p class="page-subtitle">Your culinary collection.</p>
+      <p class="page-subtitle">Your personal culinary collection.</p>
     </div>
 
     <div class="header-actions">
@@ -29,7 +29,7 @@
       </button>
 
       <button
-        mat-stroked-button
+        mat-flat-button
         type="button"
         (click)="openImportDialog()">
         <mat-icon>download</mat-icon>
@@ -48,6 +48,8 @@
   </header>
 
   <app-recipe-filter (selectedIngredientsChange)="onFilterChange($event)"/>
+
+  <mat-divider class="section-divider"/>
 
   <app-recipe-list
     [recipes]="recipes()"

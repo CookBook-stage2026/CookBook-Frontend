@@ -14,6 +14,7 @@ import { RecipeFormModalComponent } from '@features/recipe/components/typescript
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { EnumHelper } from '@shared/utils/enum-helper.service';
+import { MatDivider } from '@angular/material/list';
 
 @Component({
   selector: 'app-recipe-list-page',
@@ -25,6 +26,7 @@ import { EnumHelper } from '@shared/utils/enum-helper.service';
     MatButton,
     MatIcon,
     RecipeFormModalComponent,
+    MatDivider,
     MatFormFieldModule,
     MatSelectModule
   ],

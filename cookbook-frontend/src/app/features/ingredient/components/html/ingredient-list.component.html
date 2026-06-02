@@ -11,6 +11,26 @@
       <p>No ingredients found that match your selection.</p>
     </div>
   } @else {
+    <div class="pagination-bar">
+      <div class="pagination-actions">
+        <button
+          mat-stroked-button
+          [disabled]="pageIndex() === 0"
+          (click)="pageChange.emit(pageIndex() - 1)">
+          Previous
+        </button>
+
+        <span class="page-info">Page {{ pageIndex() + 1 }} of {{ totalPages() || 1 }}</span>
+
+        <button
+          mat-stroked-button
+          [disabled]="pageIndex() >= totalPages() - 1"
+          (click)="pageChange.emit(pageIndex() + 1)">
+          Next
+        </button>
+      </div>
+    </div>
+
     <div class="table-container">
       <table class="custom-table">
         <thead>
@@ -37,7 +57,7 @@
                 <button mat-icon-button (click)="edit.emit(item)" aria-label="Edit ingredient">
                   <mat-icon>edit</mat-icon>
                 </button>
-                <button class="delete-button" mat-icon-button color="warn" (click)="delete.emit(item)" aria-label="Delete ingredient">
+                <button class="delete-button" mat-icon-button (click)="delete.emit(item)" aria-label="Delete ingredient">
                   <mat-icon>delete</mat-icon>
                 </button>
               </td>
@@ -45,24 +65,6 @@
           }
         </tbody>
       </table>
-    </div>
-
-    <div class="pagination-bar">
-      <span class="page-info">Page {{ pageIndex() + 1 }} of {{ totalPages() || 1 }}</span>
-      <div class="pagination-actions">
-        <button
-          mat-stroked-button
-          [disabled]="pageIndex() === 0"
-          (click)="pageChange.emit(pageIndex() - 1)">
-          Previous
-        </button>
-        <button
-          mat-stroked-button
-          [disabled]="pageIndex() >= totalPages() - 1"
-          (click)="pageChange.emit(pageIndex() + 1)">
-          Next
-        </button>
-      </div>
     </div>
   }
 </div>

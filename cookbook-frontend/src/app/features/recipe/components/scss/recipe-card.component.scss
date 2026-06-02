@@ -57,6 +57,10 @@ recipe-card,
   display: flex;
   align-items: center;
   gap: 4px;
+
+  mat-icon {
+    margin-top: 2px;
+  }
 }
 
 .footer-right {

@@ -18,7 +18,6 @@ import {
   Validators
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { MatDialog } from '@angular/material/dialog';
 import { MatCheckbox } from '@angular/material/checkbox';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { CdkScrollable } from '@angular/cdk/scrolling';
@@ -30,7 +29,7 @@ import { CreateRecipeDto, NewRecipeIngredientDto, RecipeDto, UpdateRecipeDto } f
 import { RecipeIngredientsFormComponent } from './recipe-ingredients-form.component';
 import { RecipeStepsComponent } from './recipe-steps.component';
 import { CalculatingPopupComponent } from '@features/recipe/components/typescript/calculating-popup.component';
-import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-component';
+import { MatButton } from '@angular/material/button';
 
 @Component({
   selector: 'app-recipe-form-modal',
@@ -42,7 +41,8 @@ import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-compon
     CdkScrollable,
     CalculatingPopupComponent,
     MatCheckbox,
-    MatProgressSpinner
+    MatProgressSpinner,
+    MatButton
   ],
   templateUrl: '../html/recipe-form-modal.component.html',
   styleUrl: '../scss/recipe-form-modal.component.scss',
@@ -55,7 +55,6 @@ export class RecipeFormModalComponent {
   private readonly recipeService = inject(RecipeService);
   private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
-  private readonly dialog = inject(MatDialog);
 
   readonly isOpen = input<boolean>(false);
   readonly recipe = input<RecipeDto | null>(null);
@@ -67,11 +66,10 @@ export class RecipeFormModalComponent {
 
   readonly isSubmitting = signal(false);
   readonly isSavingAsNew = signal(false);
-  readonly isDeleting = signal(false);
   readonly calculateMacrosOption = signal(false);
 
   readonly isActionPending = computed(() =>
-    this.isSubmitting() || this.isSavingAsNew() || this.isDeleting()
+    this.isSubmitting() || this.isSavingAsNew()
   );
 
   readonly recipeForm = this.fb.group({
@@ -125,7 +123,6 @@ export class RecipeFormModalComponent {
 
     this.isSubmitting.set(false);
     this.isSavingAsNew.set(false);
-    this.isDeleting.set(false);
     this.calculateMacrosOption.set(false);
   }
 
@@ -241,40 +238,6 @@ export class RecipeFormModalComponent {
         this.isSavingAsNew.set(false);
         this.toastService.show('An error occurred during duplication.', 'error');
       }
-    });
-  }
-
-  onDeleteRecipe(): void {
-    if (this.isActionPending() || !this.isEditMode()) return;
-
-    const currentRecipe = this.recipe();
-    if (!currentRecipe) return;
-
-    const confirmRef = this.dialog.open(ConfirmDeleteComponent, {
-      width: '400px',
-      data: {
-        message: `Are you absolutely sure you want to delete "${currentRecipe.name}"? This action cannot be reversed.`
-      },
-      autoFocus: false
-    });
-
-    confirmRef.afterClosed().subscribe((confirmed: boolean) => {
-      if (!confirmed) return;
-
-      this.isDeleting.set(true);
-
-      this.recipeService.deleteRecipe(currentRecipe.id).subscribe({
-        next: () => {
-          this.isDeleting.set(false);
-          this.toastService.show('Recipe was successfully permanently deleted.', 'success');
-          this.closeModal.emit();
-          this.router.navigate(['/recipes']);
-        },
-        error: () => {
-          this.isDeleting.set(false);
-          this.toastService.show('Failed to delete the recipe. Please try again.', 'error');
-        }
-      });
     });
   }
 

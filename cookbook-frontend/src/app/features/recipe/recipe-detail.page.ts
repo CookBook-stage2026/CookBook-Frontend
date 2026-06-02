@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject, input, signal, untracked } from '@angular/core';
 import { Location } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { RecipeService } from '@shared/services/recipe';
 import { RecipeDto } from '@shared/domain/recipe';
@@ -23,6 +23,7 @@ import { RecipeFormModalComponent } from '@features/recipe/components/typescript
 import {
   RecipeServingsAdjusterComponent
 } from '@features/recipe/components/typescript/recipe-servings-adjuster.component';
+import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-component';
 
 @Component({
   selector: 'app-recipe-detail-page',
@@ -52,6 +53,7 @@ export default class RecipeDetailPage {
   readonly toastService = inject(ToastService);
   readonly location = inject(Location);
   readonly route = inject(ActivatedRoute);
+  readonly router = inject(Router);
 
   readonly recipeId = input.required<string>();
 
@@ -59,6 +61,7 @@ export default class RecipeDetailPage {
   readonly isUpdatingVisibility = signal(false);
   readonly isGeneratingMacros = signal(false);
   readonly isFormModalOpen = signal(false);
+  readonly isDeleting = signal(false);
 
   readonly enhanceRequest = signal<string | undefined>(undefined);
   readonly adjustedServings = signal<number | undefined>(undefined);
@@ -226,6 +229,37 @@ export default class RecipeDetailPage {
         this.isGeneratingMacros.set(false);
         this.toastService.show('Failed to calculate nutritional macros. Please verify ingredient mappings.', 'error');
       }
+    });
+  }
+
+  onDeleteRecipe(): void {
+    const currentRecipe = this.recipe.value();
+    if (!currentRecipe || this.isDeleting()) return;
+
+    const confirmRef = this.dialog.open(ConfirmDeleteComponent, {
+      width: '400px',
+      data: {
+        message: `Are you absolutely sure you want to delete "${currentRecipe.name}"? This action cannot be reversed.`
+      },
+      autoFocus: false
+    });
+
+    confirmRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (!confirmed) return;
+
+      this.isDeleting.set(true);
+
+      this.recipeService.deleteRecipe(currentRecipe.id).subscribe({
+        next: () => {
+          this.isDeleting.set(false);
+          this.toastService.show('Recipe was successfully deleted.', 'success');
+          this.router.navigate(['/recipes']);
+        },
+        error: () => {
+          this.isDeleting.set(false);
+          this.toastService.show('Failed to delete the recipe. Please try again.', 'error');
+        }
+      });
     });
   }
 }
