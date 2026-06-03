@@ -8,9 +8,8 @@ import { filter, switchMap } from 'rxjs';
 import { HouseholdService } from '@shared/services/household/household.service';
 import { UserService } from '@shared/services/user';
 import { ToastService } from '@core/services';
-import { CreateHouseholdComponent } from '@features/household/components/typescript/create-household.component';
 import { HouseholdCardComponent } from '@features/household/components/typescript/household-card.component';
-import { HouseholdDetailComponent } from '@features/household/components/typescript/household-detail.component';
+import { HouseholdModalComponent } from '@features/household/components/typescript/household-modal.component';
 import { ManageInvitesComponent } from '@features/household/components/typescript/manage-invites.component';
 import { ToastComponent } from '@shared/components/toast/toast.component';
 import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-component';
@@ -24,9 +23,8 @@ import { ConfirmDeleteComponent } from '@shared/components/confirm-delete-compon
     MatButtonModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    CreateHouseholdComponent,
     HouseholdCardComponent,
-    HouseholdDetailComponent,
+    HouseholdModalComponent,
     ManageInvitesComponent,
     ToastComponent,
   ],
@@ -52,11 +50,9 @@ export default class HouseholdsPageComponent implements OnInit {
   );
 
   readonly isCreateModalOpen = signal(false);
-
   readonly selectedHouseholdId = signal<string | null>(null);
-  readonly isDetailModalOpen = computed(() => !!this.selectedHouseholdId());
-
   readonly managingInvitesHouseholdId = signal<string | null>(null);
+
   readonly isManageInvitesModalOpen = computed(() => !!this.managingInvitesHouseholdId());
 
   ngOnInit(): void {

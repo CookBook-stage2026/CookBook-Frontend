@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal, } from '@
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
-import { MatError, MatFormField, MatLabel, MatPrefix } from '@angular/material/form-field';
+import { MatError, MatFormField, MatHint, MatLabel, MatPrefix } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
 import { MatIcon } from '@angular/material/icon';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
@@ -26,6 +26,7 @@ type ImportStep = 'url-input' | 'loading' | 'preview';
     MatInput,
     MatIcon,
     MatProgressSpinner,
+    MatHint,
   ],
   templateUrl: '../html/recipe-import-dialog.component.html',
   styleUrl: '../scss/recipe-import-dialog.component.scss',
@@ -63,6 +64,7 @@ export class RecipeImportDialogComponent {
       validators: [
         Validators.required,
         Validators.pattern(/^https?:\/\/.+/),
+        Validators.maxLength(2000),
       ],
     }),
   });
@@ -71,6 +73,7 @@ export class RecipeImportDialogComponent {
     const ctrl = this.urlForm.controls.url;
     if (ctrl.hasError('required')) return 'URL is required';
     if (ctrl.hasError('pattern')) return 'URL must start with http:// or https://';
+    if (ctrl.hasError('maxlength')) return 'URL cannot exceed 2000 characters';
     return '';
   }
 

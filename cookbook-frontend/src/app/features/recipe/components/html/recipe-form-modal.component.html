@@ -40,7 +40,10 @@
       <div class="modal-body" cdkScrollable>
         <form [formGroup]="recipeForm" class="recipe-form">
           <div class="form-group">
-            <label for="name">Recipe Name *</label>
+            <div class="label-row">
+              <label for="name">Recipe Name *</label>
+              <span class="char-counter">{{ recipeForm.controls.name.value.length || 0 }} / 255</span>
+            </div>
             <div class="input-wrapper">
               <input
                 type="text"
@@ -48,18 +51,26 @@
                 formControlName="name"
                 placeholder="e.g., Homemade Pizza"
                 class="form-control"
+                maxlength="255"
                 [class.is-invalid]="recipeForm.controls.name.invalid && recipeForm.controls.name.touched"
                 aria-required="true">
               @if (recipeForm.controls.name.invalid && recipeForm.controls.name.touched) {
                 <div class="tooltip-error" role="alert">
-                  <span>Recipe name is required</span>
+                  @if (recipeForm.controls.name.hasError('maxlength')) {
+                    <span>Recipe name cannot exceed 255 characters</span>
+                  } @else {
+                    <span>Recipe name is required</span>
+                  }
                 </div>
               }
             </div>
           </div>
 
           <div class="form-group">
-            <label for="description">Short Description *</label>
+            <div class="label-row">
+              <label for="description">Short Description *</label>
+              <span class="char-counter">{{ recipeForm.controls.description.value.length || 0 }} / 512</span>
+            </div>
             <div class="input-wrapper">
               <textarea
                 id="description"
@@ -67,11 +78,16 @@
                 rows="3"
                 placeholder="Describe the dish briefly..."
                 class="form-control"
+                maxlength="512"
                 [class.is-invalid]="recipeForm.controls.description.invalid && recipeForm.controls.description.touched"
                 aria-required="true"></textarea>
               @if (recipeForm.controls.description.invalid && recipeForm.controls.description.touched) {
                 <div class="tooltip-error" role="alert">
-                  <span>Description is required</span>
+                  @if (recipeForm.controls.description.hasError('maxlength')) {
+                    <span>Description cannot exceed 512 characters</span>
+                  } @else {
+                    <span>Description is required</span>
+                  }
                 </div>
               }
             </div>
@@ -116,7 +132,7 @@
                   aria-required="true">
                 @if (recipeForm.controls.servings.invalid && recipeForm.controls.servings.touched) {
                   <div class="tooltip-error" role="alert">
-                    <span>Servings must be at least 1</span>
+                    <span>Servings must be at least 1 and not greater than 1000</span>
                   </div>
                 }
               </div>

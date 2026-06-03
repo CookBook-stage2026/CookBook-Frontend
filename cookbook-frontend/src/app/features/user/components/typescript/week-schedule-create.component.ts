@@ -11,7 +11,8 @@ import {
   CreateWeekScheduleRequest,
   DAY_LABELS,
   DayOfWeek,
-  DAYS_OF_WEEK, ScheduleContext,
+  DAYS_OF_WEEK,
+  ScheduleContext,
   UpdateWeekScheduleRequest,
   WeekScheduleResponse,
 } from '@shared/domain/week-schedule';
@@ -71,13 +72,13 @@ export class WeekScheduleCreateComponent {
 
   readonly form = this.fb.group({
     weekStartDate: [new Date(), Validators.required],
-    MONDAY: ['' as string | RecipeSummary, Validators.required],
-    TUESDAY: ['' as string | RecipeSummary, Validators.required],
-    WEDNESDAY: ['' as string | RecipeSummary, Validators.required],
-    THURSDAY: ['' as string | RecipeSummary, Validators.required],
-    FRIDAY: ['' as string | RecipeSummary, Validators.required],
-    SATURDAY: ['' as string | RecipeSummary, Validators.required],
-    SUNDAY: ['' as string | RecipeSummary, Validators.required],
+    MONDAY: [ '' as string | RecipeSummary, [ Validators.required, Validators.maxLength(255) ] ],
+    TUESDAY: [ '' as string | RecipeSummary, [ Validators.required, Validators.maxLength(255) ] ],
+    WEDNESDAY: [ '' as string | RecipeSummary, [ Validators.required, Validators.maxLength(255) ] ],
+    THURSDAY: [ '' as string | RecipeSummary, [ Validators.required, Validators.maxLength(255) ] ],
+    FRIDAY: [ '' as string | RecipeSummary, [ Validators.required, Validators.maxLength(255) ] ],
+    SATURDAY: [ '' as string | RecipeSummary, [ Validators.required, Validators.maxLength(255) ] ],
+    SUNDAY: [ '' as string | RecipeSummary, [ Validators.required, Validators.maxLength(255) ] ],
   });
 
   constructor() {

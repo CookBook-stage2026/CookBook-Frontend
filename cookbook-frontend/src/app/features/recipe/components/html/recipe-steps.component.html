@@ -8,12 +8,33 @@
     @for (stepCtrl of steps().controls; track $index) {
       <div class="step-row">
         <span class="step-number">{{ $index + 1 }}</span>
-        <textarea
-          [formControl]="stepCtrl"
-          rows="2"
-          placeholder="Describe this step..."
-          class="form-control flex-grow"
-          [class.is-invalid]="stepCtrl.invalid && stepCtrl.touched"></textarea>
+
+        <div class="form-group flex-grow">
+          <div class="input-wrapper">
+            <textarea
+              [formControl]="stepCtrl"
+              rows="2"
+              placeholder="Describe this step..."
+              class="form-control"
+              maxlength="1024"
+              [class.is-invalid]="stepCtrl.invalid && stepCtrl.touched"></textarea>
+
+            <div style="text-align: right; margin-top: 0.25rem;">
+              <span class="char-counter">{{ stepCtrl.value?.length || 0 }} / 1024</span>
+            </div>
+
+            @if (stepCtrl.invalid && stepCtrl.touched) {
+              <div class="tooltip-error" role="alert">
+                @if (stepCtrl.hasError('maxlength')) {
+                  <span>Step cannot exceed 1024 characters</span>
+                } @else {
+                  <span>Step description is required</span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
         <button
           type="button"
           class="btn-icon danger"

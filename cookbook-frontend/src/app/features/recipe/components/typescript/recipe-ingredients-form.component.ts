@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input, output, signal } from '@angular/core';
-import { AbstractControl, FormArray, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormArray, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, filter, fromEvent, map, of, Subject, switchMap } from 'rxjs';
 import { IngredientService } from '@shared/services/ingredient';
 import { formatUnit, Ingredient } from '@shared/domain/ingredient';
@@ -12,11 +12,34 @@ import { rxResource, takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { CdkScrollable } from '@angular/cdk/scrolling';
 import { Overlay } from '@angular/cdk/overlay';
 import { IngredientModalComponent } from '@shared/components/ingredient/ingredient-modal.component';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatButtonModule, MatIconButton } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+
+export interface IngredientRowForm {
+  id: FormControl<string | null>;
+  name: FormControl<string>;
+  quantity: FormControl<number | null>;
+  unit: FormControl<string>;
+}
 
 @Component({
   selector: 'app-recipe-ingredients',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, MatAutocompleteModule, CdkScrollable, IngredientModalComponent],
+  imports: [
+    ReactiveFormsModule,
+    MatAutocompleteModule,
+    CdkScrollable,
+    IngredientModalComponent,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatIconButton,
+    MatIconModule
+  ],
   templateUrl: '../html/recipe-ingredients-form.component.html',
   styleUrl: '../scss/recipe-form-modal.component.scss',
   providers: [
@@ -30,7 +53,7 @@ import { IngredientModalComponent } from '@shared/components/ingredient/ingredie
 export class RecipeIngredientsFormComponent {
   private readonly ingredientService = inject(IngredientService);
 
-  readonly ingredients = input.required<FormArray<FormGroup>>();
+  readonly ingredients = input.required<FormArray<FormGroup<IngredientRowForm>>>();
   readonly isSubmitting = input.required<boolean>();
   readonly addIngredient = output<void>();
   readonly removeIngredient = output<number>();
@@ -49,7 +72,7 @@ export class RecipeIngredientsFormComponent {
 
   readonly hasUnselectedRow = computed(() => {
     this._tick();
-    return this.ingredients().controls.some(ctrl => !ctrl.get('id')?.value);
+    return this.ingredients().controls.some(ctrl => !ctrl.controls.id.value);
   });
 
   readonly createButtonText = computed<string>(() => {
@@ -82,7 +105,7 @@ export class RecipeIngredientsFormComponent {
     ).subscribe(({ results, rowIndex }) => {
       const selectedIds = new Set(
         this.ingredients().controls
-          .map(ctrl => ctrl.get('id')?.value)
+          .map(ctrl => ctrl.controls.id.value)
           .filter(id => id !== null)
       );
 
@@ -133,8 +156,8 @@ export class RecipeIngredientsFormComponent {
       const controls = this.ingredients().controls;
       const matchingIndex = controls.findIndex(
         ctrl =>
-          !ctrl.get('id')?.value &&
-          ctrl.get('name')?.value?.trim().toLowerCase() ===
+          !ctrl.controls.id.value &&
+          ctrl.controls.name.value.trim().toLowerCase() ===
           this.currentSearchTerm().trim().toLowerCase()
       );
       this.pendingRowIndex.set(matchingIndex === -1 ? null : matchingIndex);
@@ -170,7 +193,7 @@ export class RecipeIngredientsFormComponent {
     this.bump();
   }
 
-  onNameChange(event: Event, ctrl: AbstractControl, rowIndex: number): void {
+  onNameChange(event: Event, ctrl: FormGroup<IngredientRowForm>, rowIndex: number): void {
     const inputName = (event.target as HTMLInputElement).value;
     this.currentSearchTerm.set(inputName);
 
@@ -197,7 +220,7 @@ export class RecipeIngredientsFormComponent {
     this.bump();
   }
 
-  onOptionSelected(event: MatAutocompleteSelectedEvent, ctrl: AbstractControl, rowIndex: number): void {
+  onOptionSelected(event: MatAutocompleteSelectedEvent, ctrl: FormGroup<IngredientRowForm>, rowIndex: number): void {
     const selectedName = event.option.value;
     this.currentSearchTerm.set(selectedName);
 
@@ -216,7 +239,7 @@ export class RecipeIngredientsFormComponent {
     this.bump();
   }
 
-  onQuantityInput(event: Event, control: AbstractControl): void {
+  onQuantityInput(event: Event, control: FormControl<number | null>): void {
     const inputElement = event.target as HTMLInputElement;
     let sanitizedValue = inputElement.value.replaceAll(/[^0-9.,]/g, '');
 

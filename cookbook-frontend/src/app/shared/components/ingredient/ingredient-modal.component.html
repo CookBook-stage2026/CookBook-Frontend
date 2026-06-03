@@ -40,12 +40,17 @@
 
       <mat-dialog-content class="modal-body">
         <form [formGroup]="ingredientForm" id="ingredient-form" class="recipe-form" (ngSubmit)="onSubmit()">
-
           <mat-form-field appearance="outline" class="full-width">
             <mat-label>Ingredient Name</mat-label>
-            <input matInput formControlName="name" placeholder="e.g., Olive Oil" required/>
-            @if (ingredientForm.get('name')?.hasError('required')) {
+            <input matInput formControlName="name" placeholder="e.g., Olive Oil" required maxlength="100"/>
+
+            <mat-hint align="end">{{ ingredientForm.controls.name.value.length }} / 100</mat-hint>
+
+            @if (ingredientForm.controls.name.hasError('required')) {
               <mat-error>Name is required</mat-error>
+            }
+            @if (ingredientForm.controls.name.hasError('maxlength')) {
+              <mat-error>Name cannot exceed 100 characters</mat-error>
             }
           </mat-form-field>
 
@@ -56,7 +61,8 @@
                 <mat-option [value]="unit.value">{{ unit.label }}</mat-option>
               }
             </mat-select>
-            @if (ingredientForm.get('unit')?.hasError('required')) {
+
+            @if (ingredientForm.controls.unit.hasError('required')) {
               <mat-error>Unit is required</mat-error>
             }
 
@@ -75,7 +81,7 @@
               aria-required="true"
               multiple
               formControlName="categories"
-              [class.chip-list-invalid]="ingredientForm.get('categories')?.invalid && ingredientForm.get('categories')?.touched">
+              [class.chip-list-invalid]="ingredientForm.controls.categories.invalid && ingredientForm.controls.categories.touched">
               @for (category of formattedCategories(); track category.value) {
                 <mat-chip-option
                   [value]="category.value"
@@ -84,11 +90,11 @@
                 </mat-chip-option>
               }
             </mat-chip-listbox>
-            @if (ingredientForm.get('categories')?.invalid && ingredientForm.get('categories')?.touched) {
+
+            @if (ingredientForm.controls.categories.invalid && ingredientForm.controls.categories.touched) {
               <mat-error class="categories-error">Select at least one category</mat-error>
             }
           </div>
-
         </form>
       </mat-dialog-content>
 

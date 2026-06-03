@@ -1,13 +1,15 @@
 import {
-  Component,
+  AfterViewInit,
   ChangeDetectionStrategy,
-  input,
-  inject,
-  signal,
+  Component,
   DestroyRef,
-  effect, viewChild, AfterViewInit,
+  effect,
+  inject,
+  input,
+  signal,
+  viewChild,
 } from '@angular/core';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import {
   MatAutocompleteModule,
   MatAutocompleteSelectedEvent,
@@ -17,14 +19,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { RecipeService } from '@shared/services/recipe';
 import { RecipeSummary } from '@shared/domain/recipe';
-import {
-  debounceTime,
-  distinctUntilChanged,
-  switchMap,
-  Subject,
-  catchError,
-  of,
-} from 'rxjs';
+import { catchError, debounceTime, distinctUntilChanged, of, Subject, switchMap, } from 'rxjs';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ScheduleContext } from '@shared/domain/week-schedule';
 
@@ -49,6 +44,7 @@ export const SKIP_DAY_VALUE = '__SKIP__';
         [matAutocomplete]="auto"
         placeholder="Search recipes..."
         autocomplete="off"
+        maxlength="255"
         (input)="onInput($event)"
       />
       <mat-autocomplete
@@ -80,7 +76,7 @@ export class RecipeAutocompleteComponent implements AfterViewInit {
   readonly control = input.required<FormControl<string | RecipeSummary | null>>();
   readonly preselectedRecipe = input<RecipeSummary | undefined>(undefined);
 
-  inputControl = new FormControl('');
+  inputControl = new FormControl('', [ Validators.maxLength(255) ]);
   selectedDisplayName = signal<string>('');
 
   private readonly recipeService = inject(RecipeService);

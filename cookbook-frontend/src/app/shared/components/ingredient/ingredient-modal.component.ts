@@ -9,7 +9,7 @@ import {
   output,
   signal
 } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { IngredientService } from '@shared/services/ingredient';
 import {
   CreateIngredientDto,
@@ -59,8 +59,8 @@ export class IngredientModalComponent implements OnInit {
 
   readonly selectedCategories = signal<string[]>([]);
 
-  readonly ingredientForm: FormGroup = this.fb.group({
-    name: ['', Validators.required],
+  readonly ingredientForm = this.fb.nonNullable.group({
+    name: [ '', [ Validators.required, Validators.maxLength(100) ] ],
     unit: ['', Validators.required],
     categories: [[] as string[], Validators.required]
   });
@@ -96,19 +96,6 @@ export class IngredientModalComponent implements OnInit {
     });
   }
 
-  toggleCategory(category: string): void {
-    const control = this.ingredientForm.get('categories');
-    if (control !== null) {
-      const current = this.selectedCategories();
-      const updated = current.includes(category)
-        ? current.filter(c => c !== category)
-        : [...current, category];
-      this.selectedCategories.set(updated);
-      control.setValue(updated);
-      control.markAsTouched();
-    }
-  }
-
   onSubmit(): void {
     if (this.ingredientForm.invalid || this.isSubmitting()) {
       this.ingredientForm.markAllAsTouched();
@@ -116,7 +103,7 @@ export class IngredientModalComponent implements OnInit {
     }
 
     this.isSubmitting.set(true);
-    const raw = this.ingredientForm.value;
+    const raw = this.ingredientForm.getRawValue();
     const activeIngredient = this.ingredient();
 
     if (activeIngredient) {

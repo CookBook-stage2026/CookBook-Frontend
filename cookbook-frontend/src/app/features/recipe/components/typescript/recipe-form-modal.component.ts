@@ -73,10 +73,10 @@ export class RecipeFormModalComponent {
   );
 
   readonly recipeForm = this.fb.group({
-    name: ['', Validators.required],
-    description: ['', Validators.required],
+    name: [ '', [ Validators.required, Validators.maxLength(255) ] ],
+    description: [ '', [ Validators.required, Validators.maxLength(512) ] ],
     durationInMinutes: [null as number | null, [Validators.required, Validators.min(1)]],
-    servings: [null as number | null, [Validators.required, Validators.min(1)]],
+    servings: [ null as number | null, [ Validators.required, Validators.min(1), Validators.max(1000) ] ],
     isPublic: [false],
     steps: this.fb.array<FormControl<string>>([]),
     ingredients: this.fb.array<FormGroup>([])
@@ -144,7 +144,7 @@ export class RecipeFormModalComponent {
     recipeData.ingredients.forEach(ing => {
       this.ingredients.push(this.fb.group({
         id: [ing.ingredientId],
-        name: [ing.name, Validators.required],
+        name: [ ing.name, [ Validators.required, Validators.maxLength(100) ] ],
         quantity: [ing.quantity, [Validators.required, Validators.min(0.01)]],
         unit: [ing.unit]
       }));
@@ -254,7 +254,7 @@ export class RecipeFormModalComponent {
   addIngredient(): void {
     this.ingredients.push(this.fb.group({
       id: [''],
-      name: ['', Validators.required],
+      name: [ '', [ Validators.required, Validators.maxLength(100) ] ],
       quantity: [null as number | null, [Validators.required, Validators.min(0.01)]],
       unit: ['', Validators.required]
     }));
