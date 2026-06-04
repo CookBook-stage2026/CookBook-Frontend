@@ -73,7 +73,7 @@ export class RecipeFormModalComponent {
   );
 
   readonly recipeForm = this.fb.group({
-    name: [ '', [ Validators.required, Validators.maxLength(255) ] ],
+    name: [ '', [ Validators.required, Validators.maxLength(150) ] ],
     description: [ '', [ Validators.required, Validators.maxLength(512) ] ],
     durationInMinutes: [null as number | null, [Validators.required, Validators.min(1)]],
     servings: [ null as number | null, [ Validators.required, Validators.min(1), Validators.max(1000) ] ],

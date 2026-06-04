@@ -11,6 +11,7 @@
 }
 
 .modal {
+  box-sizing: border-box;
   background-color: var(--bg-surface);
   color: var(--text-main);
   border-radius: var(--radius-md, 12px);
@@ -44,6 +45,21 @@
     margin: 4px 0 0;
     font-size: 0.875rem;
     color: var(--text-muted);
+  }
+
+  .header-info {
+    min-width: 0;
+  }
+
+  .household-header > .header-info h2,
+  .household-header > .header-info .header-description {
+    display: block;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
+    word-break: break-all;
+    hyphens: auto;
+    max-width: 100%;
   }
 
   &-body {

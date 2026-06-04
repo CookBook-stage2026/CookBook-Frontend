@@ -44,7 +44,7 @@ export const SKIP_DAY_VALUE = '__SKIP__';
         [matAutocomplete]="auto"
         placeholder="Search recipes..."
         autocomplete="off"
-        maxlength="255"
+        maxlength="150"
         (input)="onInput($event)"
       />
       <mat-autocomplete
@@ -76,7 +76,7 @@ export class RecipeAutocompleteComponent implements AfterViewInit {
   readonly control = input.required<FormControl<string | RecipeSummary | null>>();
   readonly preselectedRecipe = input<RecipeSummary | undefined>(undefined);
 
-  inputControl = new FormControl('', [ Validators.maxLength(255) ]);
+  inputControl = new FormControl('', [ Validators.maxLength(150) ]);
   selectedDisplayName = signal<string>('');
 
   private readonly recipeService = inject(RecipeService);

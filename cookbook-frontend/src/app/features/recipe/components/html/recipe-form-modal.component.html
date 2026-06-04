@@ -42,7 +42,7 @@
           <div class="form-group">
             <div class="label-row">
               <label for="name">Recipe Name *</label>
-              <span class="char-counter">{{ recipeForm.controls.name.value.length || 0 }} / 255</span>
+              <span class="char-counter">{{ recipeForm.controls.name.value.length || 0 }} / 150</span>
             </div>
             <div class="input-wrapper">
               <input
@@ -51,13 +51,13 @@
                 formControlName="name"
                 placeholder="e.g., Homemade Pizza"
                 class="form-control"
-                maxlength="255"
+                maxlength="150"
                 [class.is-invalid]="recipeForm.controls.name.invalid && recipeForm.controls.name.touched"
                 aria-required="true">
               @if (recipeForm.controls.name.invalid && recipeForm.controls.name.touched) {
                 <div class="tooltip-error" role="alert">
                   @if (recipeForm.controls.name.hasError('maxlength')) {
-                    <span>Recipe name cannot exceed 255 characters</span>
+                    <span>Recipe name cannot exceed 150 characters</span>
                   } @else {
                     <span>Recipe name is required</span>
                   }
