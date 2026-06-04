@@ -72,7 +72,7 @@
 
       .mat-mdc-select-value {
         font-size: 14px;
-        color: var(--text-on-primary);
+        color: var(--text-main);
         line-height: 1;
         transform: translateY(1px);
       }
@@ -84,7 +84,7 @@
       }
 
       .mat-mdc-select-arrow {
-        color: var(--text-on-primary) !important;
+        color: var(--text-muted) !important;
         margin: 0;
       }
     }
@@ -97,7 +97,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--text-on-primary);
+    color: var(--text-muted);
     margin-left: 6px;
     position: relative;
 
@@ -108,7 +108,7 @@
       top: 6px;
       width: 1px;
       height: 16px;
-      background-color: var(--text-muted);
+      background-color: var(--border-color);
     }
 
     ::ng-deep mat-icon {
@@ -166,4 +166,14 @@
 .pagination-actions {
   display: flex;
   gap: 0.75rem;
+}
+
+::ng-deep .mat-mdc-select-panel.primary-text-panel {
+  --mdc-list-item-label-text-color: var(--text-main);
+
+  .mat-mdc-option {
+    .mdc-list-item__primary-text {
+      color: var(--text-main) !important;
+    }
+  }
 }

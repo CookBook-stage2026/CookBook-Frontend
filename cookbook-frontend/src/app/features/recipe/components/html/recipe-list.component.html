@@ -30,8 +30,12 @@
 
       <div class="sort-group">
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="compact-dropdown">
-          <mat-select [value]="sortBy()" (selectionChange)="onSortFieldChange($event.value)">
-            @for (option of sortingOptions(); track option) {
+          <mat-select
+            [value]="sortBy()"
+            (selectionChange)="onSortFieldChange($event.value)"
+            panelClass="primary-text-panel">
+
+          @for (option of sortingOptions(); track option) {
               <mat-option [value]="option">{{ enumHelper.formatEnum(option) }}</mat-option>
             }
           </mat-select>
