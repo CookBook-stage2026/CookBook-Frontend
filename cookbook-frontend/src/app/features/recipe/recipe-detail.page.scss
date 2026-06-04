@@ -134,6 +134,10 @@
   line-height: 1.6;
   margin-bottom: 2rem;
   max-width: 800px;
+
+  white-space: pre-line;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .servings-section {

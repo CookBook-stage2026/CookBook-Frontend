@@ -1,10 +1,14 @@
 <div class="list-container">
-  @if (isLoading()) {
-    <div class="status-msg" aria-live="polite">Loading recipes...</div>
-  } @else if (recipes().length === 0) {
+  @if (recipes().length === 0 && !isLoading() && !error()) {
     <div class="empty-state">
       <mat-icon>restaurant_menu</mat-icon>
       <p>No recipes found that match your selection.</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-stroked-button type="button" (click)="retryClick.emit()">Retry</button>
     </div>
   } @else {
     <div class="list-header">
@@ -30,8 +34,12 @@
 
       <div class="sort-group">
         <mat-form-field appearance="outline" subscriptSizing="dynamic" class="compact-dropdown">
-          <mat-select [value]="sortBy()" (selectionChange)="onSortFieldChange($event.value)">
-            @for (option of sortingOptions(); track option) {
+          <mat-select
+            [value]="sortBy()"
+            (selectionChange)="onSortFieldChange($event.value)"
+            panelClass="primary-text-panel">
+
+          @for (option of sortingOptions(); track option) {
               <mat-option [value]="option">{{ enumHelper.formatEnum(option) }}</mat-option>
             }
           </mat-select>
@@ -49,12 +57,16 @@
       </div>
     </div>
 
-    <ul class="grid">
-      @for (recipe of recipes(); track recipe.id) {
-        <li>
-          <app-recipe-card [recipe]="recipe" />
-        </li>
-      }
-    </ul>
+    @if (isLoading()) {
+      <div class="status-msg" aria-live="polite">Loading recipes...</div>
+    } @else {
+      <ul class="grid">
+        @for (recipe of recipes(); track recipe.id) {
+          <li>
+            <app-recipe-card [recipe]="recipe"/>
+          </li>
+        }
+      </ul>
+    }
   }
 </div>
