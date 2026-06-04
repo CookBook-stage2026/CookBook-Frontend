@@ -61,7 +61,8 @@
     [sortDirection]="sortDirection()"
     (pageChange)="onPageChange($event)"
     (sortFieldChange)="onSortFieldChange($event)"
-    (sortDirectionChange)="toggleSortDirection()"/>
+    (sortDirectionChange)="toggleSortDirection()"
+    (retryClick)="onRetry()"/>
 </div>
 
 <app-recipe-form-modal

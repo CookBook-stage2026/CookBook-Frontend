@@ -26,8 +26,10 @@ export class RecipeListComponent {
   pageIndex = input.required<number>();
   totalPages = input.required<number>();
   isLoading = input<boolean>(false);
+  error = input<string | null>(null);
 
   pageChange = output<number>();
+  retryClick = output<void>();
 
   isPrevDisabled = computed(() => this.pageIndex() === 0 || this.isLoading());
 

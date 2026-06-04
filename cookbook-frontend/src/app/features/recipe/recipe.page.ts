@@ -13,7 +13,6 @@ import { RecipeImportDialogComponent } from '@features/recipe/components/typescr
 import { RecipeFormModalComponent } from '@features/recipe/components/typescript/recipe-form-modal.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
-import { EnumHelper } from '@shared/utils/enum-helper.service';
 import { MatDivider } from '@angular/material/list';
 
 @Component({
@@ -35,7 +34,6 @@ import { MatDivider } from '@angular/material/list';
 })
 export default class RecipePage {
   private readonly recipeService = inject(RecipeService);
-  private readonly enumHelper = inject(EnumHelper);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
 
@@ -48,9 +46,6 @@ export default class RecipePage {
 
   readonly sortBy = signal<string>('NAME');
   readonly sortDirection = signal<string>('ASCENDING');
-
-  readonly initialSortBy = this.enumHelper.formatEnum('NAME');
-
   readonly recipeResource = rxResource({
     params: () => ({
       page: this.pageIndex(),
@@ -132,5 +127,9 @@ export default class RecipePage {
   toggleSortDirection(): void {
     this.sortDirection.update(dir => dir === 'ASCENDING' ? 'DESCENDING' : 'ASCENDING');
     this.pageIndex.set(0);
+  }
+
+  onRetry(): void {
+    this.recipeResource.reload();
   }
 }

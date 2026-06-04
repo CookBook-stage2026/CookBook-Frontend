@@ -1,10 +1,14 @@
 <div class="list-container">
-  @if (isLoading()) {
-    <div class="status-msg" aria-live="polite">Loading recipes...</div>
-  } @else if (recipes().length === 0) {
+  @if (recipes().length === 0 && !isLoading() && !error()) {
     <div class="empty-state">
       <mat-icon>restaurant_menu</mat-icon>
       <p>No recipes found that match your selection.</p>
+    </div>
+  } @else if (error()) {
+    <div class="error-state">
+      <mat-icon>error_outline</mat-icon>
+      <p>{{ error() }}</p>
+      <button mat-stroked-button type="button" (click)="retryClick.emit()">Retry</button>
     </div>
   } @else {
     <div class="list-header">
@@ -53,12 +57,16 @@
       </div>
     </div>
 
-    <ul class="grid">
-      @for (recipe of recipes(); track recipe.id) {
-        <li>
-          <app-recipe-card [recipe]="recipe" />
-        </li>
-      }
-    </ul>
+    @if (isLoading()) {
+      <div class="status-msg" aria-live="polite">Loading recipes...</div>
+    } @else {
+      <ul class="grid">
+        @for (recipe of recipes(); track recipe.id) {
+          <li>
+            <app-recipe-card [recipe]="recipe"/>
+          </li>
+        }
+      </ul>
+    }
   }
 </div>
