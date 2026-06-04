@@ -33,7 +33,11 @@
             placeholder="https://www.allrecipes.com/recipe/..."
             autocomplete="url"
             aria-required="true"
+            maxlength="2000"
           />
+
+          <mat-hint align="end">{{ urlForm.controls.url.value.length }} / 2000</mat-hint>
+
           @if (urlForm.controls.url.invalid && urlForm.controls.url.touched) {
             <mat-error>{{ getUrlErrorMessage() }}</mat-error>
           }

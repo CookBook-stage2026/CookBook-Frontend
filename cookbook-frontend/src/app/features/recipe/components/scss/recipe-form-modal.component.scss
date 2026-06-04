@@ -185,6 +185,17 @@ body {
   flex-direction: column;
   gap: 0.5rem;
 
+  .label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .char-counter {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
   label {
     font-weight: 500;
     font-size: 0.95rem;

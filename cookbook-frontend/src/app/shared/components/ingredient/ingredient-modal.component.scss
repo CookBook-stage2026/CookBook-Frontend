@@ -53,7 +53,8 @@
   padding: 1.5rem 2rem !important;
   border-top: 1px solid var(--border-color);
   margin: 0 !important;
-  gap: 0.75rem;
+  display: flex !important;
+  gap: 0.75rem !important;
 }
 
 .recipe-form {
